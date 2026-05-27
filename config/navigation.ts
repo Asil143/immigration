@@ -18,6 +18,7 @@ import {
   Calculator,
   Trophy,
   Lock,
+  UserCircle,
   type LucideIcon,
 } from "lucide-react";
 
@@ -35,6 +36,13 @@ export const dashboardNav: NavItem[] = [
     href: "/dashboard",
     icon: LayoutDashboard,
     description: "Overview and quick actions",
+  },
+  {
+    title: "My Profile",
+    href: "/dashboard/profile",
+    icon: UserCircle,
+    description: "Your visa status & key dates",
+    badge: "New",
   },
   {
     title: "AI Assistant",
