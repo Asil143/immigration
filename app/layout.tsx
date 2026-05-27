@@ -42,7 +42,7 @@ export default function RootLayout({
 }>) {
   return (
     <ClerkProvider>
-      <html lang="en" className={`${inter.variable} h-full`} suppressHydrationWarning>
+      <html lang="en" className={`${inter.variable} h-full light`} suppressHydrationWarning>
         <body className="min-h-full bg-background font-sans antialiased">
           <Providers>{children}</Providers>
         </body>
