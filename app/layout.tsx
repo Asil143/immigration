@@ -42,8 +42,8 @@ export default function RootLayout({
 }>) {
   return (
     <ClerkProvider>
-      <html lang="en" className={`${inter.variable} h-full light`} suppressHydrationWarning>
-        <body className="min-h-full bg-background font-sans antialiased">
+      <html lang="en" className={`${inter.variable} h-full`} suppressHydrationWarning style={{ background: "#ffffff", colorScheme: "light" }}>
+        <body className="min-h-full bg-white font-sans antialiased" style={{ backgroundColor: "#ffffff", color: "#0f172a" }}>
           <Providers>{children}</Providers>
         </body>
       </html>
