@@ -22,13 +22,13 @@ export function Sidebar() {
   return (
     <aside className="fixed inset-y-0 left-0 z-40 flex w-64 flex-col border-r bg-background">
       {/* Logo */}
-      <div className="flex h-16 items-center gap-2 border-b px-6">
+      <Link href="/" className="flex h-16 items-center gap-2 border-b px-6 hover:opacity-80 transition-opacity">
         <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-white">
           <Bot className="h-5 w-5" />
         </div>
         <span className="font-bold text-xl text-primary">VisaPilot</span>
         <Badge variant="secondary" className="ml-auto text-[10px] px-1.5">BETA</Badge>
-      </div>
+      </Link>
 
       {/* Main Nav */}
       <nav className="flex-1 overflow-y-auto px-3 py-4">
