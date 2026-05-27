@@ -1,8 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { Navbar } from "@/components/layout/navbar";
-import { Footer } from "@/components/layout/footer";
 import { CheckCircle2, XCircle, AlertCircle, GitCompare } from "lucide-react";
 import Link from "next/link";
 
@@ -207,7 +205,6 @@ export default function VisaComparisonPage() {
 
   return (
     <div style={{ backgroundColor: "#ffffff", minHeight: "100vh" }}>
-      <Navbar />
 
       {/* Hero */}
       <section className="py-14" style={{ background: "linear-gradient(135deg, #f5f3ff 0%, #eff6ff 100%)" }}>
@@ -246,15 +243,15 @@ export default function VisaComparisonPage() {
         </div>
 
         {/* Comparison table */}
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto rounded-2xl border" style={{ borderColor: "#e2e8f0" }}>
           <table className="w-full border-collapse">
             <thead>
-              <tr>
-                <th className="w-40 p-3 text-left text-xs font-semibold uppercase tracking-wide" style={{ color: "#94a3b8" }}>Attribute</th>
-                {selectedVisas.map((v) => (
-                  <th key={v.id} className="p-4 text-center min-w-48">
-                    <div className="inline-flex flex-col items-center">
-                      <span className="text-xs font-bold px-2 py-1 rounded-full mb-1" style={{ backgroundColor: v.bg, color: v.color }}>{v.name}</span>
+              <tr style={{ borderBottom: "2px solid #e2e8f0", backgroundColor: "#f8fafc" }}>
+                <th className="w-44 p-4 text-left text-xs font-semibold uppercase tracking-wide" style={{ color: "#94a3b8", borderRight: "1px solid #e2e8f0" }}>Attribute</th>
+                {selectedVisas.map((v, idx) => (
+                  <th key={v.id} className="p-4 text-center min-w-52" style={{ borderRight: idx < selectedVisas.length - 1 ? "1px solid #e2e8f0" : undefined }}>
+                    <div className="inline-flex flex-col items-center gap-1">
+                      <span className="text-sm font-bold px-3 py-1 rounded-full" style={{ backgroundColor: v.bg, color: v.color }}>{v.name}</span>
                       <span className="text-xs font-normal" style={{ color: "#94a3b8" }}>{v.fullName}</span>
                     </div>
                   </th>
@@ -263,20 +260,20 @@ export default function VisaComparisonPage() {
             </thead>
             <tbody>
               {Object.keys(attributeLabels).map((key, i) => (
-                <tr key={key} style={{ backgroundColor: i % 2 === 0 ? "#f8fafc" : "#ffffff" }}>
-                  <td className="p-3 text-xs font-medium" style={{ color: "#64748b" }}>{attributeLabels[key]}</td>
-                  {selectedVisas.map((v) => (
-                    <td key={v.id} className="p-4 text-center">
+                <tr key={key} style={{ backgroundColor: i % 2 === 0 ? "#ffffff" : "#f8fafc", borderBottom: "1px solid #e2e8f0" }}>
+                  <td className="p-4 text-xs font-semibold" style={{ color: "#64748b", borderRight: "1px solid #e2e8f0", minWidth: "160px" }}>{attributeLabels[key]}</td>
+                  {selectedVisas.map((v, idx) => (
+                    <td key={v.id} className="p-4 text-center" style={{ borderRight: idx < selectedVisas.length - 1 ? "1px solid #e2e8f0" : undefined }}>
                       {renderValue(key, v[key as keyof VisaOption])}
                     </td>
                   ))}
                 </tr>
               ))}
               {/* Eligibility */}
-              <tr style={{ backgroundColor: "#f8fafc" }}>
-                <td className="p-3 text-xs font-medium align-top" style={{ color: "#64748b" }}>Who qualifies</td>
-                {selectedVisas.map((v) => (
-                  <td key={v.id} className="p-4 text-center text-xs" style={{ color: "#475569" }}>{v.eligibility}</td>
+              <tr style={{ backgroundColor: "#ffffff", borderBottom: "none" }}>
+                <td className="p-4 text-xs font-semibold align-top" style={{ color: "#64748b", borderRight: "1px solid #e2e8f0" }}>Who qualifies</td>
+                {selectedVisas.map((v, idx) => (
+                  <td key={v.id} className="p-4 text-center text-xs leading-relaxed" style={{ color: "#475569", borderRight: idx < selectedVisas.length - 1 ? "1px solid #e2e8f0" : undefined }}>{v.eligibility}</td>
                 ))}
               </tr>
             </tbody>
@@ -325,7 +322,6 @@ export default function VisaComparisonPage() {
         </div>
       </div>
 
-      <Footer />
     </div>
   );
 }
