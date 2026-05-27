@@ -246,7 +246,7 @@ export default function DashboardPage() {
             <div className="grid grid-cols-3 gap-3">
               {[
                 { label: "Days Tracked", value: alerts.length > 0 ? `${alerts[0]?.days}d` : "—", sub: "Until next deadline", color: "#2563eb" },
-                { label: "Cases Monitored", value: (profile as Record<string, unknown>)?.cases ? String((profile as Record<string, unknown[]>).cases?.length || 0) : "0", sub: "USCIS receipt numbers", color: "#7c3aed" },
+                { label: "Cases Monitored", value: String((profile as unknown as { cases?: unknown[] })?.cases?.length || 0), sub: "USCIS receipt numbers", color: "#7c3aed" },
                 { label: "Status", value: profile?.greenCardStage || "Active", sub: profile?.greenCardStage ? "Green card stage" : "No GC process", color: "#16a34a" },
               ].map(stat => (
                 <Card key={stat.label}>
