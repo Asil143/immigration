@@ -1,8 +1,6 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { Navbar } from "@/components/layout/navbar";
-import { Footer } from "@/components/layout/footer";
 import { Search, BookOpen } from "lucide-react";
 
 const terms = [
@@ -96,7 +94,6 @@ export default function GlossaryPage() {
 
   return (
     <div style={{ backgroundColor: "#ffffff", minHeight: "100vh" }}>
-      <Navbar />
 
       {/* Hero */}
       <section className="py-16" style={{ background: "linear-gradient(135deg, #eff6ff 0%, #f5f3ff 100%)" }}>
@@ -182,7 +179,6 @@ export default function GlossaryPage() {
         )}
       </div>
 
-      <Footer />
     </div>
   );
 }

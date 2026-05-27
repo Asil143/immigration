@@ -1,5 +1,3 @@
-import { Navbar } from "@/components/layout/navbar";
-import { Footer } from "@/components/layout/footer";
 import { Calendar, Clock, Users, Video, MapPin, ArrowRight, Bell } from "lucide-react";
 import Link from "next/link";
 
@@ -118,7 +116,6 @@ const pastEvents = [
 export default function EventsPage() {
   return (
     <div style={{ backgroundColor: "#ffffff", minHeight: "100vh" }}>
-      <Navbar />
 
       {/* Hero */}
       <section className="py-16" style={{ background: "linear-gradient(135deg, #eff6ff 0%, #f5f3ff 100%)" }}>
@@ -238,7 +235,6 @@ export default function EventsPage() {
         </div>
       </div>
 
-      <Footer />
     </div>
   );
 }

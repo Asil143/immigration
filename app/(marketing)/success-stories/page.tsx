@@ -1,5 +1,3 @@
-import { Navbar } from "@/components/layout/navbar";
-import { Footer } from "@/components/layout/footer";
 import { Star, Quote, ArrowRight } from "lucide-react";
 import Link from "next/link";
 
@@ -93,7 +91,6 @@ const stories = [
 export default function SuccessStoriesPage() {
   return (
     <div style={{ backgroundColor: "#ffffff", minHeight: "100vh" }}>
-      <Navbar />
 
       {/* Hero */}
       <section className="py-16" style={{ background: "linear-gradient(135deg, #fef9c3 0%, #fff7ed 100%)" }}>
@@ -181,7 +178,6 @@ export default function SuccessStoriesPage() {
         </div>
       </div>
 
-      <Footer />
     </div>
   );
 }

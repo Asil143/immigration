@@ -1,8 +1,6 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { Navbar } from "@/components/layout/navbar";
-import { Footer } from "@/components/layout/footer";
 import { Search, Building2, TrendingUp, Users, MapPin, ExternalLink, Star } from "lucide-react";
 
 const employers = [
@@ -55,7 +53,6 @@ export default function EmployerLookupPage() {
 
   return (
     <div style={{ backgroundColor: "#ffffff", minHeight: "100vh" }}>
-      <Navbar />
 
       <section className="py-14" style={{ background: "linear-gradient(135deg, #f0fdf4 0%, #eff6ff 100%)" }}>
         <div className="container mx-auto px-4 text-center">
@@ -166,7 +163,6 @@ export default function EmployerLookupPage() {
         </div>
       </div>
 
-      <Footer />
     </div>
   );
 }

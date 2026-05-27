@@ -1,5 +1,3 @@
-import { Navbar } from "@/components/layout/navbar";
-import { Footer } from "@/components/layout/footer";
 import { AlertCircle, CheckCircle2, Plane, Globe, Shield, Clock } from "lucide-react";
 import Link from "next/link";
 
@@ -70,7 +68,6 @@ const checklist = [
 export default function TravelAdvisoryPage() {
   return (
     <div style={{ backgroundColor: "#ffffff", minHeight: "100vh" }}>
-      <Navbar />
 
       {/* Hero */}
       <section className="py-14" style={{ background: "linear-gradient(135deg, #fff7ed 0%, #fef3c7 100%)" }}>
@@ -163,7 +160,6 @@ export default function TravelAdvisoryPage() {
         </div>
       </div>
 
-      <Footer />
     </div>
   );
 }
