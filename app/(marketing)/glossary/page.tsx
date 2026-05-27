@@ -117,7 +117,7 @@ export default function GlossaryPage() {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="w-full pl-12 pr-4 py-3 rounded-xl border text-sm focus:outline-none focus:ring-2"
-              style={{ borderColor: "#e2e8f0", focusRingColor: "#2563eb", backgroundColor: "#ffffff" }}
+              style={{ borderColor: "#e2e8f0", backgroundColor: "#ffffff" }}
             />
           </div>
         </div>
