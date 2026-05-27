@@ -15,6 +15,9 @@ import {
   AlertTriangle,
   Newspaper,
   Wrench,
+  Calculator,
+  Trophy,
+  Lock,
   type LucideIcon,
 } from "lucide-react";
 
@@ -109,6 +112,24 @@ export const toolsNav: NavItem[] = [
     icon: AlertTriangle,
     description: "Build your RFE response",
     badge: "Pro",
+  },
+  {
+    title: "Fee Calculator",
+    href: "/dashboard/tools/fee-calculator",
+    icon: Calculator,
+    description: "Calculate USCIS filing fees",
+  },
+  {
+    title: "H-1B Tracker",
+    href: "/dashboard/tools/h1b-tracker",
+    icon: Trophy,
+    description: "Lottery odds & timeline",
+  },
+  {
+    title: "Document Vault",
+    href: "/dashboard/documents/vault",
+    icon: Lock,
+    description: "Store immigration documents",
   },
 ];
 

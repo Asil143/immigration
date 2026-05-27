@@ -11,7 +11,9 @@ import { useState } from "react";
 
 const publicLinks = [
   { href: "/guides", label: "Guides" },
-  { href: "/community", label: "Community" },
+  { href: "/visa-comparison", label: "Compare Visas" },
+  { href: "/glossary", label: "Glossary" },
+  { href: "/events", label: "Events" },
   { href: "/lawyers", label: "Find a Lawyer" },
   { href: "/pricing", label: "Pricing" },
 ];

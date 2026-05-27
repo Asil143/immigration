@@ -35,6 +35,11 @@ export function Footer() {
             <h3 className="font-semibold text-sm">Platform</h3>
             <ul className="space-y-2 text-sm text-muted-foreground">
               <li><Link href="/ai-assistant" className="hover:text-primary">AI Assistant</Link></li>
+              <li><Link href="/visa-comparison" className="hover:text-primary">Compare Visas</Link></li>
+              <li><Link href="/employer-lookup" className="hover:text-primary">Employer Lookup</Link></li>
+              <li><Link href="/glossary" className="hover:text-primary">Glossary</Link></li>
+              <li><Link href="/events" className="hover:text-primary">Webinars & Events</Link></li>
+              <li><Link href="/success-stories" className="hover:text-primary">Success Stories</Link></li>
               <li><Link href="/community" className="hover:text-primary">Community</Link></li>
               <li><Link href="/lawyers" className="hover:text-primary">Find a Lawyer</Link></li>
               <li><Link href="/pricing" className="hover:text-primary">Pricing</Link></li>
