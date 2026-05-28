@@ -28,6 +28,8 @@ create table if not exists public.profiles (
   stem_opt_end_date     date,
   visa_start_date       date,
   passport_issue_date   date,
+  i94_is_ds             boolean default false,
+  i20_end_date          date,
   priority_date         date,
   -- Green card
   green_card_stage      text,

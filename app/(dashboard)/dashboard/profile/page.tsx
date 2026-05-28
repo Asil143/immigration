@@ -28,6 +28,8 @@ interface Profile {
   countryOfBirth: string;
   employer: string;
   i94Expiry: string;
+  i94IsDS: boolean;
+  i20EndDate: string;
   eadExpiry: string;
   visaStampExpiry: string;
   visaStartDate: string;
@@ -45,32 +47,35 @@ interface Profile {
 
 const empty: Profile = {
   visaType: "", countryOfBirth: "", employer: "",
-  i94Expiry: "", eadExpiry: "", visaStampExpiry: "", visaStartDate: "",
+  i94Expiry: "", i94IsDS: false, i20EndDate: "",
+  eadExpiry: "", visaStampExpiry: "", visaStartDate: "",
   passportExpiry: "", passportIssueDate: "",
   h1bStartDate: "", optStartDate: "", optEndDate: "",
   stemOptStartDate: "", stemOptEndDate: "",
   priorityDate: "", greenCardStage: "", greenCardCategory: "",
 };
 
-function fromApi(data: Record<string, string | null>): Profile {
+function fromApi(data: Record<string, string | null | boolean>): Profile {
   return {
-    visaType: data.visa_type ?? "",
-    countryOfBirth: data.country_of_birth ?? "",
-    employer: data.employer ?? "",
-    i94Expiry: data.i94_expiry ?? "",
-    eadExpiry: data.ead_expiry ?? "",
-    visaStampExpiry: data.visa_stamp_expiry ?? "",
-    visaStartDate: data.visa_start_date ?? "",
-    passportExpiry: data.passport_expiry ?? "",
-    passportIssueDate: data.passport_issue_date ?? "",
-    h1bStartDate: data.h1b_start_date ?? "",
-    optStartDate: data.opt_start_date ?? "",
-    optEndDate: data.opt_end_date ?? "",
-    stemOptStartDate: data.stem_opt_start_date ?? "",
-    stemOptEndDate: data.stem_opt_end_date ?? "",
-    priorityDate: data.priority_date ?? "",
-    greenCardStage: data.green_card_stage ?? "",
-    greenCardCategory: data.green_card_category ?? "",
+    visaType: data.visa_type as string ?? "",
+    countryOfBirth: data.country_of_birth as string ?? "",
+    employer: data.employer as string ?? "",
+    i94Expiry: data.i94_expiry as string ?? "",
+    i94IsDS: (data.i94_is_ds as boolean) ?? false,
+    i20EndDate: data.i20_end_date as string ?? "",
+    eadExpiry: data.ead_expiry as string ?? "",
+    visaStampExpiry: data.visa_stamp_expiry as string ?? "",
+    visaStartDate: data.visa_start_date as string ?? "",
+    passportExpiry: data.passport_expiry as string ?? "",
+    passportIssueDate: data.passport_issue_date as string ?? "",
+    h1bStartDate: data.h1b_start_date as string ?? "",
+    optStartDate: data.opt_start_date as string ?? "",
+    optEndDate: data.opt_end_date as string ?? "",
+    stemOptStartDate: data.stem_opt_start_date as string ?? "",
+    stemOptEndDate: data.stem_opt_end_date as string ?? "",
+    priorityDate: data.priority_date as string ?? "",
+    greenCardStage: data.green_card_stage as string ?? "",
+    greenCardCategory: data.green_card_category as string ?? "",
   };
 }
 
@@ -79,7 +84,9 @@ function toApi(p: Profile) {
     visa_type: p.visaType || null,
     country_of_birth: p.countryOfBirth || null,
     employer: p.employer || null,
-    i94_expiry: p.i94Expiry || null,
+    i94_expiry: p.i94IsDS ? null : (p.i94Expiry || null),
+    i94_is_ds: p.i94IsDS,
+    i20_end_date: p.i20EndDate || null,
     ead_expiry: p.eadExpiry || null,
     visa_stamp_expiry: p.visaStampExpiry || null,
     visa_start_date: p.visaStartDate || null,
@@ -146,7 +153,7 @@ export default function ProfilePage() {
 
   useEffect(() => { load(); }, [load]);
 
-  function set(field: keyof Profile, value: string) {
+  function set(field: keyof Profile, value: string | boolean) {
     setProfile(p => ({ ...p, [field]: value }));
   }
 
@@ -348,9 +355,8 @@ export default function ProfilePage() {
                 {
                   section: "I-94 Authorized Stay",
                   color: "#fff7ed", border: "#fed7aa", textColor: "#c2410c",
-                  fields: [
-                    { key: "i94Expiry", label: "Expiry Date", hint: "Check at i94.cbp.dhs.gov", isExpiry: true },
-                  ],
+                  fields: [],
+                  custom: "i94",
                 },
                 {
                   section: "OPT",
@@ -382,42 +388,114 @@ export default function ProfilePage() {
                     { key: "priorityDate", label: "Priority Date", hint: "Date PERM or I-140 was filed", isExpiry: false },
                   ],
                 },
-              ].map(({ section, color, border, textColor, fields }) => (
+              ].map(({ section, color, border, textColor, fields, custom }) => (
                 <div key={section} className="rounded-2xl border overflow-hidden" style={{ borderColor: border }}>
                   <div className="px-4 py-2.5" style={{ backgroundColor: color }}>
                     <p className="text-xs font-bold" style={{ color: textColor }}>{section}</p>
                   </div>
-                  <div className="p-4 grid grid-cols-1 sm:grid-cols-2 gap-4" style={{ backgroundColor: "#ffffff" }}>
-                    {fields.map(({ key, label, hint, isExpiry }) => {
-                      const val = profile[key as keyof Profile] as string;
-                      const days = daysUntil(val);
-                      return (
-                        <div key={key}>
-                          <label className="text-xs font-semibold mb-1 block" style={{ color: "#475569" }}>{label}</label>
+                  <div className="p-4" style={{ backgroundColor: "#ffffff" }}>
+                    {/* Custom I-94 block */}
+                    {custom === "i94" && (
+                      <div className="space-y-3">
+                        <div className="flex items-center gap-3">
+                          <button
+                            onClick={() => set("i94IsDS", true)}
+                            className="flex-1 py-2 rounded-lg text-xs font-semibold border-2 transition-all"
+                            style={{
+                              backgroundColor: profile.i94IsDS ? "#fff7ed" : "#ffffff",
+                              borderColor: profile.i94IsDS ? "#c2410c" : "#e2e8f0",
+                              color: profile.i94IsDS ? "#c2410c" : "#64748b",
+                            }}
+                          >
+                            D/S — Duration of Status
+                          </button>
+                          <button
+                            onClick={() => set("i94IsDS", false)}
+                            className="flex-1 py-2 rounded-lg text-xs font-semibold border-2 transition-all"
+                            style={{
+                              backgroundColor: !profile.i94IsDS ? "#fff7ed" : "#ffffff",
+                              borderColor: !profile.i94IsDS ? "#c2410c" : "#e2e8f0",
+                              color: !profile.i94IsDS ? "#c2410c" : "#64748b",
+                            }}
+                          >
+                            Specific Date
+                          </button>
+                        </div>
+                        {profile.i94IsDS ? (
+                          <div className="p-3 rounded-xl text-xs" style={{ backgroundColor: "#fff7ed", border: "1px solid #fed7aa" }}>
+                            <p className="font-semibold text-orange-800">D/S — you can stay as long as you maintain your status</p>
+                            <p className="text-orange-700 mt-1">Common for F-1, J-1 visa holders. Your I-20 end date is your real deadline.</p>
+                          </div>
+                        ) : (
+                          <div>
+                            <label className="text-xs font-semibold mb-1 block" style={{ color: "#475569" }}>Expiry Date</label>
+                            <input
+                              type="date"
+                              value={profile.i94Expiry}
+                              onChange={e => set("i94Expiry", e.target.value)}
+                              className="w-full px-3 py-2 rounded-lg border text-sm focus:outline-none"
+                              style={{ borderColor: "#e2e8f0" }}
+                            />
+                            <p className="text-[10px] mt-1" style={{ color: "#94a3b8" }}>Check at i94.cbp.dhs.gov</p>
+                            {profile.i94Expiry && daysUntil(profile.i94Expiry) !== null && (
+                              <p className="text-[10px] font-semibold mt-0.5" style={{ color: daysUntil(profile.i94Expiry)! < 60 ? "#dc2626" : "#16a34a" }}>
+                                {daysUntil(profile.i94Expiry)! > 0 ? `${daysUntil(profile.i94Expiry)} days remaining` : "EXPIRED"}
+                              </p>
+                            )}
+                          </div>
+                        )}
+                        {/* I-20 end date always shown */}
+                        <div>
+                          <label className="text-xs font-semibold mb-1 block" style={{ color: "#475569" }}>I-20 Program End Date</label>
                           <input
                             type="date"
-                            value={val}
-                            onChange={e => set(key as keyof Profile, e.target.value)}
+                            value={profile.i20EndDate}
+                            onChange={e => set("i20EndDate", e.target.value)}
                             className="w-full px-3 py-2 rounded-lg border text-sm focus:outline-none"
                             style={{ borderColor: "#e2e8f0" }}
                           />
-                          <p className="text-[10px] mt-1" style={{ color: "#94a3b8" }}>{hint}</p>
-                          {isExpiry && days !== null && days > 0 && (
-                            <p className="text-[10px] font-semibold mt-0.5" style={{ color: days < 60 ? "#dc2626" : days < 180 ? "#ea580c" : "#16a34a" }}>
-                              {days} days remaining
-                            </p>
-                          )}
-                          {isExpiry && days !== null && days <= 0 && (
-                            <p className="text-[10px] font-bold mt-0.5 text-red-600">EXPIRED</p>
-                          )}
-                          {!isExpiry && val && (
-                            <p className="text-[10px] font-semibold mt-0.5" style={{ color: "#64748b" }}>
-                              {days !== null && days < 0 ? `${Math.abs(days)} days ago` : days === 0 ? "Today" : `In ${days} days`}
+                          <p className="text-[10px] mt-1" style={{ color: "#94a3b8" }}>The program end date on your I-20 form</p>
+                          {profile.i20EndDate && daysUntil(profile.i20EndDate) !== null && (
+                            <p className="text-[10px] font-semibold mt-0.5" style={{ color: daysUntil(profile.i20EndDate)! < 90 ? "#dc2626" : "#16a34a" }}>
+                              {daysUntil(profile.i20EndDate)! > 0 ? `${daysUntil(profile.i20EndDate)} days remaining` : "EXPIRED"}
                             </p>
                           )}
                         </div>
-                      );
-                    })}
+                      </div>
+                    )}
+                    {/* Standard fields */}
+                    <div className={`grid grid-cols-1 sm:grid-cols-2 gap-4 ${custom === "i94" ? "hidden" : ""}`}>
+                      {fields.map(({ key, label, hint, isExpiry }) => {
+                        const val = profile[key as keyof Profile] as string;
+                        const days = daysUntil(val);
+                        return (
+                          <div key={key}>
+                            <label className="text-xs font-semibold mb-1 block" style={{ color: "#475569" }}>{label}</label>
+                            <input
+                              type="date"
+                              value={val}
+                              onChange={e => set(key as keyof Profile, e.target.value)}
+                              className="w-full px-3 py-2 rounded-lg border text-sm focus:outline-none"
+                              style={{ borderColor: "#e2e8f0" }}
+                            />
+                            <p className="text-[10px] mt-1" style={{ color: "#94a3b8" }}>{hint}</p>
+                            {isExpiry && days !== null && days > 0 && (
+                              <p className="text-[10px] font-semibold mt-0.5" style={{ color: days < 60 ? "#dc2626" : days < 180 ? "#ea580c" : "#16a34a" }}>
+                                {days} days remaining
+                              </p>
+                            )}
+                            {isExpiry && days !== null && days <= 0 && (
+                              <p className="text-[10px] font-bold mt-0.5 text-red-600">EXPIRED</p>
+                            )}
+                            {!isExpiry && val && (
+                              <p className="text-[10px] font-semibold mt-0.5" style={{ color: "#64748b" }}>
+                                {days !== null && days < 0 ? `${Math.abs(days)} days ago` : days === 0 ? "Today" : `In ${days} days`}
+                              </p>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
                   </div>
                 </div>
               ))}
