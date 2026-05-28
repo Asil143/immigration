@@ -19,6 +19,7 @@ import {
   Trophy,
   Lock,
   UserCircle,
+  ScanLine,
   type LucideIcon,
 } from "lucide-react";
 
@@ -120,6 +121,13 @@ export const toolsNav: NavItem[] = [
     icon: AlertTriangle,
     description: "Build your RFE response",
     badge: "Pro",
+  },
+  {
+    title: "Smart Import",
+    href: "/dashboard/documents/smart-import",
+    icon: ScanLine,
+    description: "AI reads your I-797, EAD, I-20",
+    badge: "AI",
   },
   {
     title: "Fee Calculator",
