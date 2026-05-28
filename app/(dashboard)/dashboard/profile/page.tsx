@@ -327,53 +327,100 @@ export default function ProfilePage() {
 
           {/* Tab: Key Dates */}
           {activeTab === "dates" && (
-            <div className="space-y-5">
-              <div className="p-5 rounded-2xl border" style={{ borderColor: "#e2e8f0", backgroundColor: "#ffffff" }}>
-                <h3 className="font-semibold mb-4 text-sm" style={{ color: "#0f172a" }}>Document & Status Expiry Dates</h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {[
-                    { key: "i94Expiry", label: "I-94 Expiry Date", hint: "From i94.cbp.dhs.gov — your authorized stay end date", isExpiry: true },
-                    { key: "visaStartDate", label: "Visa Start Date", hint: "The date your current visa became valid", isExpiry: false },
-                    { key: "visaStampExpiry", label: "Visa Stamp Expiry", hint: "The expiry date stamped in your passport — needed for re-entry", isExpiry: true },
-                    { key: "passportIssueDate", label: "Passport Issue Date", hint: "The date your passport was issued", isExpiry: false },
-                    { key: "passportExpiry", label: "Passport Expiry Date", hint: "Must be valid 6+ months for most re-entries", isExpiry: true },
-                    { key: "optStartDate", label: "OPT Start Date", hint: "First day of your OPT authorization", isExpiry: false },
-                    { key: "optEndDate", label: "OPT End Date", hint: "Last day of your 12-month OPT period", isExpiry: true },
-                    { key: "stemOptStartDate", label: "STEM OPT Start Date", hint: "First day of your 24-month STEM OPT extension", isExpiry: false },
-                    { key: "stemOptEndDate", label: "STEM OPT End Date", hint: "Last day of your 24-month STEM OPT extension", isExpiry: true },
-                    { key: "h1bStartDate", label: "H-1B Start Date", hint: "October 1 or your approved H-1B start date", isExpiry: false },
-                    { key: "priorityDate", label: "Priority Date", hint: "Date your PERM or I-140 was filed — determines your green card queue position", isExpiry: false },
-                  ].map(({ key, label, hint, isExpiry }) => {
-                    const days = daysUntil(profile[key as keyof Profile] as string);
-                    return (
-                      <div key={key}>
-                        <label className="text-xs font-semibold mb-1 block" style={{ color: "#475569" }}>{label}</label>
-                        <input
-                          type="date"
-                          value={profile[key as keyof Profile] as string}
-                          onChange={e => set(key as keyof Profile, e.target.value)}
-                          className="w-full px-3 py-2 rounded-lg border text-sm focus:outline-none"
-                          style={{ borderColor: "#e2e8f0" }}
-                        />
-                        <p className="text-[10px] mt-1" style={{ color: "#94a3b8" }}>{hint}</p>
-                        {isExpiry && days !== null && days > 0 && (
-                          <p className="text-[10px] font-semibold mt-0.5" style={{ color: days < 60 ? "#dc2626" : days < 180 ? "#ea580c" : "#16a34a" }}>
-                            {days} days remaining
-                          </p>
-                        )}
-                        {isExpiry && days !== null && days <= 0 && (
-                          <p className="text-[10px] font-bold mt-0.5 text-red-600">EXPIRED</p>
-                        )}
-                        {!isExpiry && profile[key as keyof Profile] && (
-                          <p className="text-[10px] font-semibold mt-0.5" style={{ color: "#16a34a" }}>
-                            {days !== null && days < 0 ? `Started ${Math.abs(days)} days ago` : days === 0 ? "Starts today" : `Starts in ${days} days`}
-                          </p>
-                        )}
-                      </div>
-                    );
-                  })}
+            <div className="space-y-4">
+              {[
+                {
+                  section: "Passport",
+                  color: "#eff6ff", border: "#bfdbfe", textColor: "#1d4ed8",
+                  fields: [
+                    { key: "passportIssueDate", label: "Issue Date", hint: "Date passport was issued", isExpiry: false },
+                    { key: "passportExpiry", label: "Expiry Date", hint: "Must be valid 6+ months for re-entry", isExpiry: true },
+                  ],
+                },
+                {
+                  section: "Visa Stamp",
+                  color: "#f5f3ff", border: "#ddd6fe", textColor: "#6d28d9",
+                  fields: [
+                    { key: "visaStartDate", label: "Valid From", hint: "Date your visa stamp became valid", isExpiry: false },
+                    { key: "visaStampExpiry", label: "Expiry Date", hint: "Needed for re-entry after travel", isExpiry: true },
+                  ],
+                },
+                {
+                  section: "I-94 Authorized Stay",
+                  color: "#fff7ed", border: "#fed7aa", textColor: "#c2410c",
+                  fields: [
+                    { key: "i94Expiry", label: "Expiry Date", hint: "Check at i94.cbp.dhs.gov", isExpiry: true },
+                  ],
+                },
+                {
+                  section: "OPT",
+                  color: "#f0fdf4", border: "#86efac", textColor: "#15803d",
+                  fields: [
+                    { key: "optStartDate", label: "Start Date", hint: "First day of OPT authorization", isExpiry: false },
+                    { key: "optEndDate", label: "End Date", hint: "Last day of 12-month OPT period", isExpiry: true },
+                  ],
+                },
+                {
+                  section: "STEM OPT Extension",
+                  color: "#faf5ff", border: "#d8b4fe", textColor: "#7c3aed",
+                  fields: [
+                    { key: "stemOptStartDate", label: "Start Date", hint: "First day of 24-month STEM extension", isExpiry: false },
+                    { key: "stemOptEndDate", label: "End Date", hint: "Last day of 24-month STEM extension", isExpiry: true },
+                  ],
+                },
+                {
+                  section: "H-1B",
+                  color: "#ecfeff", border: "#a5f3fc", textColor: "#0891b2",
+                  fields: [
+                    { key: "h1bStartDate", label: "Start Date", hint: "October 1 or approved H-1B start date", isExpiry: false },
+                  ],
+                },
+                {
+                  section: "Green Card Priority Date",
+                  color: "#fffbeb", border: "#fde68a", textColor: "#d97706",
+                  fields: [
+                    { key: "priorityDate", label: "Priority Date", hint: "Date PERM or I-140 was filed", isExpiry: false },
+                  ],
+                },
+              ].map(({ section, color, border, textColor, fields }) => (
+                <div key={section} className="rounded-2xl border overflow-hidden" style={{ borderColor: border }}>
+                  <div className="px-4 py-2.5" style={{ backgroundColor: color }}>
+                    <p className="text-xs font-bold" style={{ color: textColor }}>{section}</p>
+                  </div>
+                  <div className="p-4 grid grid-cols-1 sm:grid-cols-2 gap-4" style={{ backgroundColor: "#ffffff" }}>
+                    {fields.map(({ key, label, hint, isExpiry }) => {
+                      const val = profile[key as keyof Profile] as string;
+                      const days = daysUntil(val);
+                      return (
+                        <div key={key}>
+                          <label className="text-xs font-semibold mb-1 block" style={{ color: "#475569" }}>{label}</label>
+                          <input
+                            type="date"
+                            value={val}
+                            onChange={e => set(key as keyof Profile, e.target.value)}
+                            className="w-full px-3 py-2 rounded-lg border text-sm focus:outline-none"
+                            style={{ borderColor: "#e2e8f0" }}
+                          />
+                          <p className="text-[10px] mt-1" style={{ color: "#94a3b8" }}>{hint}</p>
+                          {isExpiry && days !== null && days > 0 && (
+                            <p className="text-[10px] font-semibold mt-0.5" style={{ color: days < 60 ? "#dc2626" : days < 180 ? "#ea580c" : "#16a34a" }}>
+                              {days} days remaining
+                            </p>
+                          )}
+                          {isExpiry && days !== null && days <= 0 && (
+                            <p className="text-[10px] font-bold mt-0.5 text-red-600">EXPIRED</p>
+                          )}
+                          {!isExpiry && val && (
+                            <p className="text-[10px] font-semibold mt-0.5" style={{ color: "#64748b" }}>
+                              {days !== null && days < 0 ? `${Math.abs(days)} days ago` : days === 0 ? "Today" : `In ${days} days`}
+                            </p>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
-              </div>
+              ))}
             </div>
           )}
 
