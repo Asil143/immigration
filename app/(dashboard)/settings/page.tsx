@@ -12,11 +12,14 @@ import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Check, Crown, Shield, User, CreditCard, Trash2, Loader2 } from "lucide-react";
-import type { VisaType } from "@/types";
 import { PLANS } from "@/lib/stripe/client";
 
 const COUNTRIES = ["India", "China", "Mexico", "Brazil", "Philippines", "Nigeria", "South Korea", "Pakistan", "Other"];
-const VISA_TYPES: VisaType[] = ["F-1", "OPT", "STEM-OPT", "H-1B", "H-4", "J-1", "L-1", "O-1", "EB-1", "EB-2", "EB-3", "Other"];
+const VISA_TYPES = [
+  "F-1 Student", "OPT", "STEM OPT", "H-1B", "H-4", "J-1", "J-2",
+  "L-1A", "L-1B", "L-2", "O-1A", "O-1B", "TN", "E-3",
+  "Green Card (Pending I-485)", "Green Card (LPR)", "Other",
+];
 
 export default function SettingsPage() {
   const { user } = useUser();
@@ -26,7 +29,7 @@ export default function SettingsPage() {
 
   const [profile, setProfile] = useState({
     nationality: "",
-    currentVisa: "" as VisaType | "",
+    currentVisa: "",
     schoolOrEmployer: "",
     phone: "",
   });
@@ -38,7 +41,7 @@ export default function SettingsPage() {
         if (data) {
           setProfile({
             nationality: data.country_of_birth ?? "",
-            currentVisa: (data.visa_type as VisaType) ?? "",
+            currentVisa: data.visa_type ?? "",
             schoolOrEmployer: data.employer ?? "",
             phone: data.phone ?? "",
           });
@@ -131,7 +134,7 @@ export default function SettingsPage() {
                   </div>
                   <div className="space-y-1.5">
                     <Label>Current Visa Status</Label>
-                    <Select value={profile.currentVisa} onValueChange={v => setProfile(p => ({ ...p, currentVisa: v as VisaType }))}>
+                    <Select value={profile.currentVisa} onValueChange={v => setProfile(p => ({ ...p, currentVisa: v }))}>
                       <SelectTrigger><SelectValue placeholder="Select visa type..." /></SelectTrigger>
                       <SelectContent>
                         {VISA_TYPES.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}
