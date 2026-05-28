@@ -10,8 +10,6 @@ import {
   CheckCircle2, Clock, UserCircle, Shield, TrendingUp, Zap,
 } from "lucide-react";
 
-const STORAGE_KEY = "visapilot_profile";
-
 function daysUntil(dateStr: string) {
   if (!dateStr) return null;
   return Math.ceil((new Date(dateStr).getTime() - Date.now()) / 86400000);
@@ -79,20 +77,32 @@ const quickActions = [
 export default function DashboardPage() {
   const [profile, setProfile] = useState<Record<string, string> | null>(null);
   const [alerts, setAlerts] = useState<DeadlineAlert[]>([]);
+  const [caseCount, setCaseCount] = useState(0);
 
   useEffect(() => {
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      if (stored) {
-        const p = JSON.parse(stored);
+    Promise.all([
+      fetch("/api/profile").then(r => r.ok ? r.json() : null),
+      fetch("/api/cases").then(r => r.ok ? r.json() : []),
+    ]).then(([profileData, casesData]) => {
+      if (profileData && !profileData.error) {
+        const p: Record<string, string> = {
+          visaType: profileData.visa_type ?? "",
+          countryOfBirth: profileData.country_of_birth ?? "",
+          employer: profileData.employer ?? "",
+          eadExpiry: profileData.ead_expiry ?? "",
+          i94Expiry: profileData.i94_expiry ?? "",
+          visaStampExpiry: profileData.visa_stamp_expiry ?? "",
+          passportExpiry: profileData.passport_expiry ?? "",
+          greenCardStage: profileData.green_card_stage ?? "",
+          greenCardCategory: profileData.green_card_category ?? "",
+        };
         setProfile(p);
         setAlerts(computeAlerts(p));
       } else {
         setProfile({});
       }
-    } catch {
-      setProfile({});
-    }
+      if (Array.isArray(casesData)) setCaseCount(casesData.length);
+    }).catch(() => setProfile({}));
   }, []);
 
   const profileSetUp = !!(profile?.visaType);
@@ -246,7 +256,7 @@ export default function DashboardPage() {
             <div className="grid grid-cols-3 gap-3">
               {[
                 { label: "Days Tracked", value: alerts.length > 0 ? `${alerts[0]?.days}d` : "—", sub: "Until next deadline", color: "#2563eb" },
-                { label: "Cases Monitored", value: String((profile as unknown as { cases?: unknown[] })?.cases?.length || 0), sub: "USCIS receipt numbers", color: "#7c3aed" },
+                { label: "Cases Monitored", value: String(caseCount), sub: "USCIS receipt numbers", color: "#7c3aed" },
                 { label: "Status", value: profile?.greenCardStage || "Active", sub: profile?.greenCardStage ? "Green card stage" : "No GC process", color: "#16a34a" },
               ].map(stat => (
                 <Card key={stat.label}>

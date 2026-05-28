@@ -1,12 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
   User, Calendar, FileSearch, TrendingUp, Save, Plus, Trash2,
-  CheckCircle2, AlertCircle, Clock, ShieldCheck, ChevronRight,
+  CheckCircle2, AlertCircle, Clock, ShieldCheck, ChevronRight, Loader2,
 } from "lucide-react";
-
-const STORAGE_KEY = "visapilot_profile";
 
 const VISA_TYPES = [
   "F-1 Student", "OPT", "STEM OPT", "H-1B", "H-4", "J-1", "J-2",
@@ -23,7 +21,7 @@ const GC_STAGES = ["Not started", "PERM in progress", "I-140 pending", "I-140 ap
 const GC_CATEGORIES = ["EB-1A (Extraordinary Ability)", "EB-1B (Outstanding Researcher)", "EB-1C (Multinational Manager)", "EB-2 (Advanced Degree)", "EB-2 NIW (National Interest Waiver)", "EB-3 (Skilled Worker)", "Family-based"];
 const FORM_TYPES = ["I-765 (EAD)", "I-129 (H-1B/O-1/L-1)", "I-140 (Immigrant Petition)", "I-485 (Adjustment of Status)", "I-131 (Advance Parole)", "I-539 (Extension)", "DS-160 (Visa)", "Other"];
 
-interface CaseEntry { id: string; receipt: string; form: string; label: string; }
+interface CaseEntry { id: string; receipt_number: string; form_type: string; label: string; }
 
 interface Profile {
   visaType: string;
@@ -39,15 +37,50 @@ interface Profile {
   priorityDate: string;
   greenCardStage: string;
   greenCardCategory: string;
-  cases: CaseEntry[];
 }
 
 const empty: Profile = {
   visaType: "", countryOfBirth: "", employer: "",
   i94Expiry: "", eadExpiry: "", visaStampExpiry: "", passportExpiry: "",
   h1bStartDate: "", optStartDate: "", stemOptStartDate: "", priorityDate: "",
-  greenCardStage: "", greenCardCategory: "", cases: [],
+  greenCardStage: "", greenCardCategory: "",
 };
+
+function fromApi(data: Record<string, string | null>): Profile {
+  return {
+    visaType: data.visa_type ?? "",
+    countryOfBirth: data.country_of_birth ?? "",
+    employer: data.employer ?? "",
+    i94Expiry: data.i94_expiry ?? "",
+    eadExpiry: data.ead_expiry ?? "",
+    visaStampExpiry: data.visa_stamp_expiry ?? "",
+    passportExpiry: data.passport_expiry ?? "",
+    h1bStartDate: data.h1b_start_date ?? "",
+    optStartDate: data.opt_start_date ?? "",
+    stemOptStartDate: data.stem_opt_start_date ?? "",
+    priorityDate: data.priority_date ?? "",
+    greenCardStage: data.green_card_stage ?? "",
+    greenCardCategory: data.green_card_category ?? "",
+  };
+}
+
+function toApi(p: Profile) {
+  return {
+    visa_type: p.visaType || null,
+    country_of_birth: p.countryOfBirth || null,
+    employer: p.employer || null,
+    i94_expiry: p.i94Expiry || null,
+    ead_expiry: p.eadExpiry || null,
+    visa_stamp_expiry: p.visaStampExpiry || null,
+    passport_expiry: p.passportExpiry || null,
+    h1b_start_date: p.h1bStartDate || null,
+    opt_start_date: p.optStartDate || null,
+    stem_opt_start_date: p.stemOptStartDate || null,
+    priority_date: p.priorityDate || null,
+    green_card_stage: p.greenCardStage || null,
+    green_card_category: p.greenCardCategory || null,
+  };
+}
 
 function daysUntil(dateStr: string) {
   if (!dateStr) return null;
@@ -69,38 +102,83 @@ const tabs = [
 
 export default function ProfilePage() {
   const [profile, setProfile] = useState<Profile>(empty);
+  const [cases, setCases] = useState<CaseEntry[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [activeTab, setActiveTab] = useState("status");
   const [newCase, setNewCase] = useState({ receipt: "", form: "", label: "" });
+  const [addingCase, setAddingCase] = useState(false);
 
-  useEffect(() => {
+  const load = useCallback(async () => {
+    setLoading(true);
     try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      if (stored) setProfile(JSON.parse(stored));
-    } catch {}
+      const [profileRes, casesRes] = await Promise.all([
+        fetch("/api/profile"),
+        fetch("/api/cases"),
+      ]);
+      if (profileRes.ok) {
+        const data = await profileRes.json();
+        if (data && !data.error) setProfile(fromApi(data));
+      }
+      if (casesRes.ok) {
+        const data = await casesRes.json();
+        if (Array.isArray(data)) setCases(data);
+      }
+    } finally {
+      setLoading(false);
+    }
   }, []);
+
+  useEffect(() => { load(); }, [load]);
 
   function set(field: keyof Profile, value: string) {
     setProfile(p => ({ ...p, [field]: value }));
   }
 
-  function save() {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(profile));
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2500);
+  async function save() {
+    setSaving(true);
+    try {
+      const res = await fetch("/api/profile", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(toApi(profile)),
+      });
+      if (res.ok) {
+        setSaved(true);
+        setTimeout(() => setSaved(false), 2500);
+      }
+    } finally {
+      setSaving(false);
+    }
   }
 
-  function addCase() {
+  async function addCase() {
     if (!newCase.receipt || !newCase.form) return;
-    setProfile(p => ({
-      ...p,
-      cases: [...p.cases, { ...newCase, id: Date.now().toString() }],
-    }));
-    setNewCase({ receipt: "", form: "", label: "" });
+    setAddingCase(true);
+    try {
+      const res = await fetch("/api/cases", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ receipt_number: newCase.receipt, form_type: newCase.form, label: newCase.label }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setCases(c => [data, ...c]);
+        setNewCase({ receipt: "", form: "", label: "" });
+      }
+    } finally {
+      setAddingCase(false);
+    }
   }
 
-  function removeCase(id: string) {
-    setProfile(p => ({ ...p, cases: p.cases.filter(c => c.id !== id) }));
+  async function removeCase(id: string) {
+    await fetch("/api/cases", {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id }),
+    });
+    setCases(c => c.filter(x => x.id !== id));
   }
 
   // Compute live alerts
@@ -115,7 +193,13 @@ export default function ProfilePage() {
     .filter(a => a.days > 0)
     .sort((a, b) => a.days - b.days);
 
-  const profileComplete = !!(profile.visaType && profile.countryOfBirth);
+  if (loading) {
+    return (
+      <div className="p-8 flex items-center justify-center min-h-96">
+        <Loader2 className="h-8 w-8 animate-spin" style={{ color: "#2563eb" }} />
+      </div>
+    );
+  }
 
   return (
     <div className="p-8 max-w-5xl">
@@ -129,11 +213,12 @@ export default function ProfilePage() {
         </div>
         <button
           onClick={save}
-          className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-white transition-all"
+          disabled={saving}
+          className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-white transition-all disabled:opacity-70"
           style={{ backgroundColor: saved ? "#16a34a" : "#2563eb" }}
         >
-          {saved ? <CheckCircle2 className="h-4 w-4" /> : <Save className="h-4 w-4" />}
-          {saved ? "Saved!" : "Save Profile"}
+          {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : saved ? <CheckCircle2 className="h-4 w-4" /> : <Save className="h-4 w-4" />}
+          {saving ? "Saving..." : saved ? "Saved!" : "Save Profile"}
         </button>
       </div>
 
@@ -278,17 +363,17 @@ export default function ProfilePage() {
                 <p className="text-xs mb-4" style={{ color: "#64748b" }}>Add your receipt numbers — VisaPilot will monitor status changes and alert you.</p>
 
                 <div className="space-y-3 mb-5">
-                  {profile.cases.length === 0 && (
+                  {cases.length === 0 && (
                     <div className="text-center py-6 rounded-xl" style={{ backgroundColor: "#f8fafc", border: "1px dashed #e2e8f0" }}>
                       <FileSearch className="h-8 w-8 mx-auto mb-2" style={{ color: "#cbd5e1" }} />
                       <p className="text-sm font-medium" style={{ color: "#94a3b8" }}>No cases added yet</p>
                     </div>
                   )}
-                  {profile.cases.map(c => (
+                  {cases.map(c => (
                     <div key={c.id} className="flex items-center gap-3 p-3 rounded-xl border" style={{ borderColor: "#e2e8f0" }}>
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-mono font-medium">{c.receipt}</p>
-                        <p className="text-xs mt-0.5" style={{ color: "#64748b" }}>{c.form}{c.label ? ` · ${c.label}` : ""}</p>
+                        <p className="text-sm font-mono font-medium">{c.receipt_number}</p>
+                        <p className="text-xs mt-0.5" style={{ color: "#64748b" }}>{c.form_type}{c.label ? ` · ${c.label}` : ""}</p>
                       </div>
                       <span className="text-xs px-2 py-0.5 rounded-full font-medium" style={{ backgroundColor: "#eff6ff", color: "#2563eb" }}>Monitoring</span>
                       <button onClick={() => removeCase(c.id)} className="text-red-400 hover:text-red-600">
@@ -331,11 +416,12 @@ export default function ProfilePage() {
                   </div>
                   <button
                     onClick={addCase}
-                    disabled={!newCase.receipt || !newCase.form}
+                    disabled={!newCase.receipt || !newCase.form || addingCase}
                     className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold text-white disabled:opacity-40"
                     style={{ backgroundColor: "#2563eb" }}
                   >
-                    <Plus className="h-4 w-4" /> Add Case
+                    {addingCase ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
+                    Add Case
                   </button>
                 </div>
               </div>
@@ -434,7 +520,7 @@ export default function ProfilePage() {
               { label: "Country of birth", done: !!profile.countryOfBirth },
               { label: "At least one key date", done: !!(profile.i94Expiry || profile.eadExpiry || profile.passportExpiry) },
               { label: "Employer/school", done: !!profile.employer },
-              { label: "Case number added", done: profile.cases.length > 0 },
+              { label: "Case number added", done: cases.length > 0 },
             ].map(item => (
               <div key={item.label} className="flex items-center gap-2 mb-2">
                 {item.done
@@ -471,15 +557,15 @@ export default function ProfilePage() {
           </div>
 
           {/* Cases being monitored */}
-          {profile.cases.length > 0 && (
+          {cases.length > 0 && (
             <div className="p-4 rounded-2xl border" style={{ borderColor: "#e2e8f0", backgroundColor: "#ffffff" }}>
-              <p className="text-xs font-semibold mb-3" style={{ color: "#475569" }}>Monitored Cases ({profile.cases.length})</p>
-              {profile.cases.map(c => (
+              <p className="text-xs font-semibold mb-3" style={{ color: "#475569" }}>Monitored Cases ({cases.length})</p>
+              {cases.map(c => (
                 <div key={c.id} className="flex items-center gap-2 mb-2">
                   <Clock className="h-3.5 w-3.5 shrink-0" style={{ color: "#2563eb" }} />
                   <div>
-                    <p className="text-xs font-mono">{c.receipt}</p>
-                    <p className="text-[10px]" style={{ color: "#94a3b8" }}>{c.form}</p>
+                    <p className="text-xs font-mono">{c.receipt_number}</p>
+                    <p className="text-[10px]" style={{ color: "#94a3b8" }}>{c.form_type}</p>
                   </div>
                 </div>
               ))}

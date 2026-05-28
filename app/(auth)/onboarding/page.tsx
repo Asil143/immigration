@@ -8,8 +8,6 @@ import {
   ChevronLeft, Sparkles, Clock, AlertCircle, Star,
 } from "lucide-react";
 
-const STORAGE_KEY = "visapilot_profile";
-
 const visaOptions = [
   { value: "F-1 Student", label: "F-1 Student", icon: "🎓", desc: "Enrolled at a US university", color: "#eff6ff", border: "#bfdbfe", textColor: "#1d4ed8" },
   { value: "OPT", label: "OPT", icon: "💼", desc: "Post-graduation work authorization", color: "#f0fdf4", border: "#86efac", textColor: "#15803d" },
@@ -73,14 +71,21 @@ export default function OnboardingPage() {
 
   async function finish() {
     setLoading(true);
-    const profile = { visaType, countryOfBirth: country, employer, eadExpiry, i94Expiry, passportExpiry, goals: selectedGoals, cases: [] };
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(profile));
       await fetch("/api/profile", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ current_visa: visaType, nationality: country, school_or_employer: employer, onboarding_complete: true }),
-      }).catch(() => {});
+        body: JSON.stringify({
+          visa_type: visaType,
+          country_of_birth: country,
+          employer,
+          ead_expiry: eadExpiry || null,
+          i94_expiry: i94Expiry || null,
+          passport_expiry: passportExpiry || null,
+          goals: selectedGoals,
+          onboarding_complete: true,
+        }),
+      });
     } finally {
       setLoading(false);
       router.push("/dashboard");

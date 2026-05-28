@@ -21,8 +21,7 @@ export async function POST(req: NextRequest) {
       avatar_url: user.imageUrl,
       ...body,
       updated_at: new Date().toISOString(),
-    })
-    .eq("clerk_id", userId);
+    }, { onConflict: "clerk_id" });
 
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
@@ -42,6 +41,8 @@ export async function GET() {
     .eq("clerk_id", userId)
     .single();
 
+  // PGRST116 = no rows found — profile doesn't exist yet, return null
+  if (error?.code === "PGRST116") return NextResponse.json(null);
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
   return NextResponse.json(data);
 }
