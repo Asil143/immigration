@@ -20,6 +20,7 @@ import {
   Lock,
   UserCircle,
   ScanLine,
+  ClipboardList,
   type LucideIcon,
 } from "lucide-react";
 
@@ -84,6 +85,13 @@ export const dashboardNav: NavItem[] = [
 ];
 
 export const toolsNav: NavItem[] = [
+  {
+    title: "OPT Checklist",
+    href: "/dashboard/tools/opt-checklist",
+    icon: ClipboardList,
+    description: "Step-by-step OPT application guide",
+    badge: "New",
+  },
   {
     title: "OPT Day Counter",
     href: "/dashboard/tools/opt-tracker",
