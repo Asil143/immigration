@@ -21,7 +21,7 @@ const GC_STAGES = ["Not started", "PERM in progress", "I-140 pending", "I-140 ap
 const GC_CATEGORIES = ["EB-1A (Extraordinary Ability)", "EB-1B (Outstanding Researcher)", "EB-1C (Multinational Manager)", "EB-2 (Advanced Degree)", "EB-2 NIW (National Interest Waiver)", "EB-3 (Skilled Worker)", "Family-based"];
 const FORM_TYPES = ["I-765 (EAD)", "I-129 (H-1B/O-1/L-1)", "I-140 (Immigrant Petition)", "I-485 (Adjustment of Status)", "I-131 (Advance Parole)", "I-539 (Extension)", "DS-160 (Visa)", "Other"];
 
-interface CaseEntry { id: string; receipt_number: string; form_type: string; label: string; }
+interface CaseEntry { id: string; receipt_number: string; form_type: string; label: string; last_status: string | null; last_checked_at: string | null; }
 
 interface Profile {
   visaType: string;
@@ -174,6 +174,7 @@ export default function ProfilePage() {
   const [activeTab, setActiveTab] = useState("status");
   const [newCase, setNewCase] = useState({ receipt: "", form: "", label: "" });
   const [addingCase, setAddingCase] = useState(false);
+  const [checkingCase, setCheckingCase] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -234,6 +235,23 @@ export default function ProfilePage() {
       }
     } finally {
       setAddingCase(false);
+    }
+  }
+
+  async function checkStatus(c: CaseEntry) {
+    setCheckingCase(c.id);
+    try {
+      const res = await fetch("/api/cases/check-status", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: c.id, receipt_number: c.receipt_number }),
+      });
+      if (res.ok) {
+        const { status } = await res.json();
+        setCases(prev => prev.map(x => x.id === c.id ? { ...x, last_status: status, last_checked_at: new Date().toISOString() } : x));
+      }
+    } finally {
+      setCheckingCase(null);
     }
   }
 
@@ -602,18 +620,49 @@ export default function ProfilePage() {
                       <p className="text-sm font-medium" style={{ color: "#94a3b8" }}>No cases added yet</p>
                     </div>
                   )}
-                  {cases.map(c => (
-                    <div key={c.id} className="flex items-center gap-3 p-3 rounded-xl border" style={{ borderColor: "#e2e8f0" }}>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-mono font-medium">{c.receipt_number}</p>
-                        <p className="text-xs mt-0.5" style={{ color: "#64748b" }}>{c.form_type}{c.label ? ` · ${c.label}` : ""}</p>
+                  {cases.map(c => {
+                    const isChecking = checkingCase === c.id;
+                    const status = c.last_status;
+                    const isApproved = status?.toLowerCase().includes("approved") || status?.toLowerCase().includes("card was mailed");
+                    const isDenied = status?.toLowerCase().includes("denied") || status?.toLowerCase().includes("rejected");
+                    const isRFE = status?.toLowerCase().includes("evidence");
+                    return (
+                      <div key={c.id} className="p-3 rounded-xl border" style={{ borderColor: "#e2e8f0" }}>
+                        <div className="flex items-center gap-3">
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-mono font-medium">{c.receipt_number}</p>
+                            <p className="text-xs mt-0.5" style={{ color: "#64748b" }}>{c.form_type}{c.label ? ` · ${c.label}` : ""}</p>
+                          </div>
+                          <button
+                            onClick={() => checkStatus(c)}
+                            disabled={isChecking}
+                            className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all disabled:opacity-50"
+                            style={{ backgroundColor: "#eff6ff", color: "#2563eb" }}
+                          >
+                            {isChecking ? <Loader2 className="h-3 w-3 animate-spin" /> : <Clock className="h-3 w-3" />}
+                            {isChecking ? "Checking..." : "Check Status"}
+                          </button>
+                          <button onClick={() => removeCase(c.id)} className="text-red-400 hover:text-red-600">
+                            <Trash2 className="h-4 w-4" />
+                          </button>
+                        </div>
+                        {status && (
+                          <div className="mt-2 px-3 py-2 rounded-lg text-xs font-medium"
+                            style={{
+                              backgroundColor: isApproved ? "#f0fdf4" : isDenied ? "#fef2f2" : isRFE ? "#fff7ed" : "#f8fafc",
+                              color: isApproved ? "#15803d" : isDenied ? "#dc2626" : isRFE ? "#c2410c" : "#475569",
+                            }}>
+                            {status}
+                            {c.last_checked_at && (
+                              <span className="ml-2 font-normal" style={{ color: "#94a3b8" }}>
+                                · checked {new Date(c.last_checked_at).toLocaleDateString()}
+                              </span>
+                            )}
+                          </div>
+                        )}
                       </div>
-                      <span className="text-xs px-2 py-0.5 rounded-full font-medium" style={{ backgroundColor: "#eff6ff", color: "#2563eb" }}>Monitoring</span>
-                      <button onClick={() => removeCase(c.id)} className="text-red-400 hover:text-red-600">
-                        <Trash2 className="h-4 w-4" />
-                      </button>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
 
                 <div className="border rounded-xl p-4" style={{ borderColor: "#e2e8f0", backgroundColor: "#f8fafc" }}>
