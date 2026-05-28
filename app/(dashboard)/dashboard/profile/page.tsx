@@ -30,10 +30,14 @@ interface Profile {
   i94Expiry: string;
   eadExpiry: string;
   visaStampExpiry: string;
+  visaStartDate: string;
   passportExpiry: string;
+  passportIssueDate: string;
   h1bStartDate: string;
   optStartDate: string;
+  optEndDate: string;
   stemOptStartDate: string;
+  stemOptEndDate: string;
   priorityDate: string;
   greenCardStage: string;
   greenCardCategory: string;
@@ -41,9 +45,11 @@ interface Profile {
 
 const empty: Profile = {
   visaType: "", countryOfBirth: "", employer: "",
-  i94Expiry: "", eadExpiry: "", visaStampExpiry: "", passportExpiry: "",
-  h1bStartDate: "", optStartDate: "", stemOptStartDate: "", priorityDate: "",
-  greenCardStage: "", greenCardCategory: "",
+  i94Expiry: "", eadExpiry: "", visaStampExpiry: "", visaStartDate: "",
+  passportExpiry: "", passportIssueDate: "",
+  h1bStartDate: "", optStartDate: "", optEndDate: "",
+  stemOptStartDate: "", stemOptEndDate: "",
+  priorityDate: "", greenCardStage: "", greenCardCategory: "",
 };
 
 function fromApi(data: Record<string, string | null>): Profile {
@@ -54,10 +60,14 @@ function fromApi(data: Record<string, string | null>): Profile {
     i94Expiry: data.i94_expiry ?? "",
     eadExpiry: data.ead_expiry ?? "",
     visaStampExpiry: data.visa_stamp_expiry ?? "",
+    visaStartDate: data.visa_start_date ?? "",
     passportExpiry: data.passport_expiry ?? "",
+    passportIssueDate: data.passport_issue_date ?? "",
     h1bStartDate: data.h1b_start_date ?? "",
     optStartDate: data.opt_start_date ?? "",
+    optEndDate: data.opt_end_date ?? "",
     stemOptStartDate: data.stem_opt_start_date ?? "",
+    stemOptEndDate: data.stem_opt_end_date ?? "",
     priorityDate: data.priority_date ?? "",
     greenCardStage: data.green_card_stage ?? "",
     greenCardCategory: data.green_card_category ?? "",
@@ -72,10 +82,14 @@ function toApi(p: Profile) {
     i94_expiry: p.i94Expiry || null,
     ead_expiry: p.eadExpiry || null,
     visa_stamp_expiry: p.visaStampExpiry || null,
+    visa_start_date: p.visaStartDate || null,
     passport_expiry: p.passportExpiry || null,
+    passport_issue_date: p.passportIssueDate || null,
     h1b_start_date: p.h1bStartDate || null,
     opt_start_date: p.optStartDate || null,
+    opt_end_date: p.optEndDate || null,
     stem_opt_start_date: p.stemOptStartDate || null,
+    stem_opt_end_date: p.stemOptEndDate || null,
     priority_date: p.priorityDate || null,
     green_card_stage: p.greenCardStage || null,
     green_card_category: p.greenCardCategory || null,
@@ -318,14 +332,17 @@ export default function ProfilePage() {
                 <h3 className="font-semibold mb-4 text-sm" style={{ color: "#0f172a" }}>Document & Status Expiry Dates</h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {[
-                    { key: "i94Expiry", label: "I-94 Expiry Date", hint: "From i94.cbp.dhs.gov — your authorized stay", isExpiry: true },
-                    { key: "eadExpiry", label: "OPT / STEM OPT End Date", hint: "The expiry date on your EAD card — same as your OPT or STEM OPT end date", isExpiry: true },
-                    { key: "visaStampExpiry", label: "Visa Stamp Expiry", hint: "From your passport — needed for re-entry", isExpiry: true },
-                    { key: "passportExpiry", label: "Passport Expiry", hint: "Must be valid 6+ months for most re-entries", isExpiry: true },
-                    { key: "optStartDate", label: "OPT Start Date", hint: "First day of authorized OPT work", isExpiry: false },
-                    { key: "stemOptStartDate", label: "STEM OPT Start Date", hint: "First day of 24-month STEM extension", isExpiry: false },
-                    { key: "h1bStartDate", label: "H-1B Start Date", hint: "October 1 (or approved start date)", isExpiry: false },
-                    { key: "priorityDate", label: "Priority Date", hint: "Date PERM or I-140 was filed — for green card queue", isExpiry: false },
+                    { key: "i94Expiry", label: "I-94 Expiry Date", hint: "From i94.cbp.dhs.gov — your authorized stay end date", isExpiry: true },
+                    { key: "visaStartDate", label: "Visa Start Date", hint: "The date your current visa became valid", isExpiry: false },
+                    { key: "visaStampExpiry", label: "Visa Stamp Expiry", hint: "The expiry date stamped in your passport — needed for re-entry", isExpiry: true },
+                    { key: "passportIssueDate", label: "Passport Issue Date", hint: "The date your passport was issued", isExpiry: false },
+                    { key: "passportExpiry", label: "Passport Expiry Date", hint: "Must be valid 6+ months for most re-entries", isExpiry: true },
+                    { key: "optStartDate", label: "OPT Start Date", hint: "First day of your OPT authorization", isExpiry: false },
+                    { key: "optEndDate", label: "OPT End Date", hint: "Last day of your 12-month OPT period", isExpiry: true },
+                    { key: "stemOptStartDate", label: "STEM OPT Start Date", hint: "First day of your 24-month STEM OPT extension", isExpiry: false },
+                    { key: "stemOptEndDate", label: "STEM OPT End Date", hint: "Last day of your 24-month STEM OPT extension", isExpiry: true },
+                    { key: "h1bStartDate", label: "H-1B Start Date", hint: "October 1 or your approved H-1B start date", isExpiry: false },
+                    { key: "priorityDate", label: "Priority Date", hint: "Date your PERM or I-140 was filed — determines your green card queue position", isExpiry: false },
                   ].map(({ key, label, hint, isExpiry }) => {
                     const days = daysUntil(profile[key as keyof Profile] as string);
                     return (

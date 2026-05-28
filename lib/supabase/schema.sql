@@ -23,7 +23,11 @@ create table if not exists public.profiles (
   passport_expiry       date,
   h1b_start_date        date,
   opt_start_date        date,
+  opt_end_date          date,
   stem_opt_start_date   date,
+  stem_opt_end_date     date,
+  visa_start_date       date,
+  passport_issue_date   date,
   priority_date         date,
   -- Green card
   green_card_stage      text,
