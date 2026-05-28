@@ -1,15 +1,14 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Timer, AlertCircle, CheckCircle2, Info, Calendar, TrendingDown } from "lucide-react";
-import { differenceInDays, format, addDays, parseISO } from "date-fns";
+import { Timer, AlertCircle, CheckCircle2, Info, Calendar, Loader2 } from "lucide-react";
+import { differenceInDays, format, addDays, parseISO, isValid } from "date-fns";
 
 const MAX_STANDARD = 90;
 const MAX_STEM = 150;
@@ -22,14 +21,29 @@ interface UnemployedPeriod {
 
 export default function OPTTrackerPage() {
   const [optType, setOptType] = useState<"standard" | "stem">("standard");
-  const [optStart, setOptStart] = useState("2025-01-15");
-  const [optEnd, setOptEnd] = useState("2026-01-14");
-  const [periods, setPeriods] = useState<UnemployedPeriod[]>([
-    { id: "1", start: "2025-03-01", end: "2025-03-21" },
-    { id: "2", start: "2025-06-10", end: "2025-06-20" },
-  ]);
+  const [optStart, setOptStart] = useState("");
+  const [optEnd, setOptEnd] = useState("");
+  const [periods, setPeriods] = useState<UnemployedPeriod[]>([]);
   const [newStart, setNewStart] = useState("");
   const [newEnd, setNewEnd] = useState("");
+  const [loadingProfile, setLoadingProfile] = useState(true);
+
+  useEffect(() => {
+    fetch("/api/profile")
+      .then(r => r.ok ? r.json() : null)
+      .then(data => {
+        if (data) {
+          if (data.opt_start_date) setOptStart(data.opt_start_date);
+          if (data.opt_end_date) setOptEnd(data.opt_end_date);
+          if (data.stem_opt_start_date) {
+            setOptType("stem");
+            if (data.stem_opt_start_date) setOptStart(data.stem_opt_start_date);
+            if (data.stem_opt_end_date) setOptEnd(data.stem_opt_end_date);
+          }
+        }
+      })
+      .finally(() => setLoadingProfile(false));
+  }, []);
 
   const max = optType === "standard" ? MAX_STANDARD : MAX_STEM;
 
@@ -47,9 +61,9 @@ export default function OPTTrackerPage() {
   const status = pct >= 90 ? "critical" : pct >= 70 ? "warning" : "safe";
 
   const statusConfig = {
-    safe:     { color: "text-green-600",  bg: "bg-green-50",  barColor: "bg-green-500",  label: "Safe",    icon: CheckCircle2 },
-    warning:  { color: "text-yellow-600", bg: "bg-yellow-50", barColor: "bg-yellow-500", label: "Warning", icon: AlertCircle  },
-    critical: { color: "text-red-600",    bg: "bg-red-50",    barColor: "bg-red-500",    label: "Critical",icon: AlertCircle  },
+    safe:     { color: "text-green-600",  bg: "bg-green-50",  barColor: "bg-green-500",  label: "Safe",     icon: CheckCircle2 },
+    warning:  { color: "text-yellow-600", bg: "bg-yellow-50", barColor: "bg-yellow-500", label: "Warning",  icon: AlertCircle  },
+    critical: { color: "text-red-600",    bg: "bg-red-50",    barColor: "bg-red-500",    label: "Critical", icon: AlertCircle  },
   }[status];
 
   const StatusIcon = statusConfig.icon;
@@ -64,8 +78,17 @@ export default function OPTTrackerPage() {
     setPeriods(p => p.filter(x => x.id !== id));
   }
 
-  const daysUntilOptEnd = differenceInDays(parseISO(optEnd), new Date());
+  const optEndDate = optEnd && isValid(parseISO(optEnd)) ? parseISO(optEnd) : null;
+  const daysUntilOptEnd = optEndDate ? differenceInDays(optEndDate, new Date()) : null;
   const safeUntil = addDays(new Date(), remaining);
+
+  if (loadingProfile) {
+    return (
+      <div className="p-8 flex justify-center py-24">
+        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
 
   return (
     <div className="p-8 max-w-3xl">
@@ -77,7 +100,6 @@ export default function OPTTrackerPage() {
         <p className="text-muted-foreground">Track your unemployment days to stay within USCIS limits</p>
       </div>
 
-      {/* OPT Type + Dates */}
       <Card className="mb-6">
         <CardContent className="p-5 space-y-4">
           <div className="flex gap-3">
@@ -103,10 +125,15 @@ export default function OPTTrackerPage() {
               <Input type="date" value={optEnd} onChange={e => setOptEnd(e.target.value)} />
             </div>
           </div>
+          {!optStart && !optEnd && (
+            <p className="text-xs text-muted-foreground">
+              Dates pre-fill from your profile. Update them in{" "}
+              <a href="/dashboard/profile" className="text-primary underline">Profile → Key Dates</a>.
+            </p>
+          )}
         </CardContent>
       </Card>
 
-      {/* Main counter */}
       <Card className={`mb-6 border-2 ${status === "safe" ? "border-green-200" : status === "warning" ? "border-yellow-200" : "border-red-200"}`}>
         <CardContent className="p-6">
           <div className="flex items-center justify-between mb-5">
@@ -131,11 +158,7 @@ export default function OPTTrackerPage() {
               <span>{max} days (limit)</span>
             </div>
             <div className="relative h-4 rounded-full bg-slate-100 overflow-hidden">
-              <div
-                className={`h-full rounded-full transition-all ${statusConfig.barColor}`}
-                style={{ width: `${pct}%` }}
-              />
-              {/* Warning threshold marker */}
+              <div className={`h-full rounded-full transition-all ${statusConfig.barColor}`} style={{ width: `${pct}%` }} />
               <div className="absolute top-0 bottom-0 border-l-2 border-yellow-400 border-dashed" style={{ left: "70%" }} />
               <div className="absolute top-0 bottom-0 border-l-2 border-red-400 border-dashed" style={{ left: "90%" }} />
             </div>
@@ -147,7 +170,7 @@ export default function OPTTrackerPage() {
               <p className="text-xs text-muted-foreground">Days remaining</p>
             </div>
             <div className="rounded-lg bg-slate-50 p-3">
-              <p className="text-xl font-bold">{daysUntilOptEnd}</p>
+              <p className="text-xl font-bold">{daysUntilOptEnd ?? "—"}</p>
               <p className="text-xs text-muted-foreground">Until OPT ends</p>
             </div>
             <div className="rounded-lg bg-slate-50 p-3">
@@ -158,7 +181,6 @@ export default function OPTTrackerPage() {
         </CardContent>
       </Card>
 
-      {/* Unemployment periods */}
       <Card className="mb-6">
         <CardHeader>
           <CardTitle className="text-base flex items-center gap-2">
@@ -167,6 +189,9 @@ export default function OPTTrackerPage() {
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
+          {periods.length === 0 && (
+            <p className="text-sm text-muted-foreground text-center py-4">No unemployment periods recorded. Add one below if you had gaps in employment.</p>
+          )}
           {periods.map(p => {
             const end = p.end ? parseISO(p.end) : new Date();
             const days = Math.max(0, differenceInDays(end, parseISO(p.start)));
@@ -205,7 +230,6 @@ export default function OPTTrackerPage() {
         </CardContent>
       </Card>
 
-      {/* Info box */}
       <div className="rounded-lg border border-blue-200 bg-blue-50 p-4 flex gap-3">
         <Info className="h-5 w-5 text-blue-500 shrink-0 mt-0.5" />
         <div className="text-sm text-blue-800">

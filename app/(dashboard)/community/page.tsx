@@ -28,71 +28,22 @@ const CATEGORIES = [
   { id: "lawyer-ama", label: "Attorney AMAs", icon: "⚖️" },
 ];
 
-const MOCK_POSTS = [
-  {
-    id: "1", category: "opt-stem-opt",
-    title: "Just got my EAD card after 4 months — tips for those waiting",
-    body: "After 4 months of anxiety, my EAD finally arrived! Here's what I learned...",
-    author: { name: "Priya S.", visa: "OPT", initials: "PS" },
-    upvotes: 142, replies: 38, is_answered: true, is_pinned: false,
-    tags: ["OPT", "EAD", "Success"],
-    created_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-  },
-  {
-    id: "2", category: "h1b-work-visa",
-    title: "H-1B Transfer during RFE — is it safe? Attorney answers inside",
-    body: "I got an RFE on my pending H-1B and I'm thinking of changing employers. Verified attorney weighs in...",
-    author: { name: "Atty. James R.", visa: "Attorney", initials: "JR" },
-    upvotes: 89, replies: 22, is_answered: true, is_pinned: true,
-    tags: ["H-1B", "RFE", "Transfer", "Legal"],
-    created_at: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
-  },
-  {
-    id: "3", category: "f1-students",
-    title: "Can I work on campus more than 20 hrs/week during finals week?",
-    body: "My employer wants me to work extra hours during finals. I've heard conflicting things about this...",
-    author: { name: "Wei C.", visa: "F-1", initials: "WC" },
-    upvotes: 54, replies: 15, is_answered: true, is_pinned: false,
-    tags: ["F-1", "On-campus work", "USCIS rules"],
-    created_at: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
-  },
-  {
-    id: "4", category: "green-card",
-    title: "EB-2 NIW approved in 8 months — my complete timeline and strategy",
-    body: "I just got my I-140 approved for EB-2 NIW! Here's everything I did, including the petition letters...",
-    author: { name: "Fatima A.", visa: "EB-2 NIW", initials: "FA" },
-    upvotes: 231, replies: 67, is_answered: false, is_pinned: false,
-    tags: ["EB-2", "NIW", "Success Story", "I-140"],
-    created_at: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
-  },
-  {
-    id: "5", category: "opt-stem-opt",
-    title: "STEM OPT employer changed — how do I update my I-983?",
-    body: "My startup was acquired and technically I have a new employer. What steps do I need to take for my STEM OPT?",
-    author: { name: "Carlos M.", visa: "STEM OPT", initials: "CM" },
-    upvotes: 33, replies: 9, is_answered: false, is_pinned: false,
-    tags: ["STEM OPT", "Employer Change", "I-983"],
-    created_at: new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString(),
-  },
-  {
-    id: "6", category: "success-stories",
-    title: "From F-1 to Green Card in 4 years — my complete journey",
-    body: "I came to the US on F-1 in 2019. Today I'm a permanent resident. Here's the full story...",
-    author: { name: "Yuna K.", visa: "Green Card", initials: "YK" },
-    upvotes: 387, replies: 112, is_answered: false, is_pinned: false,
-    tags: ["Success Story", "F-1", "H-1B", "Green Card"],
-    created_at: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString(),
-  },
-];
+type Post = {
+  id: string; category: string; title: string; body: string;
+  author: { name: string; visa: string; initials: string };
+  upvotes: number; replies: number; is_answered: boolean; is_pinned: boolean;
+  tags: string[]; created_at: string;
+};
 
 export default function CommunityPage() {
+  const [posts] = useState<Post[]>([]);
   const [search, setSearch] = useState("");
   const [activeCategory, setActiveCategory] = useState("all");
   const [sort, setSort] = useState("hot");
   const [newPostOpen, setNewPostOpen] = useState(false);
   const [newPost, setNewPost] = useState({ title: "", body: "", category: "", tags: "" });
 
-  const filtered = MOCK_POSTS
+  const filtered = posts
     .filter(p => activeCategory === "all" || p.category === activeCategory)
     .filter(p => !search || p.title.toLowerCase().includes(search.toLowerCase()) || p.tags.some(t => t.toLowerCase().includes(search.toLowerCase())))
     .sort((a, b) => {
@@ -102,9 +53,9 @@ export default function CommunityPage() {
     });
 
   const stats = [
-    { label: "Members", value: "48,200+", icon: Users },
-    { label: "Posts", value: "12,400+", icon: MessageSquare },
-    { label: "Answered", value: "9,800+", icon: CheckCircle2 },
+    { label: "Members", value: "0", icon: Users },
+    { label: "Posts", value: posts.length.toString(), icon: MessageSquare },
+    { label: "Answered", value: posts.filter(p => p.is_answered).length.toString(), icon: CheckCircle2 },
   ];
 
   return (

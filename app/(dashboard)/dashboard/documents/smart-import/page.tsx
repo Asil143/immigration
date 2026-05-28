@@ -6,7 +6,6 @@ import {
   RefreshCw, AlertCircle, Save, Eye, ChevronDown,
 } from "lucide-react";
 
-const STORAGE_KEY = "visapilot_profile";
 
 type DocType = "I-797" | "I-20" | "EAD" | "Passport" | "I-485 Receipt" | "I-140 Approval";
 
@@ -163,13 +162,26 @@ export default function SmartImportPage() {
     handleFile(new File([""], `${docType?.replace(" ", "_")}_sample.pdf`, { type: "application/pdf" }));
   }
 
-  function saveToProfile() {
+  async function saveToProfile() {
     if (!result) return;
-    try {
-      const existing = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
-      localStorage.setItem(STORAGE_KEY, JSON.stringify({ ...existing, ...result.profileUpdates }));
-      setSaved(true);
-    } catch {}
+    const body: Record<string, string> = {};
+    const keyMap: Record<string, string> = {
+      visaType: "visa_type", employer: "employer", eadExpiry: "ead_expiry",
+      h1bStartDate: "h1b_start_date", i94Expiry: "i94_expiry",
+      passportExpiry: "passport_expiry", countryOfBirth: "country_of_birth",
+      greenCardStage: "green_card_stage", greenCardCategory: "green_card_category",
+      priorityDate: "priority_date",
+    };
+    for (const [k, v] of Object.entries(result.profileUpdates)) {
+      const snakeKey = keyMap[k] ?? k;
+      body[snakeKey] = v;
+    }
+    const res = await fetch("/api/profile", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+    if (res.ok) setSaved(true);
   }
 
   function reset() {

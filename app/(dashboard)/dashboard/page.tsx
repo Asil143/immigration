@@ -223,25 +223,11 @@ export default function DashboardPage() {
                   <p className="text-xs text-green-700 mt-0.5">Add more key dates in your profile to stay ahead.</p>
                 </div>
               ) : (
-                // Generic deadlines when no profile
-                [
-                  { label: "OPT Application Window", days: 14, priority: "critical" as const, desc: "90 days before graduation date" },
-                  { label: "STEM OPT Extension Filing", days: 45, priority: "high" as const, desc: "File I-765 90 days before OPT expiry" },
-                  { label: "Passport Renewal Reminder", days: 120, priority: "medium" as const, desc: "Passport expires in 6 months" },
-                ].map(d => (
-                  <div key={d.label} className="flex items-start gap-3 rounded-xl border p-3" style={{ borderColor: "#e2e8f0" }}>
-                    {d.priority === "critical" ? <AlertCircle className="h-5 w-5 text-red-500 shrink-0 mt-0.5" />
-                      : d.priority === "high" ? <Clock className="h-5 w-5 text-orange-500 shrink-0 mt-0.5" />
-                      : <CheckCircle2 className="h-5 w-5 text-blue-500 shrink-0 mt-0.5" />}
-                    <div className="flex-1">
-                      <div className="flex items-center justify-between">
-                        <p className="font-medium text-sm">{d.label}</p>
-                        <Badge variant={d.priority === "critical" ? "destructive" : d.priority === "high" ? "warning" : "info"} className="ml-2 shrink-0 text-xs">{d.days}d</Badge>
-                      </div>
-                      <p className="text-xs mt-0.5 text-muted-foreground">{d.desc}</p>
-                    </div>
-                  </div>
-                ))
+                <div className="text-center py-8 rounded-xl" style={{ backgroundColor: "#f8fafc", border: "1px dashed #e2e8f0" }}>
+                  <Shield className="h-8 w-8 mx-auto mb-2" style={{ color: "#cbd5e1" }} />
+                  <p className="font-medium text-sm" style={{ color: "#64748b" }}>No deadlines yet</p>
+                  <p className="text-xs mt-1" style={{ color: "#94a3b8" }}>Set up your profile to see personalized deadline alerts.</p>
+                </div>
               )}
               {!profileSetUp && (
                 <Link href="/dashboard/profile">
