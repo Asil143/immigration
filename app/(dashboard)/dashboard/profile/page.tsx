@@ -319,7 +319,7 @@ export default function ProfilePage() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {[
                     { key: "i94Expiry", label: "I-94 Expiry Date", hint: "From i94.cbp.dhs.gov — your authorized stay", isExpiry: true },
-                    { key: "eadExpiry", label: "EAD Expiry Date", hint: "Employment Authorization Document (OPT / STEM OPT)", isExpiry: true },
+                    { key: "eadExpiry", label: "OPT / STEM OPT End Date", hint: "The expiry date on your EAD card — same as your OPT or STEM OPT end date", isExpiry: true },
                     { key: "visaStampExpiry", label: "Visa Stamp Expiry", hint: "From your passport — needed for re-entry", isExpiry: true },
                     { key: "passportExpiry", label: "Passport Expiry", hint: "Must be valid 6+ months for most re-entries", isExpiry: true },
                     { key: "optStartDate", label: "OPT Start Date", hint: "First day of authorized OPT work", isExpiry: false },

@@ -22,7 +22,7 @@ export async function GET(req: NextRequest) {
   today.setHours(0, 0, 0, 0);
 
   const deadlineChecks = [
-    { key: "ead_expiry", label: "EAD / Work Authorization" },
+    { key: "ead_expiry", label: "OPT / STEM OPT Work Authorization" },
     { key: "i94_expiry", label: "I-94 Authorized Stay" },
     { key: "visa_stamp_expiry", label: "Visa Stamp" },
     { key: "passport_expiry", label: "Passport" },

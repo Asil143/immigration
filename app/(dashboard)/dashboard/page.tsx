@@ -29,7 +29,7 @@ function computeAlerts(profile: Record<string, string>): DeadlineAlert[] {
 
   const checks = [
     {
-      key: "eadExpiry", label: "EAD / OPT Expires",
+      key: "eadExpiry", label: "OPT / STEM OPT End Date",
       criticalDays: 45, highDays: 90,
       action: "File STEM OPT or H-1B", actionHref: "/dashboard/tools/opt-tracker",
     },
