@@ -1,15 +1,32 @@
-import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
+import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 
-// UI-first development mode: all routes are accessible without auth.
-// When wiring real Clerk auth, replace this with clerkMiddleware + auth.protect().
-export function proxy(_req: NextRequest) {
-  return NextResponse.next();
-}
+const isPublicRoute = createRouteMatcher([
+  "/",
+  "/sign-in(.*)",
+  "/sign-up(.*)",
+  "/guides(.*)",
+  "/visa-comparison(.*)",
+  "/glossary(.*)",
+  "/events(.*)",
+  "/lawyers(.*)",
+  "/jobs(.*)",
+  "/pricing(.*)",
+  "/blog(.*)",
+  "/success-stories(.*)",
+  "/employer-lookup(.*)",
+  "/visa-bulletin(.*)",
+]);
+
+export default clerkMiddleware(async (auth, req) => {
+  if (!isPublicRoute(req)) {
+    await auth.protect();
+  }
+});
 
 export const config = {
   matcher: [
     "/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
     "/(api|trpc)(.*)",
+    "/__clerk/(.*)",
   ],
 };
