@@ -633,7 +633,7 @@ export default function ProfilePage() {
                             <p className="text-xs mt-0.5" style={{ color: "#64748b" }}>{c.form_type}{c.label ? ` · ${c.label}` : ""}</p>
                           </div>
                           <a
-                            href="https://egov.uscis.gov/casestatus/mycasestatus.do"
+                            href={`/api/cases/uscis-redirect?receipt=${encodeURIComponent(c.receipt_number)}`}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all"
