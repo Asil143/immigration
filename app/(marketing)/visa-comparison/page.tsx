@@ -263,8 +263,10 @@ export default function VisaComparisonPage() {
                 <tr key={key} style={{ backgroundColor: i % 2 === 0 ? "#ffffff" : "#f8fafc", borderBottom: "1px solid #e2e8f0" }}>
                   <td className="p-4 text-xs font-semibold" style={{ color: "#64748b", borderRight: "1px solid #e2e8f0", minWidth: "160px" }}>{attributeLabels[key]}</td>
                   {selectedVisas.map((v, idx) => (
-                    <td key={v.id} className="p-4 text-center" style={{ borderRight: idx < selectedVisas.length - 1 ? "1px solid #e2e8f0" : undefined }}>
-                      {renderValue(key, v[key as keyof VisaOption])}
+                    <td key={v.id} className="p-4" style={{ borderRight: idx < selectedVisas.length - 1 ? "1px solid #e2e8f0" : undefined }}>
+                      <div className="flex items-center justify-center">
+                        {renderValue(key, v[key as keyof VisaOption])}
+                      </div>
                     </td>
                   ))}
                 </tr>
