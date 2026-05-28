@@ -175,6 +175,7 @@ export default function ProfilePage() {
   const [newCase, setNewCase] = useState({ receipt: "", form: "", label: "" });
   const [addingCase, setAddingCase] = useState(false);
   const [checkingCase, setCheckingCase] = useState<string | null>(null);
+  const [copiedCase, setCopiedCase] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -632,15 +633,18 @@ export default function ProfilePage() {
                             <p className="text-sm font-mono font-medium">{c.receipt_number}</p>
                             <p className="text-xs mt-0.5" style={{ color: "#64748b" }}>{c.form_type}{c.label ? ` · ${c.label}` : ""}</p>
                           </div>
-                          <a
-                            href={`/api/cases/uscis-redirect?receipt=${encodeURIComponent(c.receipt_number)}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
+                          <button
+                            onClick={async () => {
+                              await navigator.clipboard.writeText(c.receipt_number);
+                              setCopiedCase(c.id);
+                              setTimeout(() => setCopiedCase(null), 3000);
+                              window.open("https://egov.uscis.gov/casestatus/mycasestatus.do", "_blank");
+                            }}
                             className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all"
-                            style={{ backgroundColor: "#eff6ff", color: "#2563eb" }}
+                            style={{ backgroundColor: copiedCase === c.id ? "#f0fdf4" : "#eff6ff", color: copiedCase === c.id ? "#15803d" : "#2563eb" }}
                           >
-                            Check on USCIS ↗
-                          </a>
+                            {copiedCase === c.id ? "✓ Copied! Paste on USCIS" : "Check on USCIS ↗"}
+                          </button>
                           <button onClick={() => removeCase(c.id)} className="text-red-400 hover:text-red-600">
                             <Trash2 className="h-4 w-4" />
                           </button>
