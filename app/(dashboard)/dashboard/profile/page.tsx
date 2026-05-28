@@ -238,17 +238,16 @@ export default function ProfilePage() {
     }
   }
 
-  async function checkStatus(c: CaseEntry) {
-    setCheckingCase(c.id);
+  async function updateStatus(id: string, status: string) {
+    setCheckingCase(id);
     try {
       const res = await fetch("/api/cases/check-status", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id: c.id, receipt_number: c.receipt_number }),
+        body: JSON.stringify({ id, status }),
       });
       if (res.ok) {
-        const { status } = await res.json();
-        setCases(prev => prev.map(x => x.id === c.id ? { ...x, last_status: status, last_checked_at: new Date().toISOString() } : x));
+        setCases(prev => prev.map(x => x.id === id ? { ...x, last_status: status, last_checked_at: new Date().toISOString() } : x));
       }
     } finally {
       setCheckingCase(null);
@@ -621,7 +620,7 @@ export default function ProfilePage() {
                     </div>
                   )}
                   {cases.map(c => {
-                    const isChecking = checkingCase === c.id;
+                    const isSaving = checkingCase === c.id;
                     const status = c.last_status;
                     const isApproved = status?.toLowerCase().includes("approved") || status?.toLowerCase().includes("card was mailed");
                     const isDenied = status?.toLowerCase().includes("denied") || status?.toLowerCase().includes("rejected");
@@ -633,21 +632,49 @@ export default function ProfilePage() {
                             <p className="text-sm font-mono font-medium">{c.receipt_number}</p>
                             <p className="text-xs mt-0.5" style={{ color: "#64748b" }}>{c.form_type}{c.label ? ` · ${c.label}` : ""}</p>
                           </div>
-                          <button
-                            onClick={() => checkStatus(c)}
-                            disabled={isChecking}
-                            className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all disabled:opacity-50"
+                          <a
+                            href="https://egov.uscis.gov/casestatus/mycasestatus.do"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all"
                             style={{ backgroundColor: "#eff6ff", color: "#2563eb" }}
                           >
-                            {isChecking ? <Loader2 className="h-3 w-3 animate-spin" /> : <Clock className="h-3 w-3" />}
-                            {isChecking ? "Checking..." : "Check Status"}
-                          </button>
+                            Check on USCIS ↗
+                          </a>
                           <button onClick={() => removeCase(c.id)} className="text-red-400 hover:text-red-600">
                             <Trash2 className="h-4 w-4" />
                           </button>
                         </div>
+
+                        {/* Manual status update */}
+                        <div className="mt-2 flex items-center gap-2">
+                          <select
+                            value={status ?? ""}
+                            onChange={e => e.target.value && updateStatus(c.id, e.target.value)}
+                            disabled={isSaving}
+                            className="flex-1 px-2 py-1.5 rounded-lg border text-xs focus:outline-none"
+                            style={{ borderColor: "#e2e8f0", color: status ? "#0f172a" : "#94a3b8" }}
+                          >
+                            <option value="">— Update status manually —</option>
+                            <option>Case Was Received</option>
+                            <option>Fingerprint Fee Was Received</option>
+                            <option>Case Is Being Actively Reviewed</option>
+                            <option>Request for Evidence Was Sent</option>
+                            <option>Response to RFE Was Received</option>
+                            <option>Interview Was Scheduled</option>
+                            <option>Case Was Approved</option>
+                            <option>Card Was Mailed To Me</option>
+                            <option>Card Was Picked Up By USPS</option>
+                            <option>Case Was Denied</option>
+                            <option>Case Was Rejected</option>
+                            <option>Case Was Transferred</option>
+                            <option>Case Was Closed</option>
+                          </select>
+                          {isSaving && <Loader2 className="h-3.5 w-3.5 animate-spin shrink-0" style={{ color: "#2563eb" }} />}
+                        </div>
+
                         {status && (
-                          <div className="mt-2 px-3 py-2 rounded-lg text-xs font-medium"
+                          <div className="mt-1.5 px-3 py-1.5 rounded-lg text-xs font-medium"
                             style={{
                               backgroundColor: isApproved ? "#f0fdf4" : isDenied ? "#fef2f2" : isRFE ? "#fff7ed" : "#f8fafc",
                               color: isApproved ? "#15803d" : isDenied ? "#dc2626" : isRFE ? "#c2410c" : "#475569",
@@ -655,7 +682,7 @@ export default function ProfilePage() {
                             {status}
                             {c.last_checked_at && (
                               <span className="ml-2 font-normal" style={{ color: "#94a3b8" }}>
-                                · checked {new Date(c.last_checked_at).toLocaleDateString()}
+                                · updated {new Date(c.last_checked_at).toLocaleDateString()}
                               </span>
                             )}
                           </div>
