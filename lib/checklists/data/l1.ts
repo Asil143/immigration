@@ -1,0 +1,96 @@
+import type { ChecklistDef } from "../types";
+
+export const l1: ChecklistDef = {
+  slug: "l1",
+  title: "L-1 Intracompany Transfer",
+  subtitle: "L-1A (manager/executive) and L-1B (specialized knowledge)",
+  emoji: "🌐",
+  cardColor: "from-violet-500 to-purple-600",
+  keyFacts: [
+    { label: "I-129 Fee", value: "~$1,385", sub: "+ premium optional", icon: "DollarSign", color: "text-red-600" },
+    { label: "L-1A Duration", value: "7 years", sub: "3 + 2 + 2 extensions", icon: "Clock", color: "text-blue-600" },
+    { label: "L-1B Duration", value: "5 years", sub: "3 + 2 extensions", icon: "Clock", color: "text-purple-600" },
+    { label: "No Lottery", value: "✓", sub: "no annual cap", icon: "CheckCircle", color: "text-green-600" },
+  ],
+  phases: [
+    {
+      id: "eligibility", number: 1,
+      title: "Confirm Eligibility",
+      subtitle: "Must have worked for the related company abroad for at least 1 year",
+      icon: "BookOpen", colorText: "text-violet-700", colorBg: "bg-violet-50", colorBorder: "border-violet-200",
+      items: [
+        { id: "l1e1", text: "You have been employed by the parent, affiliate, or subsidiary company abroad for at least 1 continuous year within the last 3 years", type: "action" },
+        { id: "l1e2", text: "The US and foreign entities have a qualifying relationship: parent-subsidiary, affiliate, or joint venture", type: "action" },
+        { id: "l1e3", text: "L-1A: You are being transferred to a managerial or executive role in the US", note: "Must manage people, functions, or an entire department — not just 'titled' manager", type: "action" },
+        { id: "l1e4", text: "L-1B: You possess specialized knowledge of the company's products, services, or procedures", note: "Must be significantly above what a standard employee knows — true 'specialized' knowledge", type: "action" },
+        { id: "l1e5", text: "The US company is currently doing business or is in the process of commencing business", type: "action" },
+      ],
+    },
+    {
+      id: "blanket", number: 2,
+      title: "Individual vs. Blanket Petition",
+      subtitle: "Large companies may have a blanket L approval for faster processing",
+      icon: "Building2", colorText: "text-blue-700", colorBg: "bg-blue-50", colorBorder: "border-blue-200",
+      items: [
+        { id: "l1b1", text: "Check with your HR/legal team if the company has an approved Blanket L petition", type: "action" },
+        { id: "l1b2", text: "Blanket L: Apply for L-1 visa at embassy directly using Form I-129S — faster for large multinationals", type: "action" },
+        { id: "l1b3", text: "Individual petition: Employer files Form I-129 with USCIS for you specifically", type: "action" },
+        { id: "l1b4", text: "New office L-1: If you are establishing a brand-new US office, additional business plan evidence is required", note: "New office L-1A approved for 1 year initially (not 3)", type: "action" },
+      ],
+    },
+    {
+      id: "documents", number: 3,
+      title: "Gather Documents",
+      subtitle: "Work with employer's attorney to compile petition package",
+      icon: "FileText", colorText: "text-orange-700", colorBg: "bg-orange-50", colorBorder: "border-orange-200",
+      items: [
+        { id: "l1d1", text: "Organizational charts for both foreign and US entities showing your position", type: "doc" },
+        { id: "l1d2", text: "Detailed job description for both your foreign and US roles", type: "doc" },
+        { id: "l1d3", text: "Proof of 1-year qualifying employment: offer letters, pay stubs, tax records, employment verification", type: "doc" },
+        { id: "l1d4", text: "Corporate documents proving qualifying relationship: stock certificates, annual reports, subsidiary agreements", type: "doc" },
+        { id: "l1d5", text: "Company financial statements (US and foreign entity)", type: "doc" },
+        { id: "l1d6", text: "Passport (biographical page)", type: "doc" },
+        { id: "l1d7", text: "Educational degrees and credentials", type: "doc" },
+        { id: "l1d8", text: "L-1B only: Evidence of specialized knowledge — training materials, patents, proprietary systems documentation", type: "doc" },
+      ],
+    },
+    {
+      id: "petition", number: 4,
+      title: "File Form I-129 Petition",
+      subtitle: "Employer files with USCIS — no lottery, no quota",
+      icon: "Send", colorText: "text-teal-700", colorBg: "bg-teal-50", colorBorder: "border-teal-200",
+      items: [
+        { id: "l1p1", text: "Employer/attorney files Form I-129 with L Classification Supplement", type: "form" },
+        { id: "l1p2", text: "Pay base I-129 filing fee: $730", type: "fee" },
+        { id: "l1p3", text: "Pay anti-fraud fee: $500 (all L-1 petitions)", type: "fee" },
+        { id: "l1p4", text: "Optional: Pay $2,805 Premium Processing for 15 business day decision", type: "fee" },
+        { id: "l1p5", text: "Standard processing: 3–5 months", type: "action" },
+        { id: "l1p6", text: "Receive I-797 approval notice — initial period: 3 years (1 year for new office)", type: "doc" },
+      ],
+    },
+    {
+      id: "visa", number: 5,
+      title: "L-1 Visa Stamp (if entering from abroad)",
+      subtitle: "Required only for entry — not needed if changing status inside the US",
+      icon: "Globe", colorText: "text-purple-700", colorBg: "bg-purple-50", colorBorder: "border-purple-200",
+      items: [
+        { id: "l1v1", text: "Complete DS-160 online application", type: "form", link: { label: "DS-160", url: "https://ceac.state.gov/genniv/" } },
+        { id: "l1v2", text: "Pay MRV visa fee: $205", type: "fee" },
+        { id: "l1v3", text: "Schedule and attend embassy interview", type: "action" },
+        { id: "l1v4", text: "Bring I-797 approval, passport, DS-160, I-129 petition copy, and relationship documents", type: "doc" },
+        { id: "l1v5", text: "Receive L-1 visa stamp in passport", type: "doc" },
+      ],
+    },
+    {
+      id: "extension", number: 6,
+      title: "Extension & Path to Green Card",
+      subtitle: "L-1A holders have a strong path to EB-1C green card",
+      icon: "Zap", colorText: "text-green-700", colorBg: "bg-green-50", colorBorder: "border-green-200",
+      items: [
+        { id: "l1ex1", text: "File I-129 extension before I-797 expiry (L-1A: extend up to 7 years total; L-1B: up to 5 years)", type: "action" },
+        { id: "l1ex2", text: "L-1A holders: Start EB-1C green card process (no PERM required!)", note: "EB-1C is typically current for most countries — much faster than EB-2/EB-3", type: "action", link: { label: "Green Card Checklist", url: "/dashboard/tools/checklists/green-card" } },
+        { id: "l1ex3", text: "Once you hit the L-1 maximum, you must work outside the US for 1 year before getting another L-1", type: "action" },
+      ],
+    },
+  ],
+};

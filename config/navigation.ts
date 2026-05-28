@@ -21,6 +21,7 @@ import {
   UserCircle,
   ScanLine,
   ClipboardList,
+  ListChecks,
   type LucideIcon,
 } from "lucide-react";
 
@@ -86,10 +87,10 @@ export const dashboardNav: NavItem[] = [
 
 export const toolsNav: NavItem[] = [
   {
-    title: "OPT Checklist",
-    href: "/dashboard/tools/opt-checklist",
-    icon: ClipboardList,
-    description: "Step-by-step OPT application guide",
+    title: "Visa Checklists",
+    href: "/dashboard/tools/checklists",
+    icon: ListChecks,
+    description: "Step-by-step guides for OPT, H-1B, Green Card & more",
     badge: "New",
   },
   {
