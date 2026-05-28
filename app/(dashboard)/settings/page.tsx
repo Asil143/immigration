@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useUser } from "@clerk/nextjs";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -11,7 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Check, Crown, Shield, Bell, User, CreditCard, Trash2 } from "lucide-react";
+import { Check, Crown, Shield, User, CreditCard, Trash2, Loader2 } from "lucide-react";
 import type { VisaType } from "@/types";
 import { PLANS } from "@/lib/stripe/client";
 
@@ -20,17 +20,46 @@ const VISA_TYPES: VisaType[] = ["F-1", "OPT", "STEM-OPT", "H-1B", "H-4", "J-1", 
 
 export default function SettingsPage() {
   const { user } = useUser();
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
 
   const [profile, setProfile] = useState({
-    fullName: user?.fullName ?? "",
-    nationality: "India",
-    currentVisa: "OPT" as VisaType,
-    schoolOrEmployer: "Google LLC",
+    nationality: "",
+    currentVisa: "" as VisaType | "",
+    schoolOrEmployer: "",
     phone: "",
   });
 
-  function save() {
+  useEffect(() => {
+    fetch("/api/profile")
+      .then(r => r.ok ? r.json() : null)
+      .then(data => {
+        if (data) {
+          setProfile({
+            nationality: data.country_of_birth ?? "",
+            currentVisa: (data.visa_type as VisaType) ?? "",
+            schoolOrEmployer: data.employer ?? "",
+            phone: data.phone ?? "",
+          });
+        }
+      })
+      .finally(() => setLoading(false));
+  }, []);
+
+  async function save() {
+    setSaving(true);
+    await fetch("/api/profile", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        country_of_birth: profile.nationality || null,
+        visa_type: profile.currentVisa || null,
+        employer: profile.schoolOrEmployer || null,
+        phone: profile.phone || null,
+      }),
+    });
+    setSaving(false);
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
   }
@@ -66,53 +95,60 @@ export default function SettingsPage() {
                   <AvatarFallback className="text-lg">{user?.firstName?.[0]}{user?.lastName?.[0]}</AvatarFallback>
                 </Avatar>
                 <div>
-                  <Button variant="outline" size="sm">Change Photo</Button>
-                  <p className="text-xs text-muted-foreground mt-1">JPG or PNG, max 2MB</p>
+                  <p className="font-medium">{user?.fullName}</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">{user?.emailAddresses[0]?.emailAddress}</p>
                 </div>
               </div>
 
               <Separator />
 
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                <div className="space-y-1.5">
-                  <Label>Full Name</Label>
-                  <Input value={profile.fullName} onChange={e => setProfile(p => ({ ...p, fullName: e.target.value }))} />
+              {loading ? (
+                <div className="flex justify-center py-8">
+                  <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
                 </div>
-                <div className="space-y-1.5">
-                  <Label>Email</Label>
-                  <Input value={user?.emailAddresses[0]?.emailAddress ?? ""} disabled className="bg-muted" />
+              ) : (
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                  <div className="space-y-1.5">
+                    <Label>Full Name</Label>
+                    <Input value={user?.fullName ?? ""} disabled className="bg-muted" />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label>Email</Label>
+                    <Input value={user?.emailAddresses[0]?.emailAddress ?? ""} disabled className="bg-muted" />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label>Phone (optional)</Label>
+                    <Input placeholder="+1 (555) 000-0000" value={profile.phone} onChange={e => setProfile(p => ({ ...p, phone: e.target.value }))} />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label>Country of Birth / Nationality</Label>
+                    <Select value={profile.nationality} onValueChange={v => setProfile(p => ({ ...p, nationality: v }))}>
+                      <SelectTrigger><SelectValue placeholder="Select country..." /></SelectTrigger>
+                      <SelectContent>
+                        {COUNTRIES.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label>Current Visa Status</Label>
+                    <Select value={profile.currentVisa} onValueChange={v => setProfile(p => ({ ...p, currentVisa: v as VisaType }))}>
+                      <SelectTrigger><SelectValue placeholder="Select visa type..." /></SelectTrigger>
+                      <SelectContent>
+                        {VISA_TYPES.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label>School / Employer</Label>
+                    <Input value={profile.schoolOrEmployer} onChange={e => setProfile(p => ({ ...p, schoolOrEmployer: e.target.value }))} placeholder="e.g. University of Texas, Google LLC" />
+                  </div>
                 </div>
-                <div className="space-y-1.5">
-                  <Label>Phone (optional)</Label>
-                  <Input placeholder="+1 (555) 000-0000" value={profile.phone} onChange={e => setProfile(p => ({ ...p, phone: e.target.value }))} />
-                </div>
-                <div className="space-y-1.5">
-                  <Label>Country of Birth / Nationality</Label>
-                  <Select value={profile.nationality} onValueChange={v => setProfile(p => ({ ...p, nationality: v }))}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      {COUNTRIES.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-1.5">
-                  <Label>Current Visa Status</Label>
-                  <Select value={profile.currentVisa} onValueChange={v => setProfile(p => ({ ...p, currentVisa: v as VisaType }))}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      {VISA_TYPES.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-1.5">
-                  <Label>School / Employer</Label>
-                  <Input value={profile.schoolOrEmployer} onChange={e => setProfile(p => ({ ...p, schoolOrEmployer: e.target.value }))} />
-                </div>
-              </div>
+              )}
 
               <div className="flex justify-end pt-2">
-                <Button onClick={save} className="gap-2">
-                  {saved ? <><Check className="h-4 w-4" /> Saved!</> : "Save Changes"}
+                <Button onClick={save} disabled={saving || loading} className="gap-2">
+                  {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : saved ? <Check className="h-4 w-4" /> : null}
+                  {saved ? "Saved!" : "Save Changes"}
                 </Button>
               </div>
             </CardContent>
