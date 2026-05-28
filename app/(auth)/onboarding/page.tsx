@@ -3,24 +3,47 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
-import type { VisaType } from "@/types";
-import { CheckCircle2, ArrowRight, Bot } from "lucide-react";
+import {
+  CheckCircle2, ArrowRight, Bot, Shield, Calendar, Target,
+  ChevronLeft, Sparkles, Clock, AlertCircle, Star,
+} from "lucide-react";
 
-const visaOptions: { value: VisaType; label: string; desc: string }[] = [
-  { value: "F-1", label: "F-1 Student", desc: "Currently enrolled as an international student" },
-  { value: "OPT", label: "OPT", desc: "Post-graduation work authorization" },
-  { value: "STEM-OPT", label: "STEM OPT", desc: "24-month STEM OPT extension" },
-  { value: "H-1B", label: "H-1B", desc: "Specialty occupation work visa" },
-  { value: "H-4", label: "H-4", desc: "Dependent of H-1B holder" },
-  { value: "J-1", label: "J-1 Exchange", desc: "Exchange visitor program" },
-  { value: "EB-1", label: "EB-1", desc: "Priority workers green card" },
-  { value: "EB-2", label: "EB-2", desc: "Advanced degree / NIW green card" },
-  { value: "EB-3", label: "EB-3", desc: "Skilled workers green card" },
-  { value: "Other", label: "Other", desc: "Another visa type or exploring" },
+const STORAGE_KEY = "visapilot_profile";
+
+const visaOptions = [
+  { value: "F-1 Student", label: "F-1 Student", icon: "🎓", desc: "Enrolled at a US university", color: "#eff6ff", border: "#bfdbfe", textColor: "#1d4ed8" },
+  { value: "OPT", label: "OPT", icon: "💼", desc: "Post-graduation work authorization", color: "#f0fdf4", border: "#86efac", textColor: "#15803d" },
+  { value: "STEM OPT", label: "STEM OPT", icon: "🔬", desc: "24-month STEM OPT extension", color: "#faf5ff", border: "#d8b4fe", textColor: "#6d28d9" },
+  { value: "H-1B", label: "H-1B", icon: "🏢", desc: "Specialty occupation work visa", color: "#f0fdf4", border: "#86efac", textColor: "#15803d" },
+  { value: "H-4", label: "H-4 Dependent", icon: "👥", desc: "Spouse/dependent of H-1B holder", color: "#ecfeff", border: "#a5f3fc", textColor: "#0891b2" },
+  { value: "J-1", label: "J-1 Exchange", icon: "🌍", desc: "Exchange visitor program", color: "#fff7ed", border: "#fed7aa", textColor: "#c2410c" },
+  { value: "L-1A", label: "L-1A/L-1B", icon: "🏗️", desc: "Intracompany transferee", color: "#ecfeff", border: "#a5f3fc", textColor: "#0891b2" },
+  { value: "O-1A", label: "O-1A/O-1B", icon: "⭐", desc: "Extraordinary ability visa", color: "#fdf4ff", border: "#e9d5ff", textColor: "#9333ea" },
+  { value: "Green Card (Pending I-485)", label: "I-485 Pending", icon: "🌿", desc: "Adjustment of status in progress", color: "#f0fdf4", border: "#86efac", textColor: "#15803d" },
+  { value: "Green Card (LPR)", label: "Green Card (LPR)", icon: "✅", desc: "Permanent resident", color: "#fffbeb", border: "#fde68a", textColor: "#d97706" },
+  { value: "TN", label: "TN Visa", icon: "🇨🇦", desc: "Canadian/Mexican professional", color: "#fef2f2", border: "#fecaca", textColor: "#dc2626" },
+  { value: "Other", label: "Other / Exploring", icon: "🔍", desc: "Different status or exploring", color: "#f8fafc", border: "#e2e8f0", textColor: "#64748b" },
+];
+
+const countries = ["India", "China", "Mexico", "Philippines", "Brazil", "Nigeria", "South Korea", "Pakistan", "Canada", "United Kingdom", "Other"];
+
+const goals = [
+  { id: "h1b", icon: "🎯", label: "Win H-1B lottery", desc: "Find sponsors, prepare for cap season" },
+  { id: "opt", icon: "📋", label: "OPT/STEM OPT filing", desc: "Application checklists and deadlines" },
+  { id: "greencard", icon: "🌿", label: "Get a green card", desc: "EB-2 NIW, EB-1A, or employer-sponsored" },
+  { id: "rfe", icon: "⚡", label: "Respond to an RFE", desc: "Build a strong RFE response fast" },
+  { id: "travel", icon: "✈️", label: "Travel safely", desc: "Know the rules before leaving the US" },
+  { id: "job", icon: "💼", label: "Find a sponsoring job", desc: "Jobs that actively sponsor H-1B" },
+  { id: "attorney", icon: "⚖️", label: "Find an attorney", desc: "Verified attorneys with fixed fees" },
+  { id: "understand", icon: "📚", label: "Understand my options", desc: "Explore all possible visa paths" },
+];
+
+const STEPS = [
+  { id: 1, label: "Visa Status", icon: Shield },
+  { id: 2, label: "Background", icon: Target },
+  { id: 3, label: "Key Dates", icon: Calendar },
+  { id: 4, label: "Your Goals", icon: Star },
+  { id: 5, label: "All Set!", icon: Sparkles },
 ];
 
 export default function OnboardingPage() {
@@ -28,163 +51,335 @@ export default function OnboardingPage() {
   const router = useRouter();
 
   const [step, setStep] = useState(1);
-  const [visa, setVisa] = useState<VisaType | null>(null);
-  const [nationality, setNationality] = useState("");
-  const [institution, setInstitution] = useState("");
   const [loading, setLoading] = useState(false);
 
-  async function handleComplete() {
+  // Profile state
+  const [visaType, setVisaType] = useState("");
+  const [country, setCountry] = useState("");
+  const [employer, setEmployer] = useState("");
+  const [eadExpiry, setEadExpiry] = useState("");
+  const [i94Expiry, setI94Expiry] = useState("");
+  const [passportExpiry, setPassportExpiry] = useState("");
+  const [selectedGoals, setSelectedGoals] = useState<string[]>([]);
+
+  function toggleGoal(id: string) {
+    setSelectedGoals(g => g.includes(id) ? g.filter(x => x !== id) : [...g, id]);
+  }
+
+  function daysUntil(d: string) {
+    if (!d) return null;
+    return Math.ceil((new Date(d).getTime() - Date.now()) / 86400000);
+  }
+
+  async function finish() {
     setLoading(true);
+    const profile = { visaType, countryOfBirth: country, employer, eadExpiry, i94Expiry, passportExpiry, goals: selectedGoals, cases: [] };
     try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(profile));
       await fetch("/api/profile", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          current_visa: visa,
-          nationality,
-          school_or_employer: institution,
-          onboarding_complete: true,
-        }),
-      });
-      router.push("/dashboard");
+        body: JSON.stringify({ current_visa: visaType, nationality: country, school_or_employer: employer, onboarding_complete: true }),
+      }).catch(() => {});
     } finally {
       setLoading(false);
+      router.push("/dashboard");
     }
   }
 
+  const canNext = step === 1 ? !!visaType : step === 2 ? !!country : true;
+  const selectedVisa = visaOptions.find(v => v.value === visaType);
+
+  // Alerts preview
+  const alerts = [
+    { label: "EAD Expiry", days: daysUntil(eadExpiry), date: eadExpiry },
+    { label: "I-94 Expiry", days: daysUntil(i94Expiry), date: i94Expiry },
+    { label: "Passport Expiry", days: daysUntil(passportExpiry), date: passportExpiry },
+  ].filter(a => a.days !== null && a.days > 0);
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-slate-50 p-4">
+    <div className="min-h-screen flex items-center justify-center p-4" style={{ background: "linear-gradient(135deg, #f8fafc 0%, #eff6ff 50%, #f5f3ff 100%)" }}>
       <div className="w-full max-w-2xl">
-        {/* Header */}
-        <div className="mb-8 text-center">
-          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary text-white mx-auto mb-4">
-            <Bot className="h-7 w-7" />
+
+        {/* Logo */}
+        <div className="flex items-center justify-center gap-2 mb-8">
+          <div className="h-10 w-10 rounded-xl flex items-center justify-center" style={{ backgroundColor: "#2563eb" }}>
+            <Bot className="h-6 w-6 text-white" />
           </div>
-          <h1 className="text-2xl font-bold">Welcome, {user?.firstName}!</h1>
-          <p className="mt-2 text-muted-foreground">
-            Tell us about your situation so we can personalize your experience.
-          </p>
-          <div className="flex items-center justify-center gap-2 mt-4">
-            {[1, 2, 3].map((s) => (
-              <div
-                key={s}
-                className={`h-2 rounded-full transition-all ${
-                  s <= step ? "w-8 bg-primary" : "w-4 bg-slate-200"
-                }`}
-              />
-            ))}
-          </div>
+          <span className="text-xl font-bold">VisaPilot</span>
         </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>
-              {step === 1 && "What is your current visa status?"}
-              {step === 2 && "Where are you from?"}
-              {step === 3 && "School or employer?"}
-            </CardTitle>
-            <CardDescription>
-              {step === 1 && "Select the option that best describes your current immigration status."}
-              {step === 2 && "Your country of birth affects visa bulletin priority dates."}
-              {step === 3 && "We'll use this to personalize your guides and reminders."}
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            {step === 1 && (
-              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                {visaOptions.map((opt) => (
+        {/* Progress bar */}
+        <div className="flex items-center justify-between mb-8 px-2">
+          {STEPS.map((s, i) => {
+            const Icon = s.icon;
+            const done = step > s.id;
+            const current = step === s.id;
+            return (
+              <div key={s.id} className="flex items-center flex-1">
+                <div className="flex flex-col items-center">
+                  <div
+                    className="h-9 w-9 rounded-full flex items-center justify-center transition-all"
+                    style={{
+                      backgroundColor: done ? "#16a34a" : current ? "#2563eb" : "#e2e8f0",
+                      color: done || current ? "#ffffff" : "#94a3b8",
+                    }}
+                  >
+                    {done ? <CheckCircle2 className="h-5 w-5" /> : <Icon className="h-4 w-4" />}
+                  </div>
+                  <span className="text-[10px] mt-1 font-medium hidden sm:block" style={{ color: current ? "#2563eb" : done ? "#16a34a" : "#94a3b8" }}>
+                    {s.label}
+                  </span>
+                </div>
+                {i < STEPS.length - 1 && (
+                  <div className="flex-1 h-0.5 mx-2" style={{ backgroundColor: done ? "#16a34a" : "#e2e8f0" }} />
+                )}
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Card */}
+        <div className="rounded-3xl shadow-xl overflow-hidden" style={{ backgroundColor: "#ffffff" }}>
+
+          {/* Step 1: Visa status */}
+          {step === 1 && (
+            <div className="p-8">
+              <h1 className="text-2xl font-bold mb-1">What is your current visa status?</h1>
+              <p className="text-sm mb-6" style={{ color: "#64748b" }}>
+                Hi{user?.firstName ? ` ${user.firstName}` : ""}! Select your current status and we'll personalize everything for you.
+              </p>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                {visaOptions.map(opt => (
                   <button
                     key={opt.value}
-                    onClick={() => setVisa(opt.value)}
-                    className={`flex items-start gap-3 rounded-lg border p-4 text-left transition-colors ${
-                      visa === opt.value
-                        ? "border-primary bg-primary/5"
-                        : "border-input hover:border-primary/40"
-                    }`}
+                    onClick={() => setVisaType(opt.value)}
+                    className="flex flex-col items-start p-3 rounded-2xl border-2 text-left transition-all hover:shadow-sm"
+                    style={{
+                      backgroundColor: visaType === opt.value ? opt.color : "#ffffff",
+                      borderColor: visaType === opt.value ? opt.textColor : "#e2e8f0",
+                    }}
                   >
-                    <CheckCircle2
-                      className={`mt-0.5 h-5 w-5 shrink-0 ${
-                        visa === opt.value ? "text-primary" : "text-slate-300"
-                      }`}
-                    />
-                    <div>
-                      <p className="font-medium text-sm">{opt.label}</p>
-                      <p className="text-xs text-muted-foreground mt-0.5">{opt.desc}</p>
-                    </div>
+                    <span className="text-2xl mb-2">{opt.icon}</span>
+                    <span className="font-bold text-sm" style={{ color: visaType === opt.value ? opt.textColor : "#0f172a" }}>{opt.label}</span>
+                    <span className="text-[10px] mt-0.5 leading-tight" style={{ color: "#94a3b8" }}>{opt.desc}</span>
+                    {visaType === opt.value && (
+                      <CheckCircle2 className="h-4 w-4 mt-1.5" style={{ color: opt.textColor }} />
+                    )}
                   </button>
                 ))}
               </div>
-            )}
+            </div>
+          )}
 
-            {step === 2 && (
+          {/* Step 2: Background */}
+          {step === 2 && (
+            <div className="p-8">
+              <h1 className="text-2xl font-bold mb-1">Tell us your background</h1>
+              <p className="text-sm mb-6" style={{ color: "#64748b" }}>Your country of birth determines your visa bulletin priority date queue.</p>
+
+              {selectedVisa && (
+                <div className="flex items-center gap-3 p-3 rounded-xl mb-6" style={{ backgroundColor: selectedVisa.color }}>
+                  <span className="text-2xl">{selectedVisa.icon}</span>
+                  <div>
+                    <p className="font-semibold text-sm" style={{ color: selectedVisa.textColor }}>{selectedVisa.label}</p>
+                    <p className="text-xs" style={{ color: "#64748b" }}>{selectedVisa.desc}</p>
+                  </div>
+                </div>
+              )}
+
               <div className="space-y-4">
-                <Input
-                  placeholder="e.g. India, China, Brazil..."
-                  value={nationality}
-                  onChange={(e) => setNationality(e.target.value)}
-                  className="text-base"
-                />
-                <p className="text-xs text-muted-foreground">
-                  Used only for priority date tracking. We never share your data.
-                </p>
+                <div>
+                  <label className="text-sm font-semibold mb-2 block" style={{ color: "#475569" }}>Country of birth</label>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                    {countries.map(c => (
+                      <button
+                        key={c}
+                        onClick={() => setCountry(c)}
+                        className="px-3 py-2 rounded-xl border-2 text-sm font-medium transition-all"
+                        style={{
+                          backgroundColor: country === c ? "#eff6ff" : "#ffffff",
+                          borderColor: country === c ? "#2563eb" : "#e2e8f0",
+                          color: country === c ? "#1d4ed8" : "#475569",
+                        }}
+                      >
+                        {c}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <label className="text-sm font-semibold mb-2 block" style={{ color: "#475569" }}>
+                    {["F-1 Student", "OPT", "STEM OPT", "J-1"].includes(visaType) ? "University / School" : "Current Employer"}
+                  </label>
+                  <input
+                    type="text"
+                    value={employer}
+                    onChange={e => setEmployer(e.target.value)}
+                    placeholder={["F-1 Student", "OPT", "STEM OPT", "J-1"].includes(visaType) ? "e.g. MIT, UT Austin, Stanford..." : "e.g. Google, Amazon, Pfizer..."}
+                    className="w-full px-4 py-3 rounded-xl border text-sm focus:outline-none"
+                    style={{ borderColor: "#e2e8f0" }}
+                  />
+                </div>
+
+                {country === "India" && (visaType === "H-1B" || visaType.includes("Green Card")) && (
+                  <div className="p-4 rounded-xl" style={{ backgroundColor: "#fff7ed", border: "1px solid #fed7aa" }}>
+                    <div className="flex items-start gap-2">
+                      <AlertCircle className="h-4 w-4 text-orange-500 shrink-0 mt-0.5" />
+                      <div>
+                        <p className="text-sm font-semibold text-orange-900">India green card backlog</p>
+                        <p className="text-xs text-orange-700 mt-0.5">India EB-2 has a 50+ year backlog. VisaPilot will show you EB-1A and EB-1C paths that bypass the queue entirely.</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
-            )}
+            </div>
+          )}
 
-            {step === 3 && (
+          {/* Step 3: Key dates */}
+          {step === 3 && (
+            <div className="p-8">
+              <h1 className="text-2xl font-bold mb-1">Add your key dates</h1>
+              <p className="text-sm mb-6" style={{ color: "#64748b" }}>We'll alert you before anything expires. You can always add more later in your profile.</p>
+
               <div className="space-y-4">
-                <Input
-                  placeholder={
-                    visa && ["F-1", "J-1", "OPT", "STEM-OPT"].includes(visa)
-                      ? "e.g. University of Texas Austin"
-                      : "e.g. Google, Microsoft..."
-                  }
-                  value={institution}
-                  onChange={(e) => setInstitution(e.target.value)}
-                  className="text-base"
-                />
-                <div className="rounded-lg bg-blue-50 p-4">
-                  <p className="text-sm font-medium text-blue-900">You are all set!</p>
-                  <p className="mt-1 text-sm text-blue-700">
-                    Your personalized dashboard and deadline tracker are ready. You can update
-                    these details anytime in Settings.
-                  </p>
+                {(visaType === "OPT" || visaType === "STEM OPT") && (
+                  <div>
+                    <label className="text-sm font-semibold mb-1.5 block" style={{ color: "#475569" }}>EAD Expiry Date <span className="text-red-500">*</span></label>
+                    <input type="date" value={eadExpiry} onChange={e => setEadExpiry(e.target.value)} className="w-full px-4 py-3 rounded-xl border text-sm focus:outline-none" style={{ borderColor: "#e2e8f0" }} />
+                    {eadExpiry && daysUntil(eadExpiry) !== null && (
+                      <p className="text-xs mt-1 font-semibold" style={{ color: daysUntil(eadExpiry)! < 90 ? "#dc2626" : "#16a34a" }}>
+                        {daysUntil(eadExpiry)} days remaining
+                      </p>
+                    )}
+                  </div>
+                )}
+
+                <div>
+                  <label className="text-sm font-semibold mb-1.5 block" style={{ color: "#475569" }}>I-94 Authorized Stay Expiry</label>
+                  <input type="date" value={i94Expiry} onChange={e => setI94Expiry(e.target.value)} className="w-full px-4 py-3 rounded-xl border text-sm focus:outline-none" style={{ borderColor: "#e2e8f0" }} />
+                  <p className="text-[10px] mt-1" style={{ color: "#94a3b8" }}>Check at i94.cbp.dhs.gov</p>
+                </div>
+
+                <div>
+                  <label className="text-sm font-semibold mb-1.5 block" style={{ color: "#475569" }}>Passport Expiry Date</label>
+                  <input type="date" value={passportExpiry} onChange={e => setPassportExpiry(e.target.value)} className="w-full px-4 py-3 rounded-xl border text-sm focus:outline-none" style={{ borderColor: "#e2e8f0" }} />
                 </div>
               </div>
-            )}
 
-            <div className="mt-6 flex justify-between items-center">
-              {step > 1 ? (
-                <Button variant="ghost" onClick={() => setStep(step - 1)}>
-                  Back
-                </Button>
-              ) : (
-                <div />
+              {alerts.length > 0 && (
+                <div className="mt-6 p-4 rounded-xl" style={{ backgroundColor: "#eff6ff", border: "1px solid #bfdbfe" }}>
+                  <p className="text-xs font-bold text-blue-900 mb-2">Your dashboard will show these alerts:</p>
+                  {alerts.map(a => (
+                    <div key={a.label} className="flex items-center justify-between text-xs mb-1">
+                      <span className="text-blue-800">{a.label}</span>
+                      <span className="font-bold" style={{ color: a.days! < 90 ? "#dc2626" : "#16a34a" }}>{a.days} days</span>
+                    </div>
+                  ))}
+                </div>
               )}
 
-              {step < 3 ? (
-                <Button
-                  onClick={() => setStep(step + 1)}
-                  disabled={step === 1 && !visa}
-                >
-                  Continue <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
-              ) : (
-                <Button onClick={handleComplete} disabled={loading}>
-                  {loading ? "Setting up..." : "Go to Dashboard"}
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
-              )}
+              <p className="text-xs mt-4 text-center" style={{ color: "#94a3b8" }}>
+                <button onClick={() => setStep(4)} className="underline">Skip this step</button> — you can add dates anytime in My Profile
+              </p>
             </div>
-          </CardContent>
-        </Card>
+          )}
 
-        <p className="mt-4 text-center text-xs text-muted-foreground">
-          <button
-            className="underline hover:text-foreground"
-            onClick={() => router.push("/dashboard")}
-          >
-            Skip for now
-          </button>
+          {/* Step 4: Goals */}
+          {step === 4 && (
+            <div className="p-8">
+              <h1 className="text-2xl font-bold mb-1">What do you need help with?</h1>
+              <p className="text-sm mb-6" style={{ color: "#64748b" }}>Select all that apply. We'll prioritize these in your dashboard. (You can change this later)</p>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {goals.map(goal => {
+                  const selected = selectedGoals.includes(goal.id);
+                  return (
+                    <button
+                      key={goal.id}
+                      onClick={() => toggleGoal(goal.id)}
+                      className="flex items-center gap-3 p-4 rounded-2xl border-2 text-left transition-all"
+                      style={{
+                        backgroundColor: selected ? "#eff6ff" : "#ffffff",
+                        borderColor: selected ? "#2563eb" : "#e2e8f0",
+                      }}
+                    >
+                      <span className="text-2xl shrink-0">{goal.icon}</span>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-semibold text-sm" style={{ color: selected ? "#1d4ed8" : "#0f172a" }}>{goal.label}</p>
+                        <p className="text-xs mt-0.5" style={{ color: "#94a3b8" }}>{goal.desc}</p>
+                      </div>
+                      {selected && <CheckCircle2 className="h-5 w-5 text-blue-600 shrink-0" />}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* Step 5: Done */}
+          {step === 5 && (
+            <div className="p-8 text-center">
+              <div className="h-20 w-20 rounded-full flex items-center justify-center mx-auto mb-6" style={{ background: "linear-gradient(135deg, #2563eb, #7c3aed)" }}>
+                <Sparkles className="h-10 w-10 text-white" />
+              </div>
+              <h1 className="text-2xl font-bold mb-2">You are all set!</h1>
+              <p className="text-sm mb-8" style={{ color: "#64748b" }}>
+                Your personalized immigration dashboard is ready. Here's what's waiting for you:
+              </p>
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8 text-left">
+                {[
+                  { icon: "🔔", title: "Deadline alerts", desc: alerts.length > 0 ? `${alerts.length} alert${alerts.length > 1 ? "s" : ""} configured` : "Add dates in My Profile" },
+                  { icon: "🤖", title: "AI Assistant", desc: `Personalized for ${visaType || "your visa"}` },
+                  { icon: "🎯", title: "Your goals", desc: selectedGoals.length > 0 ? `${selectedGoals.length} goal${selectedGoals.length > 1 ? "s" : ""} set` : "Dashboard personalized" },
+                ].map(item => (
+                  <div key={item.title} className="p-4 rounded-2xl" style={{ backgroundColor: "#f8fafc", border: "1px solid #e2e8f0" }}>
+                    <span className="text-2xl">{item.icon}</span>
+                    <p className="font-semibold text-sm mt-2">{item.title}</p>
+                    <p className="text-xs mt-0.5" style={{ color: "#64748b" }}>{item.desc}</p>
+                  </div>
+                ))}
+              </div>
+
+              <button
+                onClick={finish}
+                disabled={loading}
+                className="w-full py-4 rounded-2xl text-base font-bold text-white flex items-center justify-center gap-2 transition-all"
+                style={{ background: "linear-gradient(135deg, #2563eb 0%, #7c3aed 100%)" }}
+              >
+                {loading ? "Setting up your dashboard..." : <>Go to My Dashboard <ArrowRight className="h-5 w-5" /></>}
+              </button>
+            </div>
+          )}
+
+          {/* Navigation */}
+          {step < 5 && (
+            <div className="px-8 pb-6 flex items-center justify-between">
+              <button
+                onClick={() => step > 1 ? setStep(step - 1) : router.push("/dashboard")}
+                className="flex items-center gap-1 text-sm font-medium px-4 py-2 rounded-xl transition-all"
+                style={{ color: "#64748b" }}
+              >
+                <ChevronLeft className="h-4 w-4" />
+                {step > 1 ? "Back" : "Skip setup"}
+              </button>
+              <button
+                onClick={() => setStep(step + 1)}
+                disabled={!canNext}
+                className="flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-bold text-white disabled:opacity-40 transition-all"
+                style={{ backgroundColor: "#2563eb" }}
+              >
+                {step === 4 ? "See my dashboard" : "Continue"} <ArrowRight className="h-4 w-4" />
+              </button>
+            </div>
+          )}
+        </div>
+
+        <p className="text-center text-xs mt-4" style={{ color: "#94a3b8" }}>
+          Your data is encrypted and never shared. You can edit everything later in Settings.
         </p>
       </div>
     </div>
