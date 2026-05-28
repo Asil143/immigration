@@ -79,7 +79,7 @@ export const rfeStemEmployment: ChecklistDef = {
         { id: "sc2", text: "Get copies of business licenses for the state where you work", type: "doc" },
         { id: "sc3", text: "Request a copy of the company's organizational chart", type: "doc", note: "Must show your position, your direct supervisor, department structure, and staffing levels" },
         { id: "sc4", text: "Document names, titles, and contact info for your entire supervisory chain", type: "doc", note: "From your direct manager up to the CEO — USCIS verifies these people exist and can confirm your employment" },
-        { id: "sc5", text: "Confirm your employer is E-Verify enrolled (required for all STEM OPT employers)", type: "action", link: { label: "Search E-Verify employers", url: "https://www.e-verify.gov/employees/employer-search" } },
+        { id: "sc5", text: "Confirm your employer is E-Verify enrolled — ask HR for the E-Verify company ID number", type: "action", note: "All STEM OPT employers must be E-Verify enrolled. Ask HR directly: 'What is our E-Verify company ID?' Your DSO needs this for SEVIS." },
         { id: "sc6", text: "Save employer's E-Verify company ID number — share with DSO for SEVIS", type: "doc" },
       ],
     },
