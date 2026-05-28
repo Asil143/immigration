@@ -36,10 +36,22 @@ interface Profile {
   passportExpiry: string;
   passportIssueDate: string;
   h1bStartDate: string;
+  h1bExpiry: string;
   optStartDate: string;
   optEndDate: string;
   stemOptStartDate: string;
   stemOptEndDate: string;
+  advanceParoleIssueDate: string;
+  advanceParoleExpiry: string;
+  i140ApprovalDate: string;
+  h4EadIssueDate: string;
+  h4EadExpiry: string;
+  j1EndDate: string;
+  tnStartDate: string;
+  tnExpiry: string;
+  l1StartDate: string;
+  l1Expiry: string;
+  permFilingDate: string;
   priorityDate: string;
   greenCardStage: string;
   greenCardCategory: string;
@@ -50,8 +62,16 @@ const empty: Profile = {
   i94Expiry: "", i94IsDS: false, i20EndDate: "",
   eadExpiry: "", visaStampExpiry: "", visaStartDate: "",
   passportExpiry: "", passportIssueDate: "",
-  h1bStartDate: "", optStartDate: "", optEndDate: "",
+  h1bStartDate: "", h1bExpiry: "",
+  optStartDate: "", optEndDate: "",
   stemOptStartDate: "", stemOptEndDate: "",
+  advanceParoleIssueDate: "", advanceParoleExpiry: "",
+  i140ApprovalDate: "",
+  h4EadIssueDate: "", h4EadExpiry: "",
+  j1EndDate: "",
+  tnStartDate: "", tnExpiry: "",
+  l1StartDate: "", l1Expiry: "",
+  permFilingDate: "",
   priorityDate: "", greenCardStage: "", greenCardCategory: "",
 };
 
@@ -69,10 +89,22 @@ function fromApi(data: Record<string, string | null | boolean>): Profile {
     passportExpiry: data.passport_expiry as string ?? "",
     passportIssueDate: data.passport_issue_date as string ?? "",
     h1bStartDate: data.h1b_start_date as string ?? "",
+    h1bExpiry: data.h1b_expiry as string ?? "",
     optStartDate: data.opt_start_date as string ?? "",
     optEndDate: data.opt_end_date as string ?? "",
     stemOptStartDate: data.stem_opt_start_date as string ?? "",
     stemOptEndDate: data.stem_opt_end_date as string ?? "",
+    advanceParoleIssueDate: data.advance_parole_issue_date as string ?? "",
+    advanceParoleExpiry: data.advance_parole_expiry as string ?? "",
+    i140ApprovalDate: data.i140_approval_date as string ?? "",
+    h4EadIssueDate: data.h4_ead_issue_date as string ?? "",
+    h4EadExpiry: data.h4_ead_expiry as string ?? "",
+    j1EndDate: data.j1_end_date as string ?? "",
+    tnStartDate: data.tn_start_date as string ?? "",
+    tnExpiry: data.tn_expiry as string ?? "",
+    l1StartDate: data.l1_start_date as string ?? "",
+    l1Expiry: data.l1_expiry as string ?? "",
+    permFilingDate: data.perm_filing_date as string ?? "",
     priorityDate: data.priority_date as string ?? "",
     greenCardStage: data.green_card_stage as string ?? "",
     greenCardCategory: data.green_card_category as string ?? "",
@@ -93,10 +125,22 @@ function toApi(p: Profile) {
     passport_expiry: p.passportExpiry || null,
     passport_issue_date: p.passportIssueDate || null,
     h1b_start_date: p.h1bStartDate || null,
+    h1b_expiry: p.h1bExpiry || null,
     opt_start_date: p.optStartDate || null,
     opt_end_date: p.optEndDate || null,
     stem_opt_start_date: p.stemOptStartDate || null,
     stem_opt_end_date: p.stemOptEndDate || null,
+    advance_parole_issue_date: p.advanceParoleIssueDate || null,
+    advance_parole_expiry: p.advanceParoleExpiry || null,
+    i140_approval_date: p.i140ApprovalDate || null,
+    h4_ead_issue_date: p.h4EadIssueDate || null,
+    h4_ead_expiry: p.h4EadExpiry || null,
+    j1_end_date: p.j1EndDate || null,
+    tn_start_date: p.tnStartDate || null,
+    tn_expiry: p.tnExpiry || null,
+    l1_start_date: p.l1StartDate || null,
+    l1_expiry: p.l1Expiry || null,
+    perm_filing_date: p.permFilingDate || null,
     priority_date: p.priorityDate || null,
     green_card_stage: p.greenCardStage || null,
     green_card_category: p.greenCardCategory || null,
@@ -379,13 +423,55 @@ export default function ProfilePage() {
                   color: "#ecfeff", border: "#a5f3fc", textColor: "#0891b2",
                   fields: [
                     { key: "h1bStartDate", label: "Start Date", hint: "October 1 or approved H-1B start date", isExpiry: false },
+                    { key: "h1bExpiry", label: "Expiry Date", hint: "End of your current H-1B approval period", isExpiry: true },
                   ],
                 },
                 {
-                  section: "Green Card Priority Date",
+                  section: "Advance Parole (I-131)",
+                  color: "#fef2f2", border: "#fecaca", textColor: "#dc2626",
+                  fields: [
+                    { key: "advanceParoleIssueDate", label: "Issue Date", hint: "Date your Advance Parole was issued", isExpiry: false },
+                    { key: "advanceParoleExpiry", label: "Expiry Date", hint: "Must return to US before this date", isExpiry: true },
+                  ],
+                },
+                {
+                  section: "H-4 EAD",
+                  color: "#ecfeff", border: "#a5f3fc", textColor: "#0891b2",
+                  fields: [
+                    { key: "h4EadIssueDate", label: "Issue Date", hint: "Date your H-4 EAD card was issued", isExpiry: false },
+                    { key: "h4EadExpiry", label: "Expiry Date", hint: "End of H-4 EAD work authorization", isExpiry: true },
+                  ],
+                },
+                {
+                  section: "J-1 / DS-2019",
+                  color: "#fff7ed", border: "#fed7aa", textColor: "#c2410c",
+                  fields: [
+                    { key: "j1EndDate", label: "Program End Date", hint: "End date on your DS-2019 form", isExpiry: true },
+                  ],
+                },
+                {
+                  section: "TN Visa",
+                  color: "#f0fdf4", border: "#86efac", textColor: "#15803d",
+                  fields: [
+                    { key: "tnStartDate", label: "Start Date", hint: "Date your TN was approved at the border", isExpiry: false },
+                    { key: "tnExpiry", label: "Expiry Date", hint: "End of your current TN authorization", isExpiry: true },
+                  ],
+                },
+                {
+                  section: "L-1 Visa",
+                  color: "#f5f3ff", border: "#ddd6fe", textColor: "#6d28d9",
+                  fields: [
+                    { key: "l1StartDate", label: "Start Date", hint: "Date your L-1 transfer began", isExpiry: false },
+                    { key: "l1Expiry", label: "Expiry Date", hint: "End of your current L-1 approval", isExpiry: true },
+                  ],
+                },
+                {
+                  section: "Green Card",
                   color: "#fffbeb", border: "#fde68a", textColor: "#d97706",
                   fields: [
-                    { key: "priorityDate", label: "Priority Date", hint: "Date PERM or I-140 was filed", isExpiry: false },
+                    { key: "permFilingDate", label: "PERM Filing Date", hint: "Date your PERM labor certification was filed", isExpiry: false },
+                    { key: "i140ApprovalDate", label: "I-140 Approval Date", hint: "Date USCIS approved your I-140 petition (permanent — no expiry)", isExpiry: false },
+                    { key: "priorityDate", label: "Priority Date", hint: "Your place in the green card queue (usually PERM filing date)", isExpiry: false },
                   ],
                 },
               ].map(({ section, color, border, textColor, fields, custom }) => (
