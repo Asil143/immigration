@@ -1,9 +1,18 @@
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Timer, BarChart3, Search, FilePlus2, AlertTriangle, Clock, Wrench } from "lucide-react";
+import { Timer, BarChart3, Search, FilePlus2, AlertTriangle, Clock, Wrench, ListChecks } from "lucide-react";
 
 const TOOLS = [
+  {
+    icon: ListChecks,
+    title: "Visa Checklists",
+    description: "Step-by-step application guides for OPT, STEM OPT, H-1B, Green Card, J-1, L-1, O-1, TN, and more. Track progress as you complete each item.",
+    href: "/dashboard/tools/checklists",
+    color: "bg-indigo-50 text-indigo-600",
+    badge: "New",
+    phase: "Free",
+  },
   {
     icon: Timer,
     title: "OPT Day Counter",
@@ -62,7 +71,7 @@ const TOOLS = [
 
 export default function ToolsPage() {
   return (
-    <div className="p-8">
+    <div className="p-8 max-w-6xl">
       <div className="mb-8 flex items-center gap-3">
         <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
           <Wrench className="h-5 w-5 text-primary" />

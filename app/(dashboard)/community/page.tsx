@@ -52,41 +52,20 @@ export default function CommunityPage() {
       return b.replies - a.replies;
     });
 
-  const stats = [
-    { label: "Members", value: "0", icon: Users },
-    { label: "Posts", value: posts.length.toString(), icon: MessageSquare },
-    { label: "Answered", value: posts.filter(p => p.is_answered).length.toString(), icon: CheckCircle2 },
-  ];
-
   return (
-    <div className="p-8">
+    <div className="p-8 max-w-6xl">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold">Community</h1>
+          <h1 className="text-2xl font-bold flex items-center gap-3">
+            Community
+            <Badge variant="secondary" className="text-xs font-medium">Coming Soon</Badge>
+          </h1>
           <p className="mt-1 text-muted-foreground">Ask questions, share experiences, find support</p>
         </div>
         <Button onClick={() => setNewPostOpen(true)}>
           <Plus className="mr-2 h-4 w-4" /> New Post
         </Button>
-      </div>
-
-      {/* Stats */}
-      <div className="grid grid-cols-3 gap-4 mb-8">
-        {stats.map(s => {
-          const Icon = s.icon;
-          return (
-            <Card key={s.label}>
-              <CardContent className="flex items-center gap-3 p-4">
-                <Icon className="h-5 w-5 text-primary" />
-                <div>
-                  <p className="font-bold">{s.value}</p>
-                  <p className="text-xs text-muted-foreground">{s.label}</p>
-                </div>
-              </CardContent>
-            </Card>
-          );
-        })}
       </div>
 
       <div className="flex gap-6">
@@ -192,9 +171,17 @@ export default function CommunityPage() {
           </div>
 
           {filtered.length === 0 && (
-            <div className="text-center py-16 text-muted-foreground">
-              <MessageSquare className="h-10 w-10 mx-auto mb-3 opacity-30" />
-              <p>No posts found. Be the first to post!</p>
+            <div className="text-center py-16 rounded-xl border border-dashed">
+              <MessageSquare className="h-10 w-10 mx-auto mb-3 text-slate-300" />
+              <p className="font-medium text-muted-foreground">No posts yet</p>
+              <p className="text-sm text-muted-foreground mt-1">
+                {search ? "No posts match your search." : "Be the first to start a conversation!"}
+              </p>
+              {!search && (
+                <Button variant="outline" size="sm" className="mt-4" onClick={() => setNewPostOpen(true)}>
+                  <Plus className="mr-2 h-4 w-4" /> Create the first post
+                </Button>
+              )}
             </div>
           )}
         </div>

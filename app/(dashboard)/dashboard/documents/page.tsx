@@ -56,7 +56,7 @@ export default function DocumentsPage() {
   const pending = docs.filter(d => !d.analyzed);
 
   return (
-    <div className="p-8">
+    <div className="p-8 max-w-5xl">
       <div className="mb-8">
         <h1 className="text-2xl font-bold">Documents</h1>
         <p className="mt-1 text-muted-foreground">Upload immigration documents for AI-powered analysis</p>

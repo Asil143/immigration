@@ -109,16 +109,16 @@ export default function DashboardPage() {
   const criticalCount = alerts.filter(a => a.priority === "critical").length;
 
   return (
-    <div className="p-8">
+    <div className="p-8 max-w-6xl">
       {/* Header */}
-      <div className="mb-8 flex items-start justify-between">
+      <div className="mb-8 flex items-center justify-between gap-4 flex-wrap">
         <div>
           <h1 className="text-2xl font-bold">
             {profileSetUp ? `Welcome back` : "Welcome to VisaPilot"}
           </h1>
-          <p className="mt-1 text-sm" style={{ color: "#64748b" }}>
+          <p className="mt-1 text-sm text-muted-foreground">
             {profileSetUp
-              ? `${profile?.visaType || ""} · ${profile?.employer || ""} · ${profile?.countryOfBirth || ""}`
+              ? [profile?.visaType, profile?.employer, profile?.countryOfBirth].filter(Boolean).join(" · ")
               : "Set up your profile for personalized alerts and advice"}
           </p>
         </div>

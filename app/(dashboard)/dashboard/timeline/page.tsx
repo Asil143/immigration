@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
   Plus, Calendar, AlertCircle, Clock, CheckCircle2, Check, Trash2, Loader2,
 } from "lucide-react";
@@ -84,7 +85,7 @@ export default function TimelinePage() {
   const completed = deadlines.filter(d => d.is_completed);
 
   return (
-    <div className="p-8">
+    <div className="p-8 max-w-3xl">
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-2xl font-bold">Timeline & Deadlines</h1>
@@ -102,16 +103,17 @@ export default function TimelinePage() {
             <Input placeholder="Deadline title..." value={newTitle} onChange={e => setNewTitle(e.target.value)} />
             <div className="flex gap-3">
               <Input type="date" value={newDate} onChange={e => setNewDate(e.target.value)} className="flex-1" />
-              <select
-                value={newPriority}
-                onChange={e => setNewPriority(e.target.value as Priority)}
-                className="flex h-10 rounded-md border border-input bg-background px-3 py-2 text-sm"
-              >
-                <option value="critical">Critical</option>
-                <option value="high">High</option>
-                <option value="medium">Medium</option>
-                <option value="low">Low</option>
-              </select>
+              <Select value={newPriority} onValueChange={v => setNewPriority(v as Priority)}>
+                <SelectTrigger className="w-36">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="critical">Critical</SelectItem>
+                  <SelectItem value="high">High</SelectItem>
+                  <SelectItem value="medium">Medium</SelectItem>
+                  <SelectItem value="low">Low</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
             <div className="flex gap-2">
               <Button onClick={addDeadline} disabled={saving}>
