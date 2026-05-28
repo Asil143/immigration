@@ -318,15 +318,15 @@ export default function ProfilePage() {
                 <h3 className="font-semibold mb-4 text-sm" style={{ color: "#0f172a" }}>Document & Status Expiry Dates</h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {[
-                    { key: "i94Expiry", label: "I-94 Expiry Date", hint: "From i94.cbp.dhs.gov — your authorized stay" },
-                    { key: "eadExpiry", label: "EAD Expiry Date", hint: "Employment Authorization Document (OPT / STEM OPT)" },
-                    { key: "visaStampExpiry", label: "Visa Stamp Expiry", hint: "From your passport — needed for re-entry" },
-                    { key: "passportExpiry", label: "Passport Expiry", hint: "Must be valid 6+ months for most re-entries" },
-                    { key: "optStartDate", label: "OPT Start Date", hint: "First day of authorized OPT work" },
-                    { key: "stemOptStartDate", label: "STEM OPT Start Date", hint: "First day of 24-month STEM extension" },
-                    { key: "h1bStartDate", label: "H-1B Start Date", hint: "October 1 (or approved start date)" },
-                    { key: "priorityDate", label: "Priority Date", hint: "Date PERM or I-140 was filed — for green card queue" },
-                  ].map(({ key, label, hint }) => {
+                    { key: "i94Expiry", label: "I-94 Expiry Date", hint: "From i94.cbp.dhs.gov — your authorized stay", isExpiry: true },
+                    { key: "eadExpiry", label: "EAD Expiry Date", hint: "Employment Authorization Document (OPT / STEM OPT)", isExpiry: true },
+                    { key: "visaStampExpiry", label: "Visa Stamp Expiry", hint: "From your passport — needed for re-entry", isExpiry: true },
+                    { key: "passportExpiry", label: "Passport Expiry", hint: "Must be valid 6+ months for most re-entries", isExpiry: true },
+                    { key: "optStartDate", label: "OPT Start Date", hint: "First day of authorized OPT work", isExpiry: false },
+                    { key: "stemOptStartDate", label: "STEM OPT Start Date", hint: "First day of 24-month STEM extension", isExpiry: false },
+                    { key: "h1bStartDate", label: "H-1B Start Date", hint: "October 1 (or approved start date)", isExpiry: false },
+                    { key: "priorityDate", label: "Priority Date", hint: "Date PERM or I-140 was filed — for green card queue", isExpiry: false },
+                  ].map(({ key, label, hint, isExpiry }) => {
                     const days = daysUntil(profile[key as keyof Profile] as string);
                     return (
                       <div key={key}>
@@ -339,13 +339,18 @@ export default function ProfilePage() {
                           style={{ borderColor: "#e2e8f0" }}
                         />
                         <p className="text-[10px] mt-1" style={{ color: "#94a3b8" }}>{hint}</p>
-                        {days !== null && days > 0 && (
+                        {isExpiry && days !== null && days > 0 && (
                           <p className="text-[10px] font-semibold mt-0.5" style={{ color: days < 60 ? "#dc2626" : days < 180 ? "#ea580c" : "#16a34a" }}>
                             {days} days remaining
                           </p>
                         )}
-                        {days !== null && days <= 0 && (
+                        {isExpiry && days !== null && days <= 0 && (
                           <p className="text-[10px] font-bold mt-0.5 text-red-600">EXPIRED</p>
+                        )}
+                        {!isExpiry && profile[key as keyof Profile] && (
+                          <p className="text-[10px] font-semibold mt-0.5" style={{ color: "#16a34a" }}>
+                            {days !== null && days < 0 ? `Started ${Math.abs(days)} days ago` : days === 0 ? "Starts today" : `Starts in ${days} days`}
+                          </p>
                         )}
                       </div>
                     );
