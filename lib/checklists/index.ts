@@ -7,10 +7,13 @@ import { j1 } from "./data/j1";
 import { l1 } from "./data/l1";
 import { o1 } from "./data/o1";
 import { tn } from "./data/tn";
+import { rfeF1Maintenance } from "./data/rfe-f1-maintenance";
+import { rfeStemEmployment } from "./data/rfe-stem-employment";
 import type { ChecklistDef } from "./types";
 
 export const allChecklists: ChecklistDef[] = [
   opt, stemOpt, h1b, h4, greenCard, j1, l1, o1, tn,
+  rfeF1Maintenance, rfeStemEmployment,
 ];
 
 export const checklistMap: Record<string, ChecklistDef> = Object.fromEntries(

@@ -3,9 +3,15 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { CheckCircle2 } from "lucide-react";
+import { CheckCircle2, ShieldAlert } from "lucide-react";
 import { allChecklists } from "@/lib/checklists";
+
+const RFE_SLUGS = ["rfe-f1-maintenance", "rfe-stem-employment"];
+
+const visaChecklists = allChecklists.filter(c => !RFE_SLUGS.includes(c.slug));
+const rfeChecklists = allChecklists.filter(c => RFE_SLUGS.includes(c.slug));
 
 function useChecklistProgress(slug: string, totalItems: number) {
   const [pct, setPct] = useState(0);
@@ -67,8 +73,27 @@ export default function ChecklistsHubPage() {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {allChecklists.map(checklist => (
+      {/* Visa application checklists */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-12">
+        {visaChecklists.map(checklist => (
+          <ChecklistCard key={checklist.slug} checklist={checklist} />
+        ))}
+      </div>
+
+      {/* RFE Prevention section */}
+      <div className="mb-6">
+        <div className="flex items-center gap-3 mb-2">
+          <ShieldAlert className="h-5 w-5 text-red-600" />
+          <h2 className="text-lg font-bold">RFE Prevention Guides</h2>
+          <Badge variant="destructive" className="text-xs">Real USCIS RFE Patterns</Badge>
+        </div>
+        <p className="text-sm text-muted-foreground">
+          Based on actual USCIS Requests for Evidence — collect these documents from Day 1 so you&apos;re never caught off guard.
+        </p>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {rfeChecklists.map(checklist => (
           <ChecklistCard key={checklist.slug} checklist={checklist} />
         ))}
       </div>
