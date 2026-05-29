@@ -120,6 +120,7 @@ export const rfeStemEmployment: ChecklistDef = {
       icon: "Calendar", colorText: "text-indigo-700", colorBg: "bg-indigo-50", colorBorder: "border-indigo-200",
       items: [
         { id: "sr1", text: "Report your STEM OPT employer to your DSO within 10 days of starting work", type: "action" },
+        { id: "sr1b", text: "Also update employer directly in the SEVP Portal (sevp.ice.gov/opt) within 10 days", type: "online", note: "The SEVP Portal is your direct line to SEVIS — most students don't know it exists. Updating here creates a timestamped record that you reported your employer on time, which is critical if USCIS ever audits your timeline. Login: SEVIS ID (N-number) + DOB + passport number.", link: { label: "SEVP Portal", url: "https://sevp.ice.gov/opt/" } },
         { id: "sr2", text: "Report any change of employer to DSO within 10 days", type: "action" },
         { id: "sr3", text: "Complete 6-month validation reports to DSO throughout STEM OPT period", type: "action", note: "Your DSO will contact you — respond promptly and provide updated employer/address info" },
         { id: "sr4", text: "Report changes in job title, location, or hours to DSO as they occur", type: "action" },

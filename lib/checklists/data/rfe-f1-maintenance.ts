@@ -108,6 +108,7 @@ export const rfeF1Maintenance: ChecklistDef = {
         { id: "rd3", text: "Keep any reduced course load (RCL) authorization letters if applicable", type: "doc" },
         { id: "rd4", text: "Save SEVIS fee payment receipts (Form I-901)", type: "doc" },
         { id: "rd5", text: "Keep records of any OPT/STEM OPT employer reporting you submitted to your DSO", type: "doc" },
+        { id: "rd6", text: "Access the SEVP Portal to view your own SEVIS record — verify everything on file is accurate", type: "online", note: "The SEVP Portal (sevp.ice.gov/opt) lets you see exactly what USCIS sees in your SEVIS record. Check that your employer, address, and status are correct. If anything is wrong, contact your DSO immediately to fix it before you apply for OPT. Login: SEVIS ID (N-number on I-20) + date of birth + passport number.", link: { label: "SEVP Portal", url: "https://sevp.ice.gov/opt/" } },
       ],
     },
   ],

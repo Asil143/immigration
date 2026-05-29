@@ -104,8 +104,9 @@ export const stemOpt: ChecklistDef = {
       items: [
         { id: "sr1", text: "Verify EAD shows category C(3)(C) and correct dates", type: "action" },
         { id: "sr2", text: "Submit I-983 to DSO and report new employer within 10 days of starting", type: "action" },
+        { id: "sr2b", text: "Update employer in the SEVP Portal (sevp.ice.gov/opt) — within 10 days", type: "online", note: "Most students don't know this exists. After graduation you have direct access to update your own SEVIS record without going through your DSO. Login: SEVIS ID (N-number on I-20) + date of birth + passport number.", link: { label: "SEVP Portal", url: "https://sevp.ice.gov/opt/" } },
         { id: "sr3", text: "Complete 6-month I-983 self-evaluation with supervisor", note: "Required every 6 months throughout STEM OPT period", type: "action" },
-        { id: "sr4", text: "Report any employer changes to DSO within 10 days (new I-983 required)", type: "action" },
+        { id: "sr4", text: "Report any employer changes to DSO AND update in SEVP Portal within 10 days (new I-983 required)", type: "action", link: { label: "SEVP Portal", url: "https://sevp.ice.gov/opt/" } },
         { id: "sr5", text: "Track unemployment days — max 150 days cumulative (includes OPT period)", type: "action", link: { label: "OPT Day Counter", url: "/dashboard/tools/opt-tracker" } },
         { id: "sr6", text: "Complete annual validation in SEVIS with your DSO", type: "action" },
         { id: "sr7", text: "Begin H-1B lottery process in March if you wish to stay after STEM OPT", type: "action", link: { label: "H-1B Checklist", url: "/dashboard/tools/checklists/h1b" } },
