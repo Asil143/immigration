@@ -1,66 +1,107 @@
 import Link from "next/link";
 import { Bot } from "lucide-react";
 
+const visaGuides = [
+  { href: "/guides/f1-visa", label: "F-1 Student Visa" },
+  { href: "/guides/opt-stem-opt", label: "OPT & STEM OPT" },
+  { href: "/guides/h1b-visa", label: "H-1B Work Visa" },
+  { href: "/guides/green-card", label: "Green Card" },
+  { href: "/guides/j1-visa", label: "J-1 Exchange Visa" },
+];
+
+const tools = [
+  { href: "/dashboard/tools/checklists", label: "Visa Checklists" },
+  { href: "/ai-assistant", label: "AI Assistant" },
+  { href: "/dashboard/tools/opt-tracker", label: "OPT Day Counter" },
+  { href: "/rfe-assistant", label: "RFE Assistant" },
+  { href: "/lawyers", label: "Find a Lawyer" },
+];
+
+const resources = [
+  { href: "/visa-bulletin", label: "Visa Bulletin" },
+  { href: "/dashboard/tools/processing-times", label: "Processing Times" },
+  { href: "/dashboard/tools/fee-calculator", label: "Fee Calculator" },
+  { href: "/community", label: "Community" },
+  { href: "/pricing", label: "Pricing" },
+];
+
 export function Footer() {
   return (
-    <footer className="border-t bg-background">
-      <div className="container mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 gap-8 md:grid-cols-4">
-          <div className="space-y-4">
-            <div className="flex items-center gap-2 font-bold text-xl text-primary">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-white">
+    <footer className="border-t bg-slate-900 text-slate-300">
+      <div className="container mx-auto px-4 py-14">
+        <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-4">
+
+          {/* Brand */}
+          <div className="space-y-4 lg:col-span-1">
+            <Link href="/" className="flex items-center gap-2 font-bold text-xl text-white">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-500 text-white">
                 <Bot className="h-5 w-5" />
               </div>
               VisaPilot
-            </div>
-            <p className="text-sm text-muted-foreground max-w-xs">
-              AI-powered immigration guidance for international students and immigrants in the US.
+            </Link>
+            <p className="text-sm text-slate-400 leading-6 max-w-xs">
+              Step-by-step checklists, AI guidance, and deadline tracking for
+              international students navigating the US immigration system.
             </p>
-            <p className="text-xs text-muted-foreground">
-              ⚠️ Not legal advice. Consult a licensed attorney for your specific situation.
+            <p className="text-xs text-slate-500 leading-5">
+              ⚠️ General information only — not legal advice.
+              Consult a licensed immigration attorney for your specific situation.
             </p>
           </div>
 
-          <div className="space-y-3">
-            <h3 className="font-semibold text-sm">Visa Guides</h3>
-            <ul className="space-y-2 text-sm text-muted-foreground">
-              <li><Link href="/guides/f1-visa" className="hover:text-primary">F-1 Student Visa</Link></li>
-              <li><Link href="/guides/opt-stem-opt" className="hover:text-primary">OPT & STEM OPT</Link></li>
-              <li><Link href="/guides/h1b-visa" className="hover:text-primary">H-1B Work Visa</Link></li>
-              <li><Link href="/guides/green-card" className="hover:text-primary">Green Card</Link></li>
+          {/* Visa Guides */}
+          <div className="space-y-4">
+            <h3 className="font-semibold text-sm text-white">Visa Guides</h3>
+            <ul className="space-y-2.5">
+              {visaGuides.map((link) => (
+                <li key={link.href}>
+                  <Link href={link.href} className="text-sm text-slate-400 hover:text-white transition-colors">
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 
-          <div className="space-y-3">
-            <h3 className="font-semibold text-sm">Tools</h3>
-            <ul className="space-y-2 text-sm text-muted-foreground">
-              <li><Link href="/ai-assistant" className="hover:text-primary">AI Assistant</Link></li>
-              <li><Link href="/dashboard/tools/checklists" className="hover:text-primary">Visa Checklists</Link></li>
-              <li><Link href="/dashboard/tools/opt-tracker" className="hover:text-primary">OPT Day Counter</Link></li>
-              <li><Link href="/dashboard" className="hover:text-primary">Dashboard</Link></li>
-              <li><Link href="/community" className="hover:text-primary">Community</Link></li>
-              <li><Link href="/lawyers" className="hover:text-primary">Find a Lawyer</Link></li>
-              <li><Link href="/pricing" className="hover:text-primary">Pricing</Link></li>
+          {/* Tools */}
+          <div className="space-y-4">
+            <h3 className="font-semibold text-sm text-white">Tools</h3>
+            <ul className="space-y-2.5">
+              {tools.map((link) => (
+                <li key={link.href}>
+                  <Link href={link.href} className="text-sm text-slate-400 hover:text-white transition-colors">
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 
-          <div className="space-y-3">
-            <h3 className="font-semibold text-sm">Legal</h3>
-            <ul className="space-y-2 text-sm text-muted-foreground">
-              <li><Link href="/privacy" className="hover:text-primary">Privacy Policy</Link></li>
-              <li><Link href="/terms" className="hover:text-primary">Terms of Service</Link></li>
-              <li><Link href="/disclaimer" className="hover:text-primary">Legal Disclaimer</Link></li>
+          {/* Resources */}
+          <div className="space-y-4">
+            <h3 className="font-semibold text-sm text-white">Resources</h3>
+            <ul className="space-y-2.5">
+              {resources.map((link) => (
+                <li key={link.href}>
+                  <Link href={link.href} className="text-sm text-slate-400 hover:text-white transition-colors">
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
+
         </div>
 
-        <div className="mt-12 border-t pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-sm text-muted-foreground">
+        {/* Bottom bar */}
+        <div className="mt-12 border-t border-slate-800 pt-8 flex flex-col sm:flex-row items-center justify-between gap-3">
+          <p className="text-xs text-slate-500">
             © {new Date().getFullYear()} VisaPilot. All rights reserved.
           </p>
-          <p className="text-xs text-muted-foreground">
-            VisaPilot provides general information only and does not constitute legal advice.
-          </p>
+          <div className="flex items-center gap-4">
+            <Link href="/privacy" className="text-xs text-slate-500 hover:text-slate-300 transition-colors">Privacy Policy</Link>
+            <Link href="/terms" className="text-xs text-slate-500 hover:text-slate-300 transition-colors">Terms of Service</Link>
+          </div>
         </div>
       </div>
     </footer>
