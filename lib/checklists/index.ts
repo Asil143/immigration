@@ -1,5 +1,6 @@
 import { opt } from "./data/opt";
 import { stemOpt } from "./data/stem-opt";
+import { stemOptReporting } from "./data/stem-opt-reporting";
 import { h1b } from "./data/h1b";
 import { h4 } from "./data/h4";
 import { greenCard } from "./data/green-card";
@@ -12,7 +13,7 @@ import { rfeStemEmployment } from "./data/rfe-stem-employment";
 import type { ChecklistDef } from "./types";
 
 export const allChecklists: ChecklistDef[] = [
-  opt, stemOpt, h1b, h4, greenCard, j1, l1, o1, tn,
+  opt, stemOpt, stemOptReporting, h1b, h4, greenCard, j1, l1, o1, tn,
   rfeF1Maintenance, rfeStemEmployment,
 ];
 
