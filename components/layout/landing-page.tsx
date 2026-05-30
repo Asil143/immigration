@@ -10,90 +10,59 @@ import { visaGuides } from "@/config/navigation";
 import {
   Bot,
   Calendar,
-  FileText,
-  Users,
+  ListChecks,
   Scale,
   Shield,
   ArrowRight,
   CheckCircle2,
-  Star,
   Zap,
 } from "lucide-react";
 
-const features = [
+const coreFeatures = [
+  {
+    icon: ListChecks,
+    title: "Visa Checklists",
+    description:
+      "12 step-by-step checklists for OPT, STEM OPT, H-1B, Green Card, and more — including RFE prevention guides built from real USCIS patterns. Track your progress as you go.",
+    color: "text-indigo-600 bg-indigo-50",
+    href: "/dashboard/tools/checklists",
+    badge: "12 checklists",
+  },
   {
     icon: Bot,
     title: "AI Immigration Assistant",
     description:
-      "Ask any immigration question and get instant, accurate guidance powered by Claude AI — with citations to official USCIS sources.",
+      "Ask any immigration question and get instant, accurate guidance powered by Claude AI — with citations to official USCIS sources. Know when to consult an attorney.",
     color: "text-blue-600 bg-blue-50",
+    href: "/ai-assistant",
+    badge: null,
   },
   {
     icon: Calendar,
     title: "Deadline Tracker",
     description:
-      "Never miss a critical immigration deadline. Automatic reminders for OPT applications, visa renewals, I-94 expiry, and more.",
+      "Never miss a critical immigration deadline. Automatic reminders for OPT applications, I-94 expiry, STEM reporting windows, and more — all in one place.",
     color: "text-purple-600 bg-purple-50",
+    href: "/dashboard",
+    badge: null,
   },
-  {
-    icon: FileText,
-    title: "Document Generator",
-    description:
-      "AI-powered forms, cover letters, and RFE responses. Upload your documents for instant analysis and issue detection.",
-    color: "text-green-600 bg-green-50",
-  },
+];
+
+const moreFeatures = [
   {
     icon: Scale,
-    title: "Verified Lawyer Marketplace",
+    title: "Find a Lawyer",
     description:
-      "Connect with bar-verified immigration attorneys at transparent rates. Book video consultations directly on the platform.",
+      "Connect with bar-verified immigration attorneys. Browse by specialty, location, and language.",
     color: "text-orange-600 bg-orange-50",
   },
   {
-    icon: Users,
-    title: "Community Support",
-    description:
-      "Join thousands of international students sharing experiences. Visa-specific forums, success stories, and attorney AMAs.",
-    color: "text-pink-600 bg-pink-50",
-  },
-  {
     icon: Shield,
-    title: "Policy Alert Feed",
+    title: "RFE Prevention",
     description:
-      "Stay ahead of USCIS rule changes, processing time updates, and visa bulletin movements — all in one place.",
-    color: "text-teal-600 bg-teal-50",
+      "Checklists built from real USCIS Requests for Evidence — know exactly what documents to collect from Day 1.",
+    color: "text-red-600 bg-red-50",
   },
-];
-
-const testimonials = [
-  {
-    name: "Priya S.",
-    visa: "F-1 → OPT",
-    university: "UT Austin",
-    text: "VisaPilot walked me through the entire OPT process step by step. The deadline reminders saved me — I almost missed the 90-day window.",
-    rating: 5,
-  },
-  {
-    name: "Wei C.",
-    visa: "H-1B applicant",
-    university: "Google SWE",
-    text: "The H-1B lottery tracker and cap-gap explainer was incredibly clear. I finally understood what my employer and I both needed to do.",
-    rating: 5,
-  },
-  {
-    name: "Fatima A.",
-    visa: "EB-2 NIW",
-    university: "MIT Postdoc",
-    text: "The AI assistant helped me understand my NIW eligibility before I spent $5k on a lawyer. Now I'm working with a lawyer I found here.",
-    rating: 5,
-  },
-];
-
-const stats = [
-  { label: "International students helped", value: "50,000+" },
-  { label: "Questions answered by AI", value: "2M+" },
-  { label: "Verified attorneys", value: "500+" },
-  { label: "Deadlines tracked", value: "1M+" },
 ];
 
 export function LandingPage() {
@@ -107,15 +76,16 @@ export function LandingPage() {
         <div className="container mx-auto px-4 text-center">
           <Badge variant="info" className="mb-6 text-sm px-4 py-1.5">
             <Zap className="h-3.5 w-3.5 mr-1.5" />
-            Now with AI-powered document analysis
+            Built for F-1 students navigating OPT, STEM OPT &amp; H-1B
           </Badge>
           <h1 className="mx-auto max-w-4xl text-5xl font-bold tracking-tight text-gray-900 sm:text-6xl lg:text-7xl">
             Your immigration{" "}
             <span className="text-primary">co-pilot</span>
           </h1>
           <p className="mx-auto mt-6 max-w-2xl text-xl text-muted-foreground leading-8">
-            AI-powered guidance for international students and immigrants in the US.
-            Navigate F-1, OPT, H-1B, green card, and more — with confidence.
+            AI-powered guidance for international students in the US.
+            Navigate OPT, STEM OPT, H-1B, and green card — with step-by-step
+            checklists, deadline tracking, and an AI assistant that cites USCIS sources.
           </p>
           <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
             <Button size="xl" asChild>
@@ -129,28 +99,60 @@ export function LandingPage() {
             </Button>
           </div>
           <p className="mt-4 text-sm text-muted-foreground">
-            Free forever plan · No credit card required
+            Free to use · No credit card required
           </p>
+        </div>
+      </section>
 
-          {/* Stats */}
-          <div className="mt-16 grid grid-cols-2 gap-8 sm:grid-cols-4">
-            {stats.map((stat) => (
-              <div key={stat.label} className="text-center">
-                <p className="text-3xl font-bold text-primary">{stat.value}</p>
-                <p className="mt-1 text-sm text-muted-foreground">{stat.label}</p>
-              </div>
-            ))}
+      {/* Core Features — what you can do right now */}
+      <section className="py-20 bg-white">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold tracking-tight">Everything in one place</h2>
+            <p className="mt-3 text-muted-foreground max-w-2xl mx-auto">
+              The tools F-1 students actually need — from your first OPT application to your H-1B approval.
+            </p>
+          </div>
+          <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
+            {coreFeatures.map((feature) => {
+              const Icon = feature.icon;
+              return (
+                <Link key={feature.title} href={feature.href}>
+                  <Card className="h-full group hover:shadow-md transition-all border-2 hover:border-primary/30 cursor-pointer">
+                    <CardContent className="p-6">
+                      <div className="flex items-center gap-3 mb-4">
+                        <div className={`inline-flex rounded-lg p-3 ${feature.color}`}>
+                          <Icon className="h-6 w-6" />
+                        </div>
+                        {feature.badge && (
+                          <Badge variant="secondary" className="text-xs">{feature.badge}</Badge>
+                        )}
+                      </div>
+                      <h3 className="font-semibold text-lg group-hover:text-primary transition-colors">
+                        {feature.title}
+                      </h3>
+                      <p className="mt-2 text-sm text-muted-foreground leading-6">
+                        {feature.description}
+                      </p>
+                      <div className="mt-4 flex items-center text-sm text-primary font-medium">
+                        Get started <ArrowRight className="ml-1 h-4 w-4" />
+                      </div>
+                    </CardContent>
+                  </Card>
+                </Link>
+              );
+            })}
           </div>
         </div>
       </section>
 
       {/* Visa Guides */}
-      <section className="py-20 bg-white">
+      <section className="py-20 bg-slate-50">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold tracking-tight">Visa Guides</h2>
             <p className="mt-3 text-muted-foreground">
-              Step-by-step guides for every major US visa category
+              Free, detailed guides for every major US visa category
             </p>
           </div>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -170,36 +172,6 @@ export function LandingPage() {
                 </Card>
               </Link>
             ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Features */}
-      <section className="py-20 bg-slate-50">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold tracking-tight">Everything you need</h2>
-            <p className="mt-3 text-muted-foreground max-w-2xl mx-auto">
-              From your first student visa to a green card — VisaPilot has you covered at every stage.
-            </p>
-          </div>
-          <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
-            {features.map((feature) => {
-              const Icon = feature.icon;
-              return (
-                <Card key={feature.title} className="border-0 shadow-sm">
-                  <CardContent className="p-6">
-                    <div className={`inline-flex rounded-lg p-3 ${feature.color} mb-4`}>
-                      <Icon className="h-6 w-6" />
-                    </div>
-                    <h3 className="font-semibold text-lg">{feature.title}</h3>
-                    <p className="mt-2 text-sm text-muted-foreground leading-6">
-                      {feature.description}
-                    </p>
-                  </CardContent>
-                </Card>
-              );
-            })}
           </div>
         </div>
       </section>
@@ -265,36 +237,29 @@ export function LandingPage() {
         </div>
       </section>
 
-      {/* Testimonials */}
+      {/* More features — smaller grid */}
       <section className="py-20 bg-slate-50">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold tracking-tight">Trusted by thousands</h2>
-            <p className="mt-3 text-muted-foreground">
-              From F-1 arrival to green card — real stories from our community
-            </p>
+            <h2 className="text-3xl font-bold tracking-tight">More tools to protect your status</h2>
           </div>
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-            {testimonials.map((t) => (
-              <Card key={t.name} className="border-0 shadow-sm">
-                <CardContent className="p-6">
-                  <div className="flex gap-1 mb-4">
-                    {Array.from({ length: t.rating }).map((_, i) => (
-                      <Star key={i} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                    ))}
-                  </div>
-                  <p className="text-sm text-muted-foreground leading-6 italic">
-                    &ldquo;{t.text}&rdquo;
-                  </p>
-                  <div className="mt-4">
-                    <p className="font-semibold text-sm">{t.name}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {t.visa} · {t.university}
+          <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 max-w-3xl mx-auto">
+            {moreFeatures.map((feature) => {
+              const Icon = feature.icon;
+              return (
+                <Card key={feature.title} className="border-0 shadow-sm">
+                  <CardContent className="p-6">
+                    <div className={`inline-flex rounded-lg p-3 ${feature.color} mb-4`}>
+                      <Icon className="h-6 w-6" />
+                    </div>
+                    <h3 className="font-semibold text-lg">{feature.title}</h3>
+                    <p className="mt-2 text-sm text-muted-foreground leading-6">
+                      {feature.description}
                     </p>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+                  </CardContent>
+                </Card>
+              );
+            })}
           </div>
         </div>
       </section>
@@ -306,8 +271,7 @@ export function LandingPage() {
             Start navigating with confidence
           </h2>
           <p className="mt-4 text-primary-foreground/80 max-w-xl mx-auto">
-            Join 50,000+ international students and immigrants using VisaPilot to navigate the US
-            immigration system.
+            Free checklists, AI guidance, and deadline tracking — everything you need to stay in status.
           </p>
           <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
             <Button size="xl" variant="secondary" asChild>
