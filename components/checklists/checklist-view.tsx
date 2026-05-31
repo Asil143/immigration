@@ -1,6 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+import { useUser } from "@clerk/nextjs";
+import { SignUpButton } from "@clerk/nextjs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -9,6 +11,7 @@ import {
   CheckCircle2, Circle, AlertCircle, Info, ExternalLink, RotateCcw,
   BookOpen, User, FileText, Send, DollarSign, Clock, CreditCard,
   Building2, Globe, Zap, Trophy, Scale, Flag, Calendar, AlertTriangle,
+  Cloud, CloudOff, Loader2,
 } from "lucide-react";
 import type { ChecklistDef, Phase } from "@/lib/checklists/types";
 
@@ -26,25 +29,64 @@ const TYPE_CONFIG = {
   online: { label: "Online",   color: "bg-green-100 text-green-700"  },
 };
 
+type SyncStatus = "idle" | "saving" | "saved" | "error";
+
 interface Props {
   checklist: ChecklistDef;
   storageKey: string;
 }
 
 export function ChecklistView({ checklist, storageKey }: Props) {
+  const { isSignedIn } = useUser();
   const [checked, setChecked] = useState<Record<string, boolean>>({});
+  const [syncStatus, setSyncStatus] = useState<SyncStatus>("idle");
+  const saveTimer = useRef<ReturnType<typeof setTimeout>>();
 
+  // Load progress — server if signed in, localStorage fallback
   useEffect(() => {
-    try {
-      const saved = JSON.parse(localStorage.getItem(storageKey) || "{}");
-      setChecked(saved);
-    } catch {}
-  }, [storageKey]);
+    async function load() {
+      if (isSignedIn) {
+        try {
+          const res = await fetch(`/api/checklists/${checklist.slug}/progress`);
+          if (res.ok) {
+            const data = await res.json();
+            setChecked(data.checked ?? {});
+            return;
+          }
+        } catch {}
+      }
+      try {
+        const saved = JSON.parse(localStorage.getItem(storageKey) || "{}");
+        setChecked(saved);
+      } catch {}
+    }
+    load();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isSignedIn]);
+
+  function persistToServer(next: Record<string, boolean>) {
+    clearTimeout(saveTimer.current);
+    setSyncStatus("saving");
+    saveTimer.current = setTimeout(async () => {
+      try {
+        await fetch(`/api/checklists/${checklist.slug}/progress`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ checked: next }),
+        });
+        setSyncStatus("saved");
+        setTimeout(() => setSyncStatus("idle"), 2500);
+      } catch {
+        setSyncStatus("error");
+      }
+    }, 700);
+  }
 
   function toggle(id: string) {
     setChecked(prev => {
       const next = { ...prev, [id]: !prev[id] };
       localStorage.setItem(storageKey, JSON.stringify(next));
+      if (isSignedIn) persistToServer(next);
       return next;
     });
   }
@@ -52,6 +94,7 @@ export function ChecklistView({ checklist, storageKey }: Props) {
   function resetAll() {
     setChecked({});
     localStorage.removeItem(storageKey);
+    if (isSignedIn) persistToServer({});
   }
 
   const allItems = checklist.phases.flatMap(p => p.items);
@@ -66,13 +109,41 @@ export function ChecklistView({ checklist, storageKey }: Props) {
   return (
     <div className="max-w-3xl">
       {/* Header */}
-      <div className="mb-8">
-        <div className="flex items-center gap-3 mb-1">
+      <div className="mb-8 flex items-start justify-between gap-4 flex-wrap">
+        <div className="flex items-center gap-3">
           <span className="text-3xl">{checklist.emoji}</span>
           <div>
             <h1 className="text-2xl font-bold">{checklist.title} Checklist</h1>
             <p className="text-sm text-muted-foreground mt-0.5">{checklist.subtitle}</p>
           </div>
+        </div>
+
+        {/* Sync indicator */}
+        <div className="flex items-center gap-2 shrink-0">
+          {isSignedIn ? (
+            <span className={`flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-full border font-medium transition-colors ${
+              syncStatus === "saving" ? "text-amber-600 bg-amber-50 border-amber-200" :
+              syncStatus === "saved"  ? "text-green-600 bg-green-50 border-green-200" :
+              syncStatus === "error"  ? "text-red-600 bg-red-50 border-red-200" :
+              "text-slate-500 bg-slate-50 border-slate-200"
+            }`}>
+              {syncStatus === "saving" && <Loader2 className="h-3 w-3 animate-spin" />}
+              {syncStatus === "saved"  && <Cloud className="h-3 w-3" />}
+              {syncStatus === "error"  && <CloudOff className="h-3 w-3" />}
+              {syncStatus === "idle"   && <Cloud className="h-3 w-3" />}
+              {syncStatus === "saving" ? "Saving…" :
+               syncStatus === "saved"  ? "Synced" :
+               syncStatus === "error"  ? "Sync failed" :
+               "Synced across devices"}
+            </span>
+          ) : (
+            <SignUpButton mode="modal">
+              <button className="flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-full border border-blue-200 bg-blue-50 text-blue-600 font-medium hover:bg-blue-100 transition-colors">
+                <CloudOff className="h-3 w-3" />
+                Sign in to save progress
+              </button>
+            </SignUpButton>
+          )}
         </div>
       </div>
 
