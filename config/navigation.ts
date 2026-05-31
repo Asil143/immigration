@@ -96,7 +96,7 @@ export const toolsNav: NavItem[] = [
   },
   {
     title: "Visa Comparison",
-    href: "/visa-comparison",
+    href: "/dashboard/tools/visa-comparison",
     icon: GitCompare,
     description: "Compare F-1, H-1B, Green Card & more",
   },

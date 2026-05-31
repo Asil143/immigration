@@ -11,7 +11,7 @@ import { useState } from "react";
 
 const toolsLinks = [
   { href: "/dashboard/tools/checklists", label: "Visa Checklists", icon: CheckSquare, desc: "Step-by-step checklists for every visa" },
-  { href: "/visa-comparison", label: "Visa Comparison", icon: GitCompare, desc: "Compare F-1, H-1B, green card & more" },
+  { href: "/visa-comparison", label: "Visa Comparison", icon: GitCompare, desc: "Compare F-1, H-1B, green card & more" }, // marketing version — stays in (marketing) layout
   { href: "/dashboard/tools/opt-tracker", label: "OPT Day Counter", icon: Clock, desc: "Track your 90-day unemployment limit" },
   { href: "/ai-assistant", label: "AI Assistant", icon: BotIcon, desc: "Ask immigration questions 24/7" },
   { href: "/rfe-assistant", label: "RFE Assistant", icon: AlertTriangle, desc: "Analyze & respond to USCIS RFEs" },
