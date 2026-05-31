@@ -5,8 +5,145 @@ import Link from "next/link";
 import { useUser } from "@clerk/nextjs";
 import {
   CheckCircle2, ArrowRight, Zap, Shield, Star,
-  Users, ChevronDown, Bot, Calendar, Lock,
+  Users, ChevronDown, Bot, Calendar, Lock, X, Copy, Check,
 } from "lucide-react";
+
+// ─── Payment methods ──────────────────────────────────────────────────────────
+const PAYMENT_METHODS = [
+  { label: "Cash App",  handle: "$AsilKamepalli",   href: "https://cash.app/$AsilKamepalli",             color: "#00d632", bg: "rgba(0,214,50,0.08)",   border: "rgba(0,214,50,0.25)" },
+  { label: "PayPal",    handle: "AsilKamepalli",     href: "https://paypal.me/AsilKamepalli",             color: "#009cde", bg: "rgba(0,156,222,0.08)",  border: "rgba(0,156,222,0.25)" },
+  { label: "Venmo",     handle: "@Asil-Kamepalli",   href: "https://venmo.com/u/Asil-Kamepalli",          color: "#008cff", bg: "rgba(0,140,255,0.08)",  border: "rgba(0,140,255,0.25)" },
+  { label: "Chime",     handle: "$Asil-Kamepalli",   href: null,                                          color: "#73cf2e", bg: "rgba(115,207,46,0.08)", border: "rgba(115,207,46,0.25)" },
+  { label: "Zelle",     handle: "331-226-7117",      href: null,                                          color: "#6d1ed4", bg: "rgba(109,30,212,0.08)", border: "rgba(109,30,212,0.25)" },
+];
+
+interface PlanInfo { name: string; price: number; id: string; }
+
+function PaymentModal({ plan, onClose, userEmail }: { plan: PlanInfo; onClose: () => void; userEmail: string }) {
+  const [step, setStep] = useState<"choose" | "confirm" | "done">("choose");
+  const [form, setForm] = useState({ email: userEmail, txNote: "" });
+  const [submitting, setSubmitting] = useState(false);
+  const [copied, setCopied] = useState<string | null>(null);
+
+  function copyHandle(handle: string) {
+    navigator.clipboard.writeText(handle);
+    setCopied(handle);
+    setTimeout(() => setCopied(null), 2000);
+  }
+
+  async function handleSubmit() {
+    setSubmitting(true);
+    try {
+      await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: form.email,
+          email: form.email,
+          subject: `Payment Confirmation — ${plan.name} ($${plan.price})`,
+          message: `Plan: ${plan.name}\nAmount: $${plan.price}\nCustomer email: ${form.email}\n\nTransaction note:\n${form.txNote || "(none provided)"}`,
+        }),
+      });
+      setStep("done");
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm" onClick={onClose}>
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden" onClick={e => e.stopPropagation()}>
+        {/* Header */}
+        <div className="flex items-center justify-between px-6 py-4 border-b">
+          <div>
+            <p className="font-bold text-slate-900">{plan.name}</p>
+            <p className="text-2xl font-black text-blue-600">${plan.price} <span className="text-sm font-normal text-slate-400">{plan.id === "all-access" ? "/ year" : "one-time"}</span></p>
+          </div>
+          <button onClick={onClose} className="text-slate-400 hover:text-slate-600"><X className="h-5 w-5" /></button>
+        </div>
+
+        {step === "choose" && (
+          <div className="p-6">
+            <p className="text-sm text-slate-500 mb-4">Send <strong className="text-slate-800">${plan.price}</strong> using any of these methods, then click "I've paid" to confirm.</p>
+            <div className="grid grid-cols-2 gap-2 mb-5">
+              {PAYMENT_METHODS.map(({ label, handle, href, color, bg, border }) =>
+                href ? (
+                  <a key={label} href={href} target="_blank" rel="noopener noreferrer"
+                    className="flex flex-col items-center p-3 rounded-xl border text-center no-underline hover:opacity-90 transition-opacity"
+                    style={{ background: bg, borderColor: border }}>
+                    <span className="text-xs font-bold mb-0.5" style={{ color }}>{label}</span>
+                    <span className="text-xs text-slate-500">{handle}</span>
+                  </a>
+                ) : (
+                  <button key={label} onClick={() => copyHandle(handle)}
+                    className="flex flex-col items-center p-3 rounded-xl border text-center hover:opacity-90 transition-opacity"
+                    style={{ background: bg, borderColor: border }}>
+                    <span className="text-xs font-bold mb-0.5" style={{ color }}>{label}</span>
+                    <span className="flex items-center gap-1 text-xs text-slate-500">
+                      {copied === handle ? <Check className="h-3 w-3 text-green-500" /> : <Copy className="h-3 w-3" />}
+                      {copied === handle ? "Copied!" : handle}
+                    </span>
+                  </button>
+                )
+              )}
+            </div>
+            <button onClick={() => setStep("confirm")}
+              className="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm transition-colors">
+              I&apos;ve paid — confirm my order →
+            </button>
+          </div>
+        )}
+
+        {step === "confirm" && (
+          <div className="p-6 space-y-4">
+            <p className="text-sm text-slate-500">Enter your email and any transaction note so we can activate your plan.</p>
+            <div className="space-y-1">
+              <label className="text-xs font-medium text-slate-600">Your email</label>
+              <input
+                type="email"
+                className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={form.email}
+                onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
+                placeholder="you@email.com"
+              />
+            </div>
+            <div className="space-y-1">
+              <label className="text-xs font-medium text-slate-600">Transaction note <span className="text-slate-400 font-normal">(optional — last 4 digits, amount, or screenshot description)</span></label>
+              <textarea
+                rows={2}
+                className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={form.txNote}
+                onChange={e => setForm(f => ({ ...f, txNote: e.target.value }))}
+                placeholder="e.g. Sent $29 via Cash App at 3:45pm"
+              />
+            </div>
+            <div className="flex gap-2">
+              <button onClick={() => setStep("choose")} className="px-4 py-2.5 rounded-xl border border-slate-200 text-sm font-medium text-slate-600 hover:bg-slate-50">← Back</button>
+              <button onClick={handleSubmit} disabled={!form.email || submitting}
+                className="flex-1 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white font-bold text-sm transition-colors">
+                {submitting ? "Sending…" : "Submit — activate my plan"}
+              </button>
+            </div>
+          </div>
+        )}
+
+        {step === "done" && (
+          <div className="p-8 text-center">
+            <div className="text-4xl mb-3">🎉</div>
+            <p className="text-lg font-bold text-slate-900 mb-2">Order received!</p>
+            <p className="text-sm text-slate-500 leading-6">
+              We&apos;ll verify your payment and activate your <strong>{plan.name}</strong> within 2–4 hours.
+              Check your email at <strong>{form.email}</strong> for confirmation.
+            </p>
+            <button onClick={onClose} className="mt-5 px-6 py-2.5 rounded-xl bg-slate-900 text-white text-sm font-bold hover:bg-slate-700 transition-colors">
+              Close
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
 
 const eventPacks = [
   {
@@ -153,11 +290,14 @@ const faqs = [
 
 export default function PricingPage() {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
-  const { isSignedIn } = useUser();
+  const [selectedPlan, setSelectedPlan] = useState<PlanInfo | null>(null);
+  const { isSignedIn, user } = useUser();
+  const userEmail = user?.emailAddresses?.[0]?.emailAddress ?? "";
   const dest = (path: string) => isSignedIn ? "/dashboard" : path;
 
   return (
     <div className="bg-white min-h-screen">
+      {selectedPlan && <PaymentModal plan={selectedPlan} onClose={() => setSelectedPlan(null)} userEmail={userEmail} />}
 
       {/* Hero */}
       <section className="py-20 text-center border-b bg-gradient-to-b from-slate-50 to-white">
@@ -257,13 +397,13 @@ export default function PricingPage() {
                   </ul>
                 </div>
                 <div className="p-4 bg-white border-t" style={{ borderColor: pack.border }}>
-                  <Link
-                    href={dest(`/sign-up?pack=${pack.id}`)}
-                    className="block text-center py-2.5 rounded-xl text-sm font-bold text-white transition-opacity hover:opacity-90"
+                  <button
+                    onClick={() => setSelectedPlan({ name: pack.name, price: pack.price, id: pack.id })}
+                    className="w-full text-center py-2.5 rounded-xl text-sm font-bold text-white transition-opacity hover:opacity-90"
                     style={{ backgroundColor: pack.accent }}
                   >
-                    {isSignedIn ? "Go to Dashboard →" : `Get ${pack.name} →`}
-                  </Link>
+                    Get {pack.name} →
+                  </button>
                 </div>
               </div>
             ))}
@@ -313,12 +453,12 @@ export default function PricingPage() {
                 </div>
 
                 <div className="flex flex-col sm:flex-row gap-3">
-                  <Link
-                    href={dest("/sign-up?plan=all-access")}
+                  <button
+                    onClick={() => setSelectedPlan({ name: "All-Access Plan", price: 99, id: "all-access" })}
                     className="flex-1 text-center py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm transition-colors"
                   >
-                    {isSignedIn ? "Go to Dashboard" : "Get All-Access — $99/year"}
-                  </Link>
+                    Get All-Access — $99/year
+                  </button>
                   <Link
                     href={dest("/sign-up")}
                     className="flex-1 text-center py-3 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-white font-semibold text-sm transition-colors"
