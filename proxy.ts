@@ -21,11 +21,10 @@ const isPublicRoute = createRouteMatcher([
   "/about(.*)",
   "/contact(.*)",
   "/faq(.*)",
-  // Tools accessible without login
+  // Tools & dashboard accessible without login (preview mode)
   "/ai-assistant(.*)",
-  "/dashboard/tools/checklists(.*)",
-  "/dashboard/tools/opt-tracker(.*)",
-  "/dashboard/tools/timeline(.*)",
+  "/rfe-assistant(.*)",
+  "/dashboard(.*)",
 ]);
 
 export default clerkMiddleware(async (auth, req) => {

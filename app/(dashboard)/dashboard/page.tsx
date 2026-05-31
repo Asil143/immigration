@@ -9,6 +9,8 @@ import {
   Bot, Calendar, FileText, FolderOpen, ArrowRight, AlertCircle,
   CheckCircle2, Clock, UserCircle, Shield, TrendingUp, Zap,
 } from "lucide-react";
+import { useUser } from "@clerk/nextjs";
+import { GuestPreviewBanner } from "@/components/ui/guest-preview-banner";
 
 function daysUntil(dateStr: string) {
   if (!dateStr) return null;
@@ -74,12 +76,31 @@ const quickActions = [
   { title: "Manage Cases", description: "Track your visa applications", href: "/dashboard/cases", icon: FolderOpen, color: "text-orange-600 bg-orange-50" },
 ];
 
+const DEMO_PROFILE: Record<string, string> = {
+  visaType: "F-1 OPT",
+  countryOfBirth: "India",
+  employer: "Acme Corp",
+  eadExpiry: new Date(Date.now() + 45 * 86400000).toISOString().split("T")[0],
+  i94Expiry: new Date(Date.now() + 120 * 86400000).toISOString().split("T")[0],
+  visaStampExpiry: new Date(Date.now() + 200 * 86400000).toISOString().split("T")[0],
+  passportExpiry: new Date(Date.now() + 300 * 86400000).toISOString().split("T")[0],
+  greenCardStage: "",
+  greenCardCategory: "",
+};
+
 export default function DashboardPage() {
+  const { isSignedIn } = useUser();
   const [profile, setProfile] = useState<Record<string, string> | null>(null);
   const [alerts, setAlerts] = useState<DeadlineAlert[]>([]);
   const [caseCount, setCaseCount] = useState(0);
 
   useEffect(() => {
+    if (!isSignedIn) {
+      setProfile(DEMO_PROFILE);
+      setAlerts(computeAlerts(DEMO_PROFILE));
+      setCaseCount(2);
+      return;
+    }
     Promise.all([
       fetch("/api/profile").then(r => r.ok ? r.json() : null),
       fetch("/api/cases").then(r => r.ok ? r.json() : []),
@@ -103,13 +124,19 @@ export default function DashboardPage() {
       }
       if (Array.isArray(casesData)) setCaseCount(casesData.length);
     }).catch(() => setProfile({}));
-  }, []);
+  }, [isSignedIn]);
 
   const profileSetUp = !!(profile?.visaType);
   const criticalCount = alerts.filter(a => a.priority === "critical").length;
 
   return (
     <div className="p-8 max-w-6xl">
+      {!isSignedIn && (
+        <GuestPreviewBanner
+          title="Sign in to see your real dashboard"
+          description="This is a preview with sample data. Create a free account to track your own visa status, deadlines, and cases."
+        />
+      )}
       {/* Header */}
       <div className="mb-8 flex items-center justify-between gap-4 flex-wrap">
         <div>
