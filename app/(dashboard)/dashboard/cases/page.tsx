@@ -14,6 +14,8 @@ import {
   Calendar, AlertCircle, Loader2, Trash2,
 } from "lucide-react";
 import { format } from "date-fns";
+import { useUser } from "@clerk/nextjs";
+import { GuestPreviewBanner } from "@/components/ui/guest-preview-banner";
 
 type CaseStatus = "active" | "pending" | "approved" | "denied" | "expired" | "archived";
 
@@ -39,9 +41,31 @@ const statusConfig: Record<CaseStatus, { icon: React.ElementType; color: string;
 };
 
 const VISA_TYPES = ["F-1","OPT","STEM OPT","H-1B","H-4","J-1","L-1A","L-1B","O-1A","O-1B","TN","EB-1","EB-2","EB-3","Other"];
+
+const DEMO_CASES: VisaCase[] = [
+  {
+    id: "demo-1", visa_type: "STEM OPT", title: "STEM OPT Extension",
+    status: "active", receipt_number: "IOE0912345678",
+    start_date: "2025-07-01", expiry_date: "2026-07-01",
+    notes: "Approved — EAD valid through July 2026", created_at: "2025-06-15",
+  },
+  {
+    id: "demo-2", visa_type: "H-1B", title: "H-1B Petition — Acme Corp",
+    status: "pending", receipt_number: "WAC2512345678",
+    start_date: "2026-04-01", expiry_date: null,
+    notes: "Filed via premium processing", created_at: "2026-01-10",
+  },
+  {
+    id: "demo-3", visa_type: "EB-2", title: "EB-2 NIW I-140 Self-Petition",
+    status: "approved", receipt_number: "LIN2498765432",
+    start_date: "2024-09-01", expiry_date: null,
+    notes: "I-140 approved — waiting for priority date to become current", created_at: "2024-08-20",
+  },
+];
 const STATUSES: CaseStatus[] = ["active","pending","approved","denied","expired","archived"];
 
 export default function CasesPage() {
+  const { isSignedIn } = useUser();
   const [cases, setCases] = useState<VisaCase[]>([]);
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
@@ -50,11 +74,17 @@ export default function CasesPage() {
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
+    if (isSignedIn === undefined) return;
+    if (!isSignedIn) {
+      setCases(DEMO_CASES);
+      setLoading(false);
+      return;
+    }
     fetch("/api/visa-cases")
       .then(r => r.ok ? r.json() : [])
       .then(data => { if (Array.isArray(data)) setCases(data); })
       .finally(() => setLoading(false));
-  }, []);
+  }, [isSignedIn]);
 
   async function addCase() {
     if (!form.visa_type || !form.title) return;
@@ -98,10 +128,19 @@ export default function CasesPage() {
           <h1 className="text-2xl font-bold">My Cases</h1>
           <p className="mt-1 text-muted-foreground">Track all your visa applications and status</p>
         </div>
-        <Button onClick={() => setOpen(true)}>
-          <Plus className="mr-2 h-4 w-4" /> New Case
-        </Button>
+        {isSignedIn && (
+          <Button onClick={() => setOpen(true)}>
+            <Plus className="mr-2 h-4 w-4" /> New Case
+          </Button>
+        )}
       </div>
+
+      {!isSignedIn && (
+        <GuestPreviewBanner
+          title="Sign in to track your real visa cases"
+          description="Create a free account to add and manage your actual visa applications, receipts, and expiry dates."
+        />
+      )}
 
       {/* Stats */}
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 mb-8">
