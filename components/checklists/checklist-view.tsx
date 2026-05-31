@@ -40,7 +40,7 @@ export function ChecklistView({ checklist, storageKey }: Props) {
   const { isSignedIn } = useUser();
   const [checked, setChecked] = useState<Record<string, boolean>>({});
   const [syncStatus, setSyncStatus] = useState<SyncStatus>("idle");
-  const saveTimer = useRef<ReturnType<typeof setTimeout>>();
+  const saveTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   // Load progress — server if signed in, localStorage fallback
   useEffect(() => {
