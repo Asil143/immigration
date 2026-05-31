@@ -187,10 +187,10 @@ export default function CasesPage() {
       {/* Stats */}
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 mb-8">
         {[
-          { label: "Active",   value: cases.filter(c=>c.status==="active").length,   color: "text-green-600"  },
-          { label: "Pending",  value: cases.filter(c=>c.status==="pending").length,  color: "text-yellow-600" },
-          { label: "Approved", value: cases.filter(c=>c.status==="approved").length, color: "text-blue-600"   },
-          { label: "Total",    value: totalAll,                                       color: "text-foreground" },
+          { label: "In Progress", value: cases.filter(c => c.status === "active" || c.status === "pending").length, color: "text-yellow-600" },
+          { label: "Approved",    value: cases.filter(c => c.status === "approved").length,                         color: "text-blue-600"  },
+          { label: "Receipts",    value: monitored.length,                                                           color: "text-purple-600"},
+          { label: "Total",       value: totalAll,                                                                   color: "text-foreground"},
         ].map(s => (
           <Card key={s.label}>
             <CardContent className="p-4 text-center">
