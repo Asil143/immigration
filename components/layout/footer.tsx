@@ -11,6 +11,7 @@ const visaGuides = [
 
 const tools = [
   { href: "/dashboard/tools/checklists", label: "Visa Checklists" },
+  { href: "/visa-comparison", label: "Visa Comparison" },
   { href: "/ai-assistant", label: "AI Assistant" },
   { href: "/dashboard/tools/opt-tracker", label: "OPT Day Counter" },
   { href: "/rfe-assistant", label: "RFE Assistant" },
