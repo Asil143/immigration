@@ -22,6 +22,7 @@ import {
   ScanLine,
   ClipboardList,
   ListChecks,
+  GitCompare,
   type LucideIcon,
 } from "lucide-react";
 
@@ -92,6 +93,12 @@ export const toolsNav: NavItem[] = [
     icon: ListChecks,
     description: "Step-by-step guides for OPT, H-1B, Green Card & more",
     badge: "New",
+  },
+  {
+    title: "Visa Comparison",
+    href: "/visa-comparison",
+    icon: GitCompare,
+    description: "Compare F-1, H-1B, Green Card & more",
   },
   {
     title: "OPT Day Counter",
