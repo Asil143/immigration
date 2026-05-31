@@ -3,8 +3,8 @@
 import { useState } from "react";
 import Link from "next/link";
 import {
-  CheckCircle2, ArrowRight, Zap, Shield, Star, Users,
-  Calendar, CreditCard, Building2, HelpCircle, ChevronDown,
+  CheckCircle2, ArrowRight, Zap, Shield, Star,
+  Users, ChevronDown, Bot, Calendar, Lock,
 } from "lucide-react";
 
 const eventPacks = [
@@ -16,53 +16,38 @@ const eventPacks = [
     color: "#eff6ff",
     border: "#bfdbfe",
     textColor: "#1d4ed8",
+    accent: "#2563eb",
     duration: "Active Mar–Jun",
+    badge: "Most purchased",
     description: "Full support during H-1B cap registration season",
     features: [
-      "Unlimited AI questions during cap season",
-      "H-1B lottery odds calculator",
-      "Employer sponsorship lookup",
+      "H-1B registration step-by-step checklist",
       "Cap-gap & OPT bridge guide",
-      "Step-by-step registration checklist",
+      "Lottery odds & employer sponsorship lookup",
+      "Unlimited AI questions for 90 days",
       "RFE response templates",
+      "Deadline alerts during cap season",
     ],
   },
   {
     id: "opt",
-    name: "OPT Extension Pack",
+    name: "OPT / STEM OPT Pack",
     price: 19,
     icon: "📋",
     color: "#f0fdf4",
     border: "#86efac",
     textColor: "#15803d",
+    accent: "#16a34a",
     duration: "Use anytime",
+    badge: null,
     description: "Everything for OPT & STEM OPT applications",
     features: [
       "I-765 filing checklist & guide",
       "STEM OPT I-983 training plan template",
-      "90-day unemployment day tracker",
-      "AI assistant for 60 days",
-      "Deadline calculator & alerts",
+      "90-day unemployment tracker",
+      "Unlimited AI questions for 60 days",
       "DSO communication templates",
-    ],
-  },
-  {
-    id: "greencard",
-    name: "Green Card Prep Pack",
-    price: 49,
-    icon: "🌿",
-    color: "#faf5ff",
-    border: "#d8b4fe",
-    textColor: "#6d28d9",
-    duration: "Use anytime",
-    description: "EB-2 NIW, EB-1A, or PERM pathway planning",
-    features: [
-      "Visa bulletin priority date tracker",
-      "EB-2 NIW petition builder guide",
-      "EB-1A criteria self-assessment",
-      "AC21 portability explainer",
-      "India/China backlog calculator",
-      "Unlimited AI for 90 days",
+      "Deadline calculator & alerts",
     ],
   },
   {
@@ -73,159 +58,207 @@ const eventPacks = [
     color: "#fff7ed",
     border: "#fed7aa",
     textColor: "#c2410c",
+    accent: "#ea580c",
     duration: "Use within 87 days",
+    badge: "High urgency",
     description: "Build a strong RFE response before the deadline",
     features: [
-      "RFE type identifier & analyzer",
-      "AI-assisted response builder",
+      "AI-powered RFE analyzer (real Claude API)",
       "Evidence checklist by RFE type",
-      "Attorney review marketplace",
-      "Unlimited AI for 87 days",
+      "Draft response frameworks per issue",
+      "Unlimited AI questions for 87 days",
+      "Attorney review marketplace access",
       "Response letter templates",
     ],
   },
-];
-
-const subscriptionPlans = [
   {
-    id: "free",
-    name: "Free",
-    price: 0,
-    description: "For anyone exploring their options",
-    color: "#f8fafc",
-    border: "#e2e8f0",
-    textColor: "#0f172a",
-    cta: "Get Started Free",
-    ctaHref: "/sign-up",
-    highlighted: false,
-    features: [
-      "Immigration glossary (60+ terms)",
-      "Visa comparison tool",
-      "H-1B employer lookup",
-      "Travel advisory guides",
-      "Free webinars & events",
-      "10 AI questions/month",
-      "USCIS fee calculator",
-      "Basic case status check",
-    ],
-  },
-  {
-    id: "monitor",
-    name: "Monitor",
-    price: 7,
-    description: "For anyone mid-process with a pending case",
-    color: "#eff6ff",
-    border: "#2563eb",
-    textColor: "#1d4ed8",
-    cta: "Start Monitoring",
-    ctaHref: "/sign-up?plan=monitor",
-    highlighted: true,
-    badge: "Most Popular",
-    features: [
-      "Everything in Free",
-      "USCIS case auto-monitoring",
-      "SMS + email status alerts",
-      "Deadline alerts (I-94, EAD, passport)",
-      "50 AI questions/month",
-      "Immigration profile sync across devices",
-      "Processing time tracker",
-      "Cancel anytime — $0 when your case is done",
-    ],
-  },
-  {
-    id: "pro",
-    name: "Pro",
-    price: 19,
-    description: "For complex, multi-step immigration journeys",
+    id: "greencard",
+    name: "Green Card Prep Pack",
+    price: 49,
+    icon: "🌿",
     color: "#faf5ff",
-    border: "#e2e8f0",
+    border: "#d8b4fe",
     textColor: "#6d28d9",
-    cta: "Start Pro",
-    ctaHref: "/sign-up?plan=pro",
-    highlighted: false,
+    accent: "#7c3aed",
+    duration: "Use anytime",
+    badge: null,
+    description: "EB-2 NIW, EB-1A, or PERM pathway planning",
     features: [
-      "Everything in Monitor",
-      "Unlimited AI questions",
-      "RFE assistant & response builder",
-      "Document vault (encrypted storage)",
-      "AI document analyzer",
-      "Priority attorney matching",
-      "Green card stage tracker",
-      "All event packs included free",
+      "Visa bulletin priority date tracker",
+      "EB-2 NIW petition builder guide",
+      "EB-1A criteria self-assessment",
+      "AC21 portability explainer",
+      "India/China backlog calculator",
+      "Unlimited AI questions for 90 days",
     ],
   },
 ];
 
-const creditPacks = [
-  { credits: 10, price: 4, per: "$0.40/credit", popular: false },
-  { credits: 50, price: 15, per: "$0.30/credit", popular: true },
-  { credits: 150, price: 35, per: "$0.23/credit", popular: false },
+const freeFeatures = [
+  "All visa checklists (12 types)",
+  "OPT day counter & timeline tracker",
+  "H-1B employer lookup (E-Verify)",
+  "Visa comparison tool",
+  "Immigration glossary (60+ terms)",
+  "Visa bulletin tracker",
+  "USCIS fee calculator",
+  "AI Assistant (10 questions/month)",
+];
+
+const allAccessFeatures = [
+  "Everything in Free — forever",
+  "All 4 Event Packs included",
+  "Unlimited AI Assistant questions",
+  "USCIS case auto-monitoring",
+  "SMS + email deadline alerts",
+  "RFE analyzer (Claude API)",
+  "Document vault (AES-256 encrypted)",
+  "AI document analyzer",
+  "Green card stage tracker",
+  "Priority attorney matching",
+  "Cancel anytime",
 ];
 
 const faqs = [
-  { q: "Why pay for a pack instead of a subscription?", a: "Because immigration is episodic. A STEM OPT student who just got approved doesn't need help for 2 years — they just need the H-1B Season Pack in March. Pay for exactly what you need, when you need it. No wasted months." },
-  { q: "Do credits expire?", a: "No. Credits never expire. Buy them when you need to ask a lot of questions, and use them at your own pace." },
-  { q: "What happens after my pack duration ends?", a: "Your checklist data and documents are saved. You just lose access to the AI assistant until you buy more credits or another pack. Your profile and deadlines always remain accessible for free." },
-  { q: "Can I cancel Monitor subscription anytime?", a: "Yes, cancel anytime with one click. Most people cancel as soon as their case gets approved — that's exactly how it's designed." },
-  { q: "Do you take a cut from attorney fees?", a: "Yes — if you hire an attorney through VisaPilot, we take a 12% platform fee. This is already built into the fixed prices attorneys list, so there's no surprise cost to you." },
-  { q: "Is my immigration data private?", a: "Yes. Your profile, case numbers, and documents are encrypted. We never share or sell your data. Document vault uses AES-256 encryption." },
+  {
+    q: "Why packs instead of a subscription?",
+    a: "Because immigration is episodic, not ongoing. A STEM OPT student who just got approved doesn't need anything for 2 years — until H-1B season. Pay for your current event, not months you don't use.",
+  },
+  {
+    q: "When should I choose All-Access instead of a pack?",
+    a: "If you're actively mid-process across multiple steps — like waiting on an I-140 while also tracking a visa bulletin and monitoring a pending case — All-Access is better value. If you have one specific event, just buy that pack.",
+  },
+  {
+    q: "Do event packs expire?",
+    a: "Only the H-1B Season Pack is time-limited (active during cap season). All other packs never expire — buy now, use when you're ready.",
+  },
+  {
+    q: "What does the AI Assistant actually do?",
+    a: "It's powered by Anthropic's Claude and answers general immigration questions — OPT timelines, H-1B cap-gap rules, green card steps, visa bulletin interpretation. It cannot review your specific case or replace an attorney.",
+  },
+  {
+    q: "Can I cancel All-Access?",
+    a: "Yes, cancel anytime. Most people cancel once their current immigration event resolves. Your data stays saved — you just lose access to premium features.",
+  },
+  {
+    q: "Do you take a cut from attorney fees?",
+    a: "Yes — if you hire through VisaPilot, we charge a 12% platform fee, which is already built into the prices attorneys list. No surprise costs to you.",
+  },
+  {
+    q: "Is my data private?",
+    a: "Yes. Documents are AES-256 encrypted. We never sell your data. See our Privacy Policy for full details.",
+  },
 ];
 
 export default function PricingPage() {
-  const [billingCycle, setBillingCycle] = useState<"monthly" | "yearly">("monthly");
   const [openFaq, setOpenFaq] = useState<number | null>(null);
 
   return (
-    <div style={{ backgroundColor: "#ffffff", minHeight: "100vh" }}>
+    <div className="bg-white min-h-screen">
 
       {/* Hero */}
-      <section className="py-16 text-center" style={{ background: "linear-gradient(135deg, #f8fafc 0%, #eff6ff 100%)" }}>
-        <div className="container mx-auto px-4">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium mb-4" style={{ backgroundColor: "#dbeafe", color: "#1d4ed8" }}>
+      <section className="py-20 text-center border-b bg-gradient-to-b from-slate-50 to-white">
+        <div className="container mx-auto px-4 max-w-3xl">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-medium mb-5 bg-blue-50 text-blue-700 border border-blue-100">
             <Zap className="h-4 w-4" />
             Pay for what you need — nothing more
           </div>
-          <h1 className="text-4xl font-bold mb-4">Pricing that fits your journey</h1>
-          <p className="text-lg max-w-2xl mx-auto mb-3" style={{ color: "#64748b" }}>
-            Immigration is not a monthly subscription — it's a series of events. Buy a pack for your current situation, monitor your case for $7/month, or go Pro for the full experience.
+          <h1 className="text-5xl font-bold text-slate-900 mb-5 leading-tight">
+            Pricing that fits<br />your immigration stage
+          </h1>
+          <p className="text-lg text-slate-500 max-w-xl mx-auto mb-4 leading-7">
+            Start free. Buy a pack when a big event hits.
+            Go All-Access when your journey gets complex.
           </p>
-          <p className="text-sm font-medium" style={{ color: "#94a3b8" }}>No credit card required for free tier · Cancel Monitor anytime · Packs never expire</p>
+          <p className="text-sm text-slate-400">No credit card for free tier · Packs never expire · Cancel anytime</p>
         </div>
       </section>
 
-      <div className="container mx-auto px-4 py-12 max-w-6xl">
+      <div className="container mx-auto px-4 py-16 max-w-6xl">
 
-        {/* Event Packs */}
-        <div className="mb-16">
-          <div className="text-center mb-8">
-            <h2 className="text-2xl font-bold mb-2">Event Packs — Pay Once, Use When Needed</h2>
-            <p className="text-sm" style={{ color: "#64748b" }}>Buy the pack for your current immigration event. No subscription, no recurring charges.</p>
+        {/* Free tier — always first */}
+        <div className="mb-20">
+          <div className="bg-slate-50 border border-slate-200 rounded-2xl p-8 flex flex-col md:flex-row items-start md:items-center gap-8">
+            <div className="flex-1">
+              <div className="flex items-center gap-3 mb-3">
+                <span className="text-3xl font-bold text-slate-900">Free</span>
+                <span className="bg-green-100 text-green-700 text-xs font-semibold px-2.5 py-1 rounded-full border border-green-200">Always free</span>
+              </div>
+              <p className="text-slate-500 text-sm mb-5">Everything you need to understand your options. No sign-up required for checklists.</p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                {freeFeatures.map((f) => (
+                  <div key={f} className="flex items-start gap-2 text-sm text-slate-600">
+                    <CheckCircle2 className="h-4 w-4 text-green-500 shrink-0 mt-0.5" />
+                    {f}
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="shrink-0 text-center">
+              <Link
+                href="/sign-up"
+                className="block px-8 py-3 rounded-xl bg-slate-900 text-white font-semibold text-sm hover:bg-slate-700 transition-colors"
+              >
+                Get started free
+              </Link>
+              <p className="text-xs text-slate-400 mt-2">No credit card needed</p>
+            </div>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {eventPacks.map(pack => (
-              <div key={pack.id} className="rounded-2xl border-2 overflow-hidden flex flex-col" style={{ borderColor: pack.border }}>
-                <div className="p-5 flex-1" style={{ backgroundColor: pack.color }}>
+        </div>
+
+        {/* Event Packs — primary revenue */}
+        <div className="mb-20">
+          <div className="text-center mb-10">
+            <p className="text-sm font-medium text-blue-600 mb-2">Pay once · Use when needed</p>
+            <h2 className="text-3xl font-bold text-slate-900 mb-3">Event Packs</h2>
+            <p className="text-slate-500 max-w-lg mx-auto">
+              Buy the pack for your current immigration event. One payment, no recurring charges, no expiry.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            {eventPacks.map((pack) => (
+              <div
+                key={pack.id}
+                className="rounded-2xl border-2 overflow-hidden flex flex-col relative"
+                style={{ borderColor: pack.border }}
+              >
+                {pack.badge && (
+                  <div className="text-center py-1.5 text-xs font-bold text-white" style={{ backgroundColor: pack.accent }}>
+                    {pack.badge}
+                  </div>
+                )}
+                <div className="p-5 flex-1 flex flex-col" style={{ backgroundColor: pack.color }}>
                   <div className="flex items-center justify-between mb-3">
                     <span className="text-2xl">{pack.icon}</span>
-                    <span className="text-xs px-2 py-0.5 rounded-full font-medium" style={{ backgroundColor: pack.textColor + "20", color: pack.textColor }}>{pack.duration}</span>
+                    <span
+                      className="text-xs px-2.5 py-1 rounded-full font-medium"
+                      style={{ backgroundColor: pack.accent + "18", color: pack.accent }}
+                    >
+                      {pack.duration}
+                    </span>
                   </div>
-                  <h3 className="font-bold mb-1" style={{ color: pack.textColor }}>{pack.name}</h3>
-                  <p className="text-xs mb-4" style={{ color: "#64748b" }}>{pack.description}</p>
-                  <div className="text-3xl font-bold mb-4" style={{ color: pack.textColor }}>
-                    ${pack.price}
-                    <span className="text-sm font-normal ml-1" style={{ color: "#94a3b8" }}>one-time</span>
+                  <h3 className="font-bold mb-1 text-slate-900">{pack.name}</h3>
+                  <p className="text-xs text-slate-500 mb-4">{pack.description}</p>
+                  <div className="mb-5">
+                    <span className="text-3xl font-bold" style={{ color: pack.textColor }}>${pack.price}</span>
+                    <span className="text-sm text-slate-400 ml-1">one-time</span>
                   </div>
-                  <ul className="space-y-1.5 mb-4">
-                    {pack.features.map(f => (
-                      <li key={f} className="flex items-start gap-1.5 text-xs">
-                        <CheckCircle2 className="h-3.5 w-3.5 shrink-0 mt-0.5" style={{ color: pack.textColor }} />
-                        <span style={{ color: "#475569" }}>{f}</span>
+                  <ul className="space-y-2 flex-1">
+                    {pack.features.map((f) => (
+                      <li key={f} className="flex items-start gap-1.5 text-xs text-slate-600">
+                        <CheckCircle2 className="h-3.5 w-3.5 shrink-0 mt-0.5" style={{ color: pack.accent }} />
+                        {f}
                       </li>
                     ))}
                   </ul>
                 </div>
-                <div className="p-4" style={{ backgroundColor: "#ffffff" }}>
-                  <Link href={`/sign-up?pack=${pack.id}`} className="block text-center py-2 rounded-xl text-sm font-bold text-white" style={{ backgroundColor: pack.textColor }}>
+                <div className="p-4 bg-white border-t" style={{ borderColor: pack.border }}>
+                  <Link
+                    href={`/sign-up?pack=${pack.id}`}
+                    className="block text-center py-2.5 rounded-xl text-sm font-bold text-white transition-opacity hover:opacity-90"
+                    style={{ backgroundColor: pack.accent }}
+                  >
                     Get {pack.name} →
                   </Link>
                 </div>
@@ -234,175 +267,168 @@ export default function PricingPage() {
           </div>
         </div>
 
-        {/* Subscriptions */}
-        <div className="mb-16">
-          <div className="text-center mb-8">
-            <h2 className="text-2xl font-bold mb-2">Subscriptions — For Ongoing Journeys</h2>
-            <p className="text-sm mb-4" style={{ color: "#64748b" }}>For people actively mid-process. Cancel the moment your case is resolved.</p>
-            <div className="inline-flex items-center gap-1 p-1 rounded-full" style={{ backgroundColor: "#f1f5f9" }}>
-              {(["monthly", "yearly"] as const).map(c => (
-                <button
-                  key={c}
-                  onClick={() => setBillingCycle(c)}
-                  className="px-4 py-1.5 rounded-full text-sm font-semibold transition-all"
-                  style={{
-                    backgroundColor: billingCycle === c ? "#2563eb" : "transparent",
-                    color: billingCycle === c ? "#ffffff" : "#64748b",
-                  }}
-                >
-                  {c === "monthly" ? "Monthly" : "Yearly (save 20%)"}
-                </button>
+        {/* All-Access Annual */}
+        <div className="mb-20">
+          <div className="text-center mb-10">
+            <p className="text-sm font-medium text-purple-600 mb-2">For complex, multi-step journeys</p>
+            <h2 className="text-3xl font-bold text-slate-900 mb-3">All-Access Plan</h2>
+            <p className="text-slate-500 max-w-lg mx-auto">
+              When you&apos;re mid-green-card, watching a visa bulletin, monitoring a case, and preparing for an H-1B —
+              all at once. One plan covers everything.
+            </p>
+          </div>
+
+          <div className="max-w-2xl mx-auto">
+            <div className="relative bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl overflow-hidden shadow-xl shadow-slate-900/20">
+              <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 rounded-full -translate-y-32 translate-x-32 pointer-events-none" />
+              <div className="absolute bottom-0 left-0 w-48 h-48 bg-purple-500/10 rounded-full translate-y-24 -translate-x-24 pointer-events-none" />
+
+              <div className="relative p-8">
+                <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-6 mb-8">
+                  <div>
+                    <div className="inline-flex items-center gap-1.5 bg-white/10 text-white text-xs font-semibold px-3 py-1.5 rounded-full mb-3">
+                      <Star className="h-3.5 w-3.5 text-yellow-400" />
+                      Best value for active journeys
+                    </div>
+                    <h3 className="text-2xl font-bold text-white mb-1">All-Access</h3>
+                    <p className="text-slate-400 text-sm">All packs + unlimited AI + every premium tool</p>
+                  </div>
+                  <div className="text-right shrink-0">
+                    <div className="text-5xl font-bold text-white">$99</div>
+                    <div className="text-slate-400 text-sm mt-1">per year · ~$8/mo</div>
+                    <div className="text-xs text-green-400 mt-1 font-medium">Save $100+ vs buying separately</div>
+                  </div>
+                </div>
+
+                <div className="grid sm:grid-cols-2 gap-3 mb-8">
+                  {allAccessFeatures.map((f) => (
+                    <div key={f} className="flex items-start gap-2 text-sm text-slate-300">
+                      <CheckCircle2 className="h-4 w-4 text-blue-400 shrink-0 mt-0.5" />
+                      {f}
+                    </div>
+                  ))}
+                </div>
+
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <Link
+                    href="/sign-up?plan=all-access"
+                    className="flex-1 text-center py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm transition-colors"
+                  >
+                    Get All-Access — $99/year
+                  </Link>
+                  <Link
+                    href="/sign-up"
+                    className="flex-1 text-center py-3 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-white font-semibold text-sm transition-colors"
+                  >
+                    Start free first
+                  </Link>
+                </div>
+
+                <p className="text-center text-xs text-slate-500 mt-4">
+                  Cancel anytime · Data stays saved after cancellation
+                </p>
+              </div>
+            </div>
+
+            {/* Value comparison */}
+            <div className="mt-4 grid grid-cols-3 gap-3">
+              {[
+                { label: "4 Event Packs", value: "$136 value", icon: "🎯" },
+                { label: "Unlimited AI", value: "Included", icon: "🤖" },
+                { label: "All tools", value: "Included", icon: "⚡" },
+              ].map((item) => (
+                <div key={item.label} className="bg-slate-50 border border-slate-200 rounded-xl p-4 text-center">
+                  <p className="text-lg mb-1">{item.icon}</p>
+                  <p className="text-xs font-medium text-slate-700">{item.label}</p>
+                  <p className="text-xs text-slate-400 mt-0.5">{item.value}</p>
+                </div>
               ))}
             </div>
           </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {subscriptionPlans.map(plan => {
-              const price = billingCycle === "yearly" && plan.price > 0
-                ? Math.round(plan.price * 0.8)
-                : plan.price;
-              return (
-                <div
-                  key={plan.id}
-                  className="rounded-2xl border-2 overflow-hidden relative"
-                  style={{
-                    borderColor: plan.highlighted ? plan.border : "#e2e8f0",
-                    transform: plan.highlighted ? "scale(1.03)" : "none",
-                    boxShadow: plan.highlighted ? "0 8px 32px rgba(37,99,235,0.12)" : "none",
-                  }}
-                >
-                  {plan.badge && (
-                    <div className="text-center py-1.5 text-xs font-bold text-white" style={{ backgroundColor: "#2563eb" }}>
-                      {plan.badge}
-                    </div>
-                  )}
-                  <div className="p-6" style={{ backgroundColor: plan.highlighted ? plan.color : "#ffffff" }}>
-                    <h3 className="font-bold text-lg mb-1" style={{ color: plan.textColor }}>{plan.name}</h3>
-                    <p className="text-xs mb-4" style={{ color: "#64748b" }}>{plan.description}</p>
-                    <div className="flex items-end gap-1 mb-6">
-                      <span className="text-4xl font-bold" style={{ color: plan.textColor }}>
-                        {price === 0 ? "Free" : `$${price}`}
-                      </span>
-                      {price > 0 && <span className="text-sm mb-1" style={{ color: "#94a3b8" }}>/mo</span>}
-                    </div>
-                    <Link
-                      href={plan.ctaHref}
-                      className="block text-center py-2.5 rounded-xl text-sm font-bold transition-all"
-                      style={{
-                        backgroundColor: plan.highlighted ? "#2563eb" : "#f1f5f9",
-                        color: plan.highlighted ? "#ffffff" : "#0f172a",
-                      }}
-                    >
-                      {plan.cta}
-                    </Link>
-                  </div>
-                  <div className="px-6 pb-6" style={{ backgroundColor: plan.highlighted ? plan.color : "#ffffff" }}>
-                    <ul className="space-y-2">
-                      {plan.features.map(f => (
-                        <li key={f} className="flex items-start gap-2 text-sm">
-                          <CheckCircle2 className="h-4 w-4 shrink-0 mt-0.5" style={{ color: plan.highlighted ? "#2563eb" : "#16a34a" }} />
-                          <span style={{ color: "#475569" }}>{f}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
         </div>
 
-        {/* AI Credits */}
-        <div className="mb-16">
-          <div className="text-center mb-8">
-            <h2 className="text-2xl font-bold mb-2">AI Credits — Pay Per Question</h2>
-            <p className="text-sm" style={{ color: "#64748b" }}>Buy credits and use them anytime. No expiry. Perfect if you only have a few questions.</p>
-          </div>
-          <div className="flex flex-wrap justify-center gap-4">
-            {creditPacks.map(cp => (
-              <div
-                key={cp.credits}
-                className="relative p-6 rounded-2xl border-2 text-center min-w-44"
-                style={{
-                  borderColor: cp.popular ? "#2563eb" : "#e2e8f0",
-                  backgroundColor: cp.popular ? "#eff6ff" : "#ffffff",
-                }}
-              >
-                {cp.popular && (
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-full text-xs font-bold text-white" style={{ backgroundColor: "#2563eb" }}>
-                    Best Value
-                  </div>
-                )}
-                <p className="text-3xl font-bold mb-1" style={{ color: cp.popular ? "#1d4ed8" : "#0f172a" }}>{cp.credits}</p>
-                <p className="text-sm font-medium mb-1" style={{ color: "#64748b" }}>AI Credits</p>
-                <p className="text-2xl font-bold mb-1" style={{ color: cp.popular ? "#1d4ed8" : "#0f172a" }}>${cp.price}</p>
-                <p className="text-xs mb-4" style={{ color: "#94a3b8" }}>{cp.per} · never expires</p>
-                <Link
-                  href="/sign-up"
-                  className="block py-2 rounded-xl text-sm font-bold"
-                  style={{
-                    backgroundColor: cp.popular ? "#2563eb" : "#f1f5f9",
-                    color: cp.popular ? "#ffffff" : "#0f172a",
-                  }}
-                >
-                  Buy Credits
+        {/* Decision helper */}
+        <div className="mb-20 bg-blue-50 border border-blue-100 rounded-2xl p-8">
+          <h3 className="text-lg font-bold text-slate-900 text-center mb-6">Not sure which to pick?</h3>
+          <div className="grid md:grid-cols-3 gap-5">
+            {[
+              {
+                who: "I'm exploring options",
+                pick: "Free tier",
+                href: "/sign-up",
+                color: "bg-slate-100 text-slate-700 border-slate-200",
+                btn: "bg-slate-800 text-white",
+                desc: "Use checklists, guides, and tools — no payment needed.",
+              },
+              {
+                who: "I have a specific event (OPT, H-1B, RFE…)",
+                pick: "Event Pack",
+                href: "#packs",
+                color: "bg-blue-100 text-blue-800 border-blue-200",
+                btn: "bg-blue-600 text-white",
+                desc: "Buy the pack for that event. One payment, no recurring.",
+              },
+              {
+                who: "I'm mid-journey with multiple active steps",
+                pick: "All-Access $99/yr",
+                href: "/sign-up?plan=all-access",
+                color: "bg-purple-100 text-purple-800 border-purple-200",
+                btn: "bg-purple-600 text-white",
+                desc: "Everything included. Pay once for the year, cancel anytime.",
+              },
+            ].map((item) => (
+              <div key={item.who} className="bg-white border border-slate-200 rounded-xl p-5 flex flex-col gap-3">
+                <p className="text-sm text-slate-500 leading-5">"{item.who}"</p>
+                <div className={`inline-flex self-start items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border ${item.color}`}>
+                  <ArrowRight className="h-3 w-3" />
+                  {item.pick}
+                </div>
+                <p className="text-xs text-slate-400 leading-5 flex-1">{item.desc}</p>
+                <Link href={item.href} className={`block text-center py-2 rounded-lg text-xs font-bold ${item.btn}`}>
+                  Get started
                 </Link>
               </div>
             ))}
           </div>
         </div>
 
-        {/* Attorney note */}
-        <div className="mb-16 p-6 rounded-2xl flex flex-col sm:flex-row items-center gap-6" style={{ background: "linear-gradient(135deg, #0f172a 0%, #1e3a5f 100%)" }}>
-          <div className="h-14 w-14 rounded-2xl flex items-center justify-center shrink-0" style={{ backgroundColor: "rgba(255,255,255,0.1)" }}>
-            <Users className="h-7 w-7 text-white" />
-          </div>
-          <div className="flex-1 text-center sm:text-left">
-            <p className="font-bold text-white text-lg">Need a real attorney?</p>
-            <p className="text-sm mt-1" style={{ color: "rgba(255,255,255,0.7)" }}>Book verified immigration attorneys with fixed, transparent fees — H-1B filing, NIW petition, RFE response, and more. No hidden charges.</p>
-          </div>
-          <Link href="/lawyers" className="shrink-0 px-5 py-2.5 rounded-xl text-sm font-bold" style={{ backgroundColor: "#2563eb", color: "#ffffff" }}>
-            Browse Attorneys <ArrowRight className="inline ml-1 h-4 w-4" />
-          </Link>
-        </div>
-
         {/* Compare table */}
-        <div className="mb-16">
-          <h2 className="text-2xl font-bold text-center mb-8">Compare All Plans</h2>
-          <div className="overflow-x-auto rounded-2xl border" style={{ borderColor: "#e2e8f0" }}>
+        <div className="mb-20">
+          <h2 className="text-2xl font-bold text-slate-900 text-center mb-8">Compare Plans</h2>
+          <div className="overflow-x-auto rounded-2xl border border-slate-200">
             <table className="w-full border-collapse">
               <thead>
-                <tr style={{ backgroundColor: "#f8fafc", borderBottom: "2px solid #e2e8f0" }}>
-                  <th className="p-4 text-left text-sm font-semibold" style={{ color: "#64748b", borderRight: "1px solid #e2e8f0" }}>Feature</th>
-                  {["Free", "Monitor $7/mo", "Pro $19/mo"].map((h, i) => (
-                    <th key={h} className="p-4 text-center text-sm font-bold" style={{ color: i === 1 ? "#1d4ed8" : "#0f172a", borderRight: i < 2 ? "1px solid #e2e8f0" : undefined }}>
-                      {h}
-                    </th>
-                  ))}
+                <tr className="bg-slate-50 border-b-2 border-slate-200">
+                  <th className="p-4 text-left text-sm font-semibold text-slate-500 border-r border-slate-200">Feature</th>
+                  <th className="p-4 text-center text-sm font-bold text-slate-800 border-r border-slate-200">Free</th>
+                  <th className="p-4 text-center text-sm font-bold text-blue-700 border-r border-slate-200">Event Pack</th>
+                  <th className="p-4 text-center text-sm font-bold text-purple-700">All-Access</th>
                 </tr>
               </thead>
               <tbody>
                 {[
-                  ["Visa guides & glossary", true, true, true],
-                  ["AI questions", "10/mo", "50/mo", "Unlimited"],
-                  ["Visa comparison tool", true, true, true],
-                  ["USCIS case monitoring", false, true, true],
-                  ["Deadline alerts (SMS + email)", false, true, true],
-                  ["Immigration profile sync", false, true, true],
-                  ["Document vault", false, false, true],
-                  ["RFE assistant", false, false, true],
-                  ["Event packs included", false, false, true],
-                  ["Attorney priority matching", false, false, true],
-                ].map(([feature, free, monitor, pro], i) => (
-                  <tr key={String(feature)} style={{ backgroundColor: i % 2 === 0 ? "#ffffff" : "#f8fafc", borderBottom: "1px solid #e2e8f0" }}>
-                    <td className="p-4 text-sm" style={{ color: "#475569", borderRight: "1px solid #e2e8f0" }}>{feature}</td>
-                    {[free, monitor, pro].map((val, j) => (
-                      <td key={j} className="p-4 text-center" style={{ borderRight: j < 2 ? "1px solid #e2e8f0" : undefined }}>
+                  ["Visa checklists & guides", true, true, true],
+                  ["OPT tracker & timeline", true, true, true],
+                  ["H-1B employer lookup", true, true, true],
+                  ["Visa comparison & glossary", true, true, true],
+                  ["AI Assistant", "10/mo", "Unlimited (pack duration)", "Unlimited"],
+                  ["Checklist for specific event", false, true, true],
+                  ["USCIS case monitoring", false, false, true],
+                  ["Deadline alerts (SMS + email)", false, false, true],
+                  ["RFE analyzer (Claude API)", false, "RFE Pack only", true],
+                  ["Document vault (encrypted)", false, false, true],
+                  ["Green card stage tracker", false, false, true],
+                  ["Priority attorney matching", false, false, true],
+                ].map(([feature, free, pack, allAccess], i) => (
+                  <tr key={String(feature)} className={`border-b border-slate-100 ${i % 2 === 0 ? "bg-white" : "bg-slate-50/50"}`}>
+                    <td className="p-4 text-sm text-slate-600 border-r border-slate-200">{feature}</td>
+                    {[free, pack, allAccess].map((val, j) => (
+                      <td key={j} className={`p-4 text-center ${j < 2 ? "border-r border-slate-200" : ""}`}>
                         {val === true
                           ? <CheckCircle2 className="h-5 w-5 text-green-500 mx-auto" />
                           : val === false
-                          ? <span style={{ color: "#cbd5e1" }}>—</span>
-                          : <span className="text-sm font-medium" style={{ color: "#475569" }}>{val}</span>}
+                          ? <span className="text-slate-300">—</span>
+                          : <span className="text-xs font-medium text-slate-500">{val}</span>}
                       </td>
                     ))}
                   </tr>
@@ -412,22 +438,39 @@ export default function PricingPage() {
           </div>
         </div>
 
+        {/* Attorney note */}
+        <div className="mb-20 p-7 rounded-2xl flex flex-col sm:flex-row items-center gap-6 bg-gradient-to-br from-slate-900 to-slate-800">
+          <div className="h-14 w-14 rounded-2xl flex items-center justify-center shrink-0 bg-white/10">
+            <Users className="h-7 w-7 text-white" />
+          </div>
+          <div className="flex-1 text-center sm:text-left">
+            <p className="font-bold text-white text-lg">Need a real attorney?</p>
+            <p className="text-sm mt-1 text-slate-400">
+              Book verified immigration attorneys with fixed, transparent fees —
+              H-1B filing, NIW petition, RFE response, and more. No hidden charges.
+            </p>
+          </div>
+          <Link href="/lawyers" className="shrink-0 px-5 py-2.5 rounded-xl text-sm font-bold bg-blue-600 text-white hover:bg-blue-500 transition-colors">
+            Browse Attorneys <ArrowRight className="inline ml-1 h-4 w-4" />
+          </Link>
+        </div>
+
         {/* FAQ */}
-        <div className="mb-16 max-w-3xl mx-auto">
-          <h2 className="text-2xl font-bold text-center mb-8">Frequently Asked Questions</h2>
+        <div className="mb-20 max-w-3xl mx-auto">
+          <h2 className="text-2xl font-bold text-slate-900 text-center mb-8">Frequently Asked Questions</h2>
           <div className="space-y-3">
             {faqs.map((faq, i) => (
-              <div key={i} className="border rounded-xl overflow-hidden" style={{ borderColor: "#e2e8f0" }}>
+              <div key={i} className="border border-slate-200 rounded-xl overflow-hidden">
                 <button
                   onClick={() => setOpenFaq(openFaq === i ? null : i)}
-                  className="w-full flex items-center justify-between p-4 text-left"
+                  className="w-full flex items-center justify-between p-4 text-left hover:bg-slate-50 transition-colors"
                 >
-                  <span className="font-medium text-sm pr-4">{faq.q}</span>
-                  <ChevronDown className="h-4 w-4 shrink-0 transition-transform" style={{ transform: openFaq === i ? "rotate(180deg)" : "none", color: "#64748b" }} />
+                  <span className="font-medium text-sm text-slate-800 pr-4">{faq.q}</span>
+                  <ChevronDown className={`h-4 w-4 shrink-0 text-slate-400 transition-transform duration-200 ${openFaq === i ? "rotate-180" : ""}`} />
                 </button>
                 {openFaq === i && (
-                  <div className="px-4 pb-4">
-                    <p className="text-sm leading-relaxed" style={{ color: "#64748b" }}>{faq.a}</p>
+                  <div className="px-4 pb-4 pt-1 bg-slate-50 border-t border-slate-100">
+                    <p className="text-sm text-slate-600 leading-7">{faq.a}</p>
                   </div>
                 )}
               </div>
@@ -435,16 +478,34 @@ export default function PricingPage() {
           </div>
         </div>
 
+        {/* Trust signals */}
+        <div className="mb-16 grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+          {[
+            { icon: Shield, label: "AES-256 encrypted", sub: "Documents & profile" },
+            { icon: Lock, label: "No data selling", sub: "Ever, to anyone" },
+            { icon: Bot, label: "Real Claude AI", sub: "Anthropic-powered" },
+            { icon: Calendar, label: "Cancel anytime", sub: "No lock-in" },
+          ].map((item) => (
+            <div key={item.label} className="bg-slate-50 border border-slate-200 rounded-xl p-5">
+              <item.icon className="h-6 w-6 text-blue-600 mx-auto mb-2" />
+              <p className="text-sm font-semibold text-slate-800">{item.label}</p>
+              <p className="text-xs text-slate-400 mt-0.5">{item.sub}</p>
+            </div>
+          ))}
+        </div>
+
         {/* CTA */}
-        <div className="text-center p-10 rounded-2xl" style={{ background: "linear-gradient(135deg, #2563eb 0%, #7c3aed 100%)" }}>
-          <h2 className="text-2xl font-bold text-white mb-2">Start free — upgrade when it matters</h2>
-          <p className="text-white/80 mb-6">Join thousands of immigrants navigating the US system with VisaPilot.</p>
+        <div className="text-center py-14 px-8 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-700">
+          <h2 className="text-3xl font-bold text-white mb-3">Start free — upgrade when it matters</h2>
+          <p className="text-blue-100 mb-8 max-w-md mx-auto">
+            No credit card. No commitment. Upgrade to a pack or All-Access the moment you need it.
+          </p>
           <div className="flex justify-center gap-3 flex-wrap">
-            <Link href="/sign-up" className="px-6 py-3 rounded-xl text-sm font-bold" style={{ backgroundColor: "#ffffff", color: "#2563eb" }}>
+            <Link href="/sign-up" className="px-7 py-3 rounded-xl text-sm font-bold bg-white text-blue-700 hover:bg-blue-50 transition-colors">
               Get Started Free
             </Link>
-            <Link href="/ai-assistant" className="px-6 py-3 rounded-xl text-sm font-bold border-2 border-white/40 text-white hover:bg-white/10">
-              Try AI Assistant
+            <Link href="/dashboard/tools/checklists" className="px-7 py-3 rounded-xl text-sm font-bold bg-white/10 border border-white/20 text-white hover:bg-white/20 transition-colors">
+              Browse Free Checklists
             </Link>
           </div>
         </div>
