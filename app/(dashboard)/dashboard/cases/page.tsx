@@ -50,6 +50,23 @@ const statusConfig: Record<CaseStatus, { icon: React.ElementType; color: string;
   archived: { icon: FolderOpen,   color: "text-slate-400",  badge: "outline"     },
 };
 
+// Map USCIS free-text status → category
+function classifyUscisStatus(s: string | null): "approved" | "action_required" | "pending" {
+  if (!s) return "pending";
+  const t = s.toLowerCase();
+  if (
+    t.includes("approved") || t.includes("mailed") || t.includes("delivered") ||
+    t.includes("oath ceremony") || t.includes("naturalized") || t.includes("issued") ||
+    t.includes("picked up by the united states postal service")
+  ) return "approved";
+  if (
+    t.includes("request for evidence") || t.includes("rfe") ||
+    t.includes("notice of intent to deny") || t.includes("noid") ||
+    t.includes("additional evidence") || t.includes("denied")
+  ) return "action_required";
+  return "pending";
+}
+
 const VISA_TYPES = ["F-1","OPT","STEM OPT","H-1B","H-4","J-1","L-1A","L-1B","O-1A","O-1B","TN","EB-1","EB-2","EB-3","Other"];
 
 const DEMO_CASES: VisaCase[] = [
@@ -146,6 +163,9 @@ export default function CasesPage() {
   const active = cases.filter(c => c.status === "active" || c.status === "pending");
   const historical = cases.filter(c => ["approved","denied","expired","archived"].includes(c.status));
   const totalAll = cases.length + monitored.length;
+  const approvedMonitored = monitored.filter(c => classifyUscisStatus(c.last_status) === "approved").length;
+  const actionMonitored   = monitored.filter(c => classifyUscisStatus(c.last_status) === "action_required").length;
+  const pendingMonitored  = monitored.filter(c => classifyUscisStatus(c.last_status) === "pending").length;
 
   return (
     <div className="p-8 max-w-4xl">
@@ -187,10 +207,10 @@ export default function CasesPage() {
       {/* Stats */}
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 mb-8">
         {[
-          { label: "In Progress", value: cases.filter(c => c.status === "active" || c.status === "pending").length, color: "text-yellow-600" },
-          { label: "Approved",    value: cases.filter(c => c.status === "approved").length,                         color: "text-blue-600"  },
-          { label: "Receipts",    value: monitored.length,                                                           color: "text-purple-600"},
-          { label: "Total",       value: totalAll,                                                                   color: "text-foreground"},
+          { label: "In Progress",      value: active.length + pendingMonitored,                                            color: "text-yellow-600" },
+          { label: "Approved",         value: cases.filter(c => c.status === "approved").length + approvedMonitored,       color: "text-green-600"  },
+          { label: "Action Required",  value: cases.filter(c => c.status === "denied").length + actionMonitored,           color: "text-red-600"    },
+          { label: "Total",            value: totalAll,                                                                    color: "text-foreground" },
         ].map(s => (
           <Card key={s.label}>
             <CardContent className="p-4 text-center">
@@ -222,34 +242,52 @@ export default function CasesPage() {
           {monitored.length > 0 && (
             <div className="space-y-3 mb-8">
               <h2 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">USCIS Receipt Tracking</h2>
-              {monitored.map(c => (
-                <Card key={c.id}>
-                  <CardContent className="p-5">
-                    <div className="flex items-start justify-between gap-4 flex-wrap">
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <Badge variant="secondary" className="text-xs font-mono">{c.receipt_number}</Badge>
-                          <Badge variant="outline" className="text-xs">{c.form_type}</Badge>
+              {monitored.map(c => {
+                const category = classifyUscisStatus(c.last_status);
+                return (
+                  <Card key={c.id}>
+                    <CardContent className="p-5">
+                      <div className="flex items-start justify-between gap-4 flex-wrap">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <Badge variant="secondary" className="text-xs font-mono">{c.receipt_number}</Badge>
+                            <Badge variant="outline" className="text-xs">{c.form_type}</Badge>
+                            {category === "approved" && (
+                              <Badge variant="success" className="text-xs flex items-center gap-1">
+                                <CheckCircle2 className="h-3 w-3" /> Approved
+                              </Badge>
+                            )}
+                            {category === "action_required" && (
+                              <Badge variant="destructive" className="text-xs flex items-center gap-1">
+                                <AlertCircle className="h-3 w-3" /> Action Required
+                              </Badge>
+                            )}
+                            {category === "pending" && c.last_status && (
+                              <Badge variant="warning" className="text-xs flex items-center gap-1">
+                                <Clock className="h-3 w-3" /> Pending
+                              </Badge>
+                            )}
+                          </div>
+                          {c.label && <h3 className="font-semibold mt-2 text-sm">{c.label}</h3>}
+                          {c.last_status && (
+                            <p className="text-xs text-muted-foreground mt-1.5 leading-relaxed">{c.last_status}</p>
+                          )}
+                          {c.last_checked_at && (
+                            <p className="text-xs text-muted-foreground mt-1">Updated {new Date(c.last_checked_at).toLocaleDateString()}</p>
+                          )}
                         </div>
-                        {c.label && <h3 className="font-semibold mt-2 text-sm">{c.label}</h3>}
-                        {c.last_status && (
-                          <p className="text-xs text-muted-foreground mt-1.5 leading-relaxed line-clamp-2">{c.last_status}</p>
-                        )}
-                        {c.last_checked_at && (
-                          <p className="text-xs text-muted-foreground mt-1">Updated {new Date(c.last_checked_at).toLocaleDateString()}</p>
-                        )}
+                        <a
+                          href={`https://egov.uscis.gov/casestatus/mycasestatus.do?appReceiptNum=${c.receipt_number}`}
+                          target="_blank" rel="noopener noreferrer"
+                          className="text-xs text-primary hover:underline shrink-0 mt-1"
+                        >
+                          Check on USCIS ↗
+                        </a>
                       </div>
-                      <a
-                        href={`https://egov.uscis.gov/casestatus/mycasestatus.do?appReceiptNum=${c.receipt_number}`}
-                        target="_blank" rel="noopener noreferrer"
-                        className="text-xs text-primary hover:underline shrink-0 mt-1"
-                      >
-                        Check on USCIS ↗
-                      </a>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
+                    </CardContent>
+                  </Card>
+                );
+              })}
             </div>
           )}
 
