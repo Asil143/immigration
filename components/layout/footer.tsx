@@ -36,7 +36,6 @@ const company = [
   { href: "/contact", label: "Contact" },
   { href: "/blog", label: "Blog" },
   { href: "/success-stories", label: "Success Stories" },
-  { href: "/jobs", label: "Jobs" },
   { href: "/lawyer-portal", label: "Attorney Portal" },
 ];
 
