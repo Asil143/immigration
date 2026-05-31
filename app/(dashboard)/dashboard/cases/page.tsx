@@ -16,6 +16,7 @@ import {
 import { format } from "date-fns";
 import { useUser } from "@clerk/nextjs";
 import { GuestPreviewBanner } from "@/components/ui/guest-preview-banner";
+import Link from "next/link";
 
 type CaseStatus = "active" | "pending" | "approved" | "denied" | "expired" | "archived";
 
@@ -74,30 +75,41 @@ const DEMO_CASES: VisaCase[] = [
 const STATUSES: CaseStatus[] = ["active","pending","approved","denied","expired","archived"];
 
 export default function CasesPage() {
-  const { isSignedIn } = useUser();
+  const { isSignedIn, isLoaded } = useUser();
   const [cases, setCases] = useState<VisaCase[]>([]);
   const [monitored, setMonitored] = useState<MonitoredCase[]>([]);
   const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState<string | null>(null);
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState<VisaCase | null>(null);
   const [form, setForm] = useState({ visa_type: "", title: "", status: "active" as CaseStatus, receipt_number: "", start_date: "", expiry_date: "", notes: "" });
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    if (isSignedIn === undefined) return;
+    if (!isLoaded) return; // wait for Clerk to finish initializing
     if (!isSignedIn) {
       setCases(DEMO_CASES);
       setLoading(false);
       return;
     }
+    setFetchError(null);
     Promise.all([
-      fetch("/api/visa-cases").then(r => r.ok ? r.json() : []),
-      fetch("/api/cases").then(r => r.ok ? r.json() : []),
+      fetch("/api/visa-cases").then(async r => {
+        if (!r.ok) throw new Error(`visa-cases: ${r.status}`);
+        return r.json();
+      }),
+      fetch("/api/cases").then(async r => {
+        if (!r.ok) throw new Error(`cases: ${r.status}`);
+        return r.json();
+      }),
     ]).then(([visaCases, monitoredCases]) => {
       if (Array.isArray(visaCases)) setCases(visaCases);
       if (Array.isArray(monitoredCases)) setMonitored(monitoredCases);
+    }).catch(err => {
+      console.error("Cases fetch error:", err);
+      setFetchError(err.message);
     }).finally(() => setLoading(false));
-  }, [isSignedIn]);
+  }, [isLoaded, isSignedIn]);
 
   async function addCase() {
     if (!form.visa_type || !form.title) return;
@@ -156,6 +168,22 @@ export default function CasesPage() {
         />
       )}
 
+      {fetchError && (
+        <div className="mb-6 flex items-start gap-3 rounded-xl border border-red-200 bg-red-50 p-4">
+          <AlertCircle className="h-5 w-5 text-red-500 shrink-0 mt-0.5" />
+          <div className="flex-1">
+            <p className="font-semibold text-red-800 text-sm">Failed to load cases</p>
+            <p className="text-xs text-red-600 mt-0.5 font-mono">{fetchError}</p>
+          </div>
+          <button
+            onClick={() => { setFetchError(null); setLoading(true); window.location.reload(); }}
+            className="text-xs text-red-600 hover:text-red-800 font-semibold shrink-0"
+          >
+            Retry
+          </button>
+        </div>
+      )}
+
       {/* Stats */}
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 mb-8">
         {[
@@ -179,7 +207,15 @@ export default function CasesPage() {
         <div className="text-center py-16 rounded-2xl" style={{ backgroundColor: "#f8fafc", border: "1px dashed #e2e8f0" }}>
           <FolderOpen className="h-10 w-10 mx-auto mb-3 text-slate-300" />
           <p className="font-medium text-muted-foreground">No cases yet</p>
-          <p className="text-sm text-muted-foreground mt-1">Click New Case to start tracking a visa application, or add receipt numbers in your <a href="/dashboard/profile" className="text-primary underline">Profile</a>.</p>
+          <p className="text-sm text-muted-foreground mt-1 mb-4">Add a visa application below, or track USCIS receipt numbers from your profile.</p>
+          <div className="flex items-center justify-center gap-3 flex-wrap">
+            <Button size="sm" onClick={() => setOpen(true)}>
+              <Plus className="h-3.5 w-3.5 mr-1.5" /> New Case
+            </Button>
+            <Button size="sm" variant="outline" asChild>
+              <Link href="/dashboard/profile#cases">Add Receipt in Profile →</Link>
+            </Button>
+          </div>
         </div>
       ) : (
         <>
