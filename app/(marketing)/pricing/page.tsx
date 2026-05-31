@@ -53,15 +53,16 @@ function PaymentModal({ plan, onClose, userEmail }: { plan: PlanInfo; onClose: (
       reader.readAsDataURL(screenshot);
       reader.onload = async () => {
         const base64 = (reader.result as string).split(",")[1];
-        await fetch("/api/contact", {
+        await fetch("/api/payments/submit", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            name: form.email,
             email: form.email,
-            subject: `Payment Confirmation — ${plan.name} ($${plan.price})`,
-            message: `Plan: ${plan.name}\nAmount: $${plan.price}\nCustomer email: ${form.email}\n\nTransaction note:\n${form.txNote || "(none provided)"}`,
-            attachment: { filename: screenshot.name, content: base64 },
+            planId: plan.id,
+            planName: plan.name,
+            amount: plan.price,
+            txNote: form.txNote || null,
+            screenshot: { filename: screenshot.name, content: base64 },
           }),
         });
         setStep("done");
