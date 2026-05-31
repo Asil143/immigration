@@ -1,9 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import { useUser } from "@clerk/nextjs";
+import { SignInButton } from "@clerk/nextjs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { GuestPreviewBanner } from "@/components/ui/guest-preview-banner";
 import { Upload, FileText, Shield, FolderOpen, Plus, ChevronDown, ChevronRight } from "lucide-react";
 
 interface DocItem {
@@ -151,6 +154,7 @@ const docCategories: DocCategory[] = [
 const allDocSlots = docCategories.flatMap((cat) => cat.items.map((item) => item.name));
 
 export default function DocumentVaultPage() {
+  const { isSignedIn } = useUser();
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [expandedCategories, setExpandedCategories] = useState<string[]>(["identity", "entry", "work-auth"]);
 
@@ -169,10 +173,25 @@ export default function DocumentVaultPage() {
           <h1 className="text-2xl font-bold">Document Vault</h1>
           <p className="text-sm mt-1 text-muted-foreground">Securely store and organize all your immigration documents</p>
         </div>
-        <Button onClick={() => setShowUploadModal(true)} className="flex items-center gap-2">
-          <Plus className="h-4 w-4" /> Upload Document
-        </Button>
+        {isSignedIn ? (
+          <Button onClick={() => setShowUploadModal(true)} className="flex items-center gap-2">
+            <Plus className="h-4 w-4" /> Upload Document
+          </Button>
+        ) : (
+          <SignInButton mode="modal">
+            <Button className="flex items-center gap-2">
+              <Plus className="h-4 w-4" /> Upload Document
+            </Button>
+          </SignInButton>
+        )}
       </div>
+
+      {!isSignedIn && (
+        <GuestPreviewBanner
+          title="Sign in to upload and store your documents"
+          description="Create a free account to securely upload and access your immigration documents from anywhere."
+        />
+      )}
 
       <div className="flex items-start gap-3 p-4 rounded-xl mb-6 bg-green-50 border border-green-200">
         <Shield className="h-5 w-5 text-green-600 shrink-0 mt-0.5" />
@@ -241,9 +260,17 @@ export default function DocumentVaultPage() {
             <FolderOpen className="h-12 w-12 text-slate-300 mb-3" />
             <p className="font-medium text-muted-foreground">No documents uploaded yet</p>
             <p className="text-sm text-muted-foreground mt-1 mb-4">Upload your immigration documents to keep them organized and secure.</p>
-            <Button variant="outline" onClick={() => setShowUploadModal(true)}>
-              <Upload className="h-4 w-4 mr-2" /> Upload Your First Document
-            </Button>
+            {isSignedIn ? (
+              <Button variant="outline" onClick={() => setShowUploadModal(true)}>
+                <Upload className="h-4 w-4 mr-2" /> Upload Your First Document
+              </Button>
+            ) : (
+              <SignInButton mode="modal">
+                <Button variant="outline">
+                  <Upload className="h-4 w-4 mr-2" /> Sign in to Upload
+                </Button>
+              </SignInButton>
+            )}
           </div>
         </div>
       </div>
