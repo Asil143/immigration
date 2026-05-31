@@ -1,4 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
+import { Resend } from "resend";
+
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(req: NextRequest) {
   try {
@@ -8,19 +11,17 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
-    // Log to console for now — wire to email provider (Resend/SendGrid) when ready
-    console.log("[contact-form]", { name, email, subject, message, ts: new Date().toISOString() });
-
-    // TODO: send email via Resend or SendGrid
-    // await resend.emails.send({
-    //   from: "noreply@visapilot.app",
-    //   to: "support@visapilot.app",
-    //   subject: `Contact form: ${subject || "General"}`,
-    //   text: `From: ${name} <${email}>\n\n${message}`,
-    // });
+    await resend.emails.send({
+      from: process.env.RESEND_FROM_EMAIL || "onboarding@resend.dev",
+      to: "kamepalliasil143@gmail.com",
+      replyTo: email,
+      subject: subject ? `[VisaPilot] ${subject}` : "[VisaPilot] Contact Form Submission",
+      text: `From: ${name} <${email}>\n\n${message}`,
+    });
 
     return NextResponse.json({ ok: true });
-  } catch {
+  } catch (err) {
+    console.error("[contact]", err);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
