@@ -1,13 +1,17 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
+import { useUser, SignUpButton } from "@clerk/nextjs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
-import { Timer, AlertCircle, CheckCircle2, Info, Calendar, Loader2 } from "lucide-react";
+import {
+  Timer, AlertCircle, CheckCircle2, Info, Calendar, Loader2,
+  Cloud, CloudOff,
+} from "lucide-react";
 import { differenceInDays, format, addDays, parseISO, isValid } from "date-fns";
 
 const MAX_STANDARD = 90;
@@ -19,31 +23,94 @@ interface UnemployedPeriod {
   end: string | null;
 }
 
+type SyncStatus = "idle" | "saving" | "saved" | "error";
+
 export default function OPTTrackerPage() {
+  const { isSignedIn } = useUser();
   const [optType, setOptType] = useState<"standard" | "stem">("standard");
   const [optStart, setOptStart] = useState("");
   const [optEnd, setOptEnd] = useState("");
   const [periods, setPeriods] = useState<UnemployedPeriod[]>([]);
   const [newStart, setNewStart] = useState("");
   const [newEnd, setNewEnd] = useState("");
-  const [loadingProfile, setLoadingProfile] = useState(true);
+  const [loading, setLoading] = useState(true);
+  const [syncStatus, setSyncStatus] = useState<SyncStatus>("idle");
+  const saveTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
 
+  // Load profile dates + saved tracker state
   useEffect(() => {
-    fetch("/api/profile")
-      .then(r => r.ok ? r.json() : null)
-      .then(data => {
-        if (data) {
-          if (data.opt_start_date) setOptStart(data.opt_start_date);
-          if (data.opt_end_date) setOptEnd(data.opt_end_date);
+    async function load() {
+      try {
+        // Always try to load profile dates
+        const profileRes = await fetch("/api/profile");
+        if (profileRes.ok) {
+          const data = await profileRes.json();
           if (data.stem_opt_start_date) {
             setOptType("stem");
             if (data.stem_opt_start_date) setOptStart(data.stem_opt_start_date);
             if (data.stem_opt_end_date) setOptEnd(data.stem_opt_end_date);
+          } else {
+            if (data.opt_start_date) setOptStart(data.opt_start_date);
+            if (data.opt_end_date) setOptEnd(data.opt_end_date);
           }
         }
-      })
-      .finally(() => setLoadingProfile(false));
-  }, []);
+      } catch {}
+
+      // Load saved periods + opt_type if signed in
+      if (isSignedIn) {
+        try {
+          const res = await fetch("/api/opt-tracker");
+          if (res.ok) {
+            const data = await res.json();
+            setOptType(data.opt_type ?? "standard");
+            setPeriods(data.periods ?? []);
+          }
+        } catch {}
+      }
+
+      setLoading(false);
+    }
+    load();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isSignedIn]);
+
+  function persistToServer(newOptType: "standard" | "stem", newPeriods: UnemployedPeriod[]) {
+    if (!isSignedIn) return;
+    clearTimeout(saveTimer.current);
+    setSyncStatus("saving");
+    saveTimer.current = setTimeout(async () => {
+      try {
+        await fetch("/api/opt-tracker", {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ opt_type: newOptType, periods: newPeriods }),
+        });
+        setSyncStatus("saved");
+        setTimeout(() => setSyncStatus("idle"), 2500);
+      } catch {
+        setSyncStatus("error");
+      }
+    }, 700);
+  }
+
+  function handleSetOptType(t: "standard" | "stem") {
+    setOptType(t);
+    persistToServer(t, periods);
+  }
+
+  function addPeriod() {
+    if (!newStart) return;
+    const next = [...periods, { id: Date.now().toString(), start: newStart, end: newEnd || null }];
+    setPeriods(next);
+    persistToServer(optType, next);
+    setNewStart(""); setNewEnd("");
+  }
+
+  function removePeriod(id: string) {
+    const next = periods.filter(x => x.id !== id);
+    setPeriods(next);
+    persistToServer(optType, next);
+  }
 
   const max = optType === "standard" ? MAX_STANDARD : MAX_STEM;
 
@@ -67,22 +134,11 @@ export default function OPTTrackerPage() {
   }[status];
 
   const StatusIcon = statusConfig.icon;
-
-  function addPeriod() {
-    if (!newStart) return;
-    setPeriods(p => [...p, { id: Date.now().toString(), start: newStart, end: newEnd || null }]);
-    setNewStart(""); setNewEnd("");
-  }
-
-  function removePeriod(id: string) {
-    setPeriods(p => p.filter(x => x.id !== id));
-  }
-
   const optEndDate = optEnd && isValid(parseISO(optEnd)) ? parseISO(optEnd) : null;
   const daysUntilOptEnd = optEndDate ? differenceInDays(optEndDate, new Date()) : null;
   const safeUntil = addDays(new Date(), remaining);
 
-  if (loadingProfile) {
+  if (loading) {
     return (
       <div className="p-8 flex justify-center py-24">
         <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
@@ -92,12 +148,38 @@ export default function OPTTrackerPage() {
 
   return (
     <div className="p-8 max-w-3xl">
-      <div className="mb-8">
-        <div className="flex items-center gap-3 mb-1">
-          <Timer className="h-6 w-6 text-primary" />
-          <h1 className="text-2xl font-bold">OPT Unemployment Day Counter</h1>
+      <div className="mb-8 flex items-start justify-between gap-4 flex-wrap">
+        <div>
+          <div className="flex items-center gap-3 mb-1">
+            <Timer className="h-6 w-6 text-primary" />
+            <h1 className="text-2xl font-bold">OPT Unemployment Day Counter</h1>
+          </div>
+          <p className="text-muted-foreground">Track your unemployment days to stay within USCIS limits</p>
         </div>
-        <p className="text-muted-foreground">Track your unemployment days to stay within USCIS limits</p>
+
+        {/* Sync indicator */}
+        {isSignedIn ? (
+          <span className={`flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-full border font-medium transition-colors shrink-0 ${
+            syncStatus === "saving" ? "text-amber-600 bg-amber-50 border-amber-200" :
+            syncStatus === "saved"  ? "text-green-600 bg-green-50 border-green-200" :
+            syncStatus === "error"  ? "text-red-600 bg-red-50 border-red-200" :
+            "text-slate-500 bg-slate-50 border-slate-200"
+          }`}>
+            {syncStatus === "saving" && <Loader2 className="h-3 w-3 animate-spin" />}
+            {syncStatus !== "saving" && <Cloud className="h-3 w-3" />}
+            {syncStatus === "saving" ? "Saving…" :
+             syncStatus === "saved"  ? "Synced" :
+             syncStatus === "error"  ? "Sync failed" :
+             "Synced across devices"}
+          </span>
+        ) : (
+          <SignUpButton mode="modal">
+            <button className="flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-full border border-blue-200 bg-blue-50 text-blue-600 font-medium hover:bg-blue-100 transition-colors shrink-0">
+              <CloudOff className="h-3 w-3" />
+              Sign in to save data
+            </button>
+          </SignUpButton>
+        )}
       </div>
 
       <Card className="mb-6">
@@ -106,7 +188,7 @@ export default function OPTTrackerPage() {
             {(["standard", "stem"] as const).map(t => (
               <button
                 key={t}
-                onClick={() => setOptType(t)}
+                onClick={() => handleSetOptType(t)}
                 className={`flex-1 rounded-lg border p-3 text-sm font-medium transition-colors ${
                   optType === t ? "border-primary bg-primary/5 text-primary" : "text-muted-foreground hover:border-primary/40"
                 }`}
@@ -190,7 +272,9 @@ export default function OPTTrackerPage() {
         </CardHeader>
         <CardContent className="space-y-3">
           {periods.length === 0 && (
-            <p className="text-sm text-muted-foreground text-center py-4">No unemployment periods recorded. Add one below if you had gaps in employment.</p>
+            <p className="text-sm text-muted-foreground text-center py-4">
+              No unemployment periods recorded. Add one below if you had gaps in employment.
+            </p>
           )}
           {periods.map(p => {
             const end = p.end ? parseISO(p.end) : new Date();
