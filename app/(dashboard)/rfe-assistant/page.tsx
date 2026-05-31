@@ -6,7 +6,10 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
-import { AlertTriangle, Sparkles, CheckCircle2, Circle, ChevronDown, ChevronRight, FileText, Copy, Download, Info, Clock } from "lucide-react";
+import {
+  AlertTriangle, Sparkles, CheckCircle2, Circle, ChevronDown,
+  ChevronRight, FileText, Copy, Download, Info, Clock, AlertCircle,
+} from "lucide-react";
 
 const SAMPLE_RFE = `USCIS — California Service Center
 Form I-129, Petition for H-1B Nonimmigrant Worker
@@ -33,78 +36,58 @@ interface RFEIssue {
   resolved: boolean;
 }
 
-const MOCK_ANALYSIS: RFEIssue[] = [
-  {
-    title: "Issue 1: Specialty Occupation",
-    description: "USCIS is questioning whether your Software Engineer position qualifies as a specialty occupation requiring a specific degree.",
-    checklist: [
-      "Provide a detailed position description listing specific duties (at least 1 full page)",
-      "Include industry wage survey data (e.g., OES, DOL) showing bachelor's degree requirement",
-      "Obtain an expert opinion letter from an occupational expert",
-      "Provide job postings for similar positions at other companies showing degree requirements",
-      "Submit organizational chart showing where the position fits",
-      "Attach Occupational Outlook Handbook excerpt for Software Developers",
-    ],
-    sampleResponse: `Regarding Issue 1 — Specialty Occupation:\n\nThe proffered position of Software Engineer (SOC 15-1252) qualifies as a specialty occupation under INA 214(i)(1) and 8 C.F.R. §214.2(h)(4)(ii) for the following reasons:\n\n1. The position normally requires a minimum of a bachelor's degree in Computer Science, Software Engineering, or a closely related technical field...\n\n[Continue with specific evidence citations]`,
-    resolved: false,
-  },
-  {
-    title: "Issue 2: Employer-Employee Relationship",
-    description: "USCIS needs evidence that you maintain control and supervision over the beneficiary's work, especially important for consulting or third-party placement arrangements.",
-    checklist: [
-      "Provide signed MSA/SOW with end client (redact confidential terms)",
-      "Submit organizational charts for both petitioner and end client",
-      "Provide itinerary/work schedule showing petitioner's oversight",
-      "Explain day-to-day control: performance reviews, timesheet approval, HR policies",
-      "Attach offer letter, employee handbook, and benefits documentation",
-      "Submit W-2s or pay stubs showing payroll relationship",
-    ],
-    sampleResponse: `Regarding Issue 2 — Employer-Employee Relationship:\n\nThe Petitioner maintains a bona fide employer-employee relationship with the Beneficiary as evidenced by the following:\n\n1. The Petitioner retains the right to control the Beneficiary's work by [specific methods]...\n\n[Continue with supporting documentation list]`,
-    resolved: false,
-  },
-  {
-    title: "Issue 3: Specialty Degree Requirement",
-    description: "USCIS wants more evidence that your position specifically requires a bachelor's degree in a related field — not just a general degree.",
-    checklist: [
-      "Document that the degree field directly relates to the position duties",
-      "Submit the beneficiary's official transcripts and degree evaluation (if foreign)",
-      "Provide course descriptions showing how education relates to job duties",
-      "Include employer's written explanation of why specific degree is required",
-      "Attach at least 3 similar job postings from other employers in the industry",
-    ],
-    sampleResponse: `Regarding Issue 3 — Specialty Degree Requirement:\n\nThe Petitioner requires a bachelor's degree in Computer Science (or a directly related field) for the following specific reasons tied to the position's duties:\n\n1. The position requires applying theoretical principles of algorithms and data structures, which are covered specifically in computer science curricula...\n\n[Continue with degree-duty mapping]`,
-    resolved: false,
-  },
-];
+interface RFEAnalysis {
+  issueCount: number;
+  deadline: string;
+  visaType: string;
+  issues: RFEIssue[];
+}
 
 export default function RFEAssistantPage() {
   const [step, setStep] = useState<"paste" | "analyze" | "response">("paste");
   const [rfeText, setRfeText] = useState("");
   const [analyzing, setAnalyzing] = useState(false);
-  const [issues, setIssues] = useState<RFEIssue[]>([]);
+  const [analysis, setAnalysis] = useState<RFEAnalysis | null>(null);
   const [expanded, setExpanded] = useState<number | null>(0);
   const [copied, setCopied] = useState<number | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
-  function handleAnalyze() {
+  async function handleAnalyze() {
     setAnalyzing(true);
-    setTimeout(() => {
-      setIssues(MOCK_ANALYSIS.map(i => ({ ...i })));
-      setAnalyzing(false);
+    setError(null);
+    try {
+      const res = await fetch("/api/rfe-analyze", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ rfeText }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Analysis failed");
+      setAnalysis({ ...data, issues: data.issues.map((i: Omit<RFEIssue, "resolved">) => ({ ...i, resolved: false })) });
       setStep("analyze");
-    }, 2000);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Something went wrong. Please try again.");
+    } finally {
+      setAnalyzing(false);
+    }
   }
 
   function toggleResolved(idx: number) {
-    setIssues(prev => prev.map((iss, i) => i === idx ? { ...iss, resolved: !iss.resolved } : iss));
+    if (!analysis) return;
+    setAnalysis({
+      ...analysis,
+      issues: analysis.issues.map((iss, i) => i === idx ? { ...iss, resolved: !iss.resolved } : iss),
+    });
   }
 
   function handleCopy(idx: number) {
-    navigator.clipboard.writeText(issues[idx].sampleResponse);
+    if (!analysis) return;
+    navigator.clipboard.writeText(analysis.issues[idx].sampleResponse);
     setCopied(idx);
     setTimeout(() => setCopied(null), 2000);
   }
 
-  const resolvedCount = issues.filter(i => i.resolved).length;
+  const resolvedCount = analysis?.issues.filter((i) => i.resolved).length ?? 0;
 
   return (
     <div className="p-8 max-w-3xl">
@@ -114,9 +97,12 @@ export default function RFEAssistantPage() {
           <h1 className="text-2xl font-bold">RFE Response Assistant</h1>
           <Badge variant="warning" className="text-xs">Pro</Badge>
         </div>
-        <p className="text-muted-foreground">Paste your USCIS Request for Evidence — we&apos;ll break it down and draft your response</p>
+        <p className="text-muted-foreground">
+          Paste your USCIS Request for Evidence — Claude AI will break it down and draft your response
+        </p>
       </div>
 
+      {/* Step 1: Paste */}
       {step === "paste" && (
         <div>
           <Card className="mb-4">
@@ -125,12 +111,18 @@ export default function RFEAssistantPage() {
                 <p className="text-sm font-semibold mb-2">Paste your RFE notice</p>
                 <Textarea
                   value={rfeText}
-                  onChange={e => setRfeText(e.target.value)}
+                  onChange={(e) => setRfeText(e.target.value)}
                   placeholder="Paste the full text from your USCIS Request for Evidence notice here..."
                   rows={12}
                   className="font-mono text-xs"
                 />
               </div>
+              {error && (
+                <div className="flex items-center gap-2 text-sm text-red-600 bg-red-50 border border-red-100 rounded-lg px-4 py-3">
+                  <AlertCircle className="h-4 w-4 flex-shrink-0" />
+                  {error}
+                </div>
+              )}
               <div className="flex items-center justify-between">
                 <button
                   onClick={() => setRfeText(SAMPLE_RFE)}
@@ -140,7 +132,7 @@ export default function RFEAssistantPage() {
                 </button>
                 <Button onClick={handleAnalyze} disabled={!rfeText.trim() || analyzing}>
                   {analyzing ? (
-                    <><Sparkles className="mr-2 h-4 w-4 animate-pulse" /> Analyzing…</>
+                    <><Sparkles className="mr-2 h-4 w-4 animate-pulse" /> Analyzing with AI…</>
                   ) : (
                     <><Sparkles className="mr-2 h-4 w-4" /> Analyze RFE</>
                   )}
@@ -152,18 +144,19 @@ export default function RFEAssistantPage() {
           <div className="rounded-lg border border-blue-200 bg-blue-50 p-4 flex gap-3">
             <Info className="h-5 w-5 text-blue-500 shrink-0 mt-0.5" />
             <div className="text-sm text-blue-800">
-              <p className="font-semibold">What happens next</p>
+              <p className="font-semibold">What Claude will do</p>
               <ul className="mt-1 space-y-0.5 list-disc list-inside text-xs text-blue-700">
-                <li>AI identifies each distinct issue in your RFE</li>
-                <li>Generates a checklist of documents and evidence to gather</li>
-                <li>Drafts a response for each issue you can customize</li>
+                <li>Identify each distinct issue in your RFE</li>
+                <li>Generate a specific evidence checklist for each issue</li>
+                <li>Draft a professional response framework for each issue</li>
               </ul>
             </div>
           </div>
         </div>
       )}
 
-      {step === "analyze" && issues.length > 0 && (
+      {/* Step 2: Analysis */}
+      {step === "analyze" && analysis && (
         <div>
           {/* Summary bar */}
           <Card className="mb-5 border-orange-200 bg-orange-50/50">
@@ -173,14 +166,17 @@ export default function RFEAssistantPage() {
                   <AlertTriangle className="h-5 w-5 text-orange-600" />
                 </div>
                 <div>
-                  <p className="font-bold text-sm">{issues.length} Issues Identified</p>
-                  <p className="text-xs text-muted-foreground">{resolvedCount} of {issues.length} addressed</p>
+                  <p className="font-bold text-sm">
+                    {analysis.issueCount} Issue{analysis.issueCount !== 1 ? "s" : ""} Identified
+                    {analysis.visaType && <span className="ml-2 font-normal text-muted-foreground">· {analysis.visaType}</span>}
+                  </p>
+                  <p className="text-xs text-muted-foreground">{resolvedCount} of {analysis.issues.length} addressed</p>
                 </div>
               </div>
               <div className="flex items-center gap-3">
                 <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
                   <Clock className="h-4 w-4" />
-                  <span>87-day deadline</span>
+                  <span>{analysis.deadline}</span>
                 </div>
                 <Button size="sm" onClick={() => setStep("response")}>
                   <FileText className="mr-2 h-4 w-4" /> Build Full Response
@@ -191,23 +187,19 @@ export default function RFEAssistantPage() {
 
           {/* Issues */}
           <div className="space-y-3">
-            {issues.map((issue, idx) => (
+            {analysis.issues.map((issue, idx) => (
               <Card key={idx} className={issue.resolved ? "opacity-60" : ""}>
-                <button
-                  className="w-full"
-                  onClick={() => setExpanded(expanded === idx ? null : idx)}
-                >
+                <button className="w-full" onClick={() => setExpanded(expanded === idx ? null : idx)}>
                   <CardHeader className="p-4">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
                         <button
-                          onClick={e => { e.stopPropagation(); toggleResolved(idx); }}
+                          onClick={(e) => { e.stopPropagation(); toggleResolved(idx); }}
                           className="shrink-0"
                         >
                           {issue.resolved
                             ? <CheckCircle2 className="h-5 w-5 text-green-500" />
-                            : <Circle className="h-5 w-5 text-muted-foreground hover:text-primary" />
-                          }
+                            : <Circle className="h-5 w-5 text-muted-foreground hover:text-primary" />}
                         </button>
                         <div className="text-left">
                           <p className="font-semibold text-sm">{issue.title}</p>
@@ -254,7 +246,7 @@ export default function RFEAssistantPage() {
           </div>
 
           <div className="flex justify-between mt-4">
-            <Button variant="outline" onClick={() => { setStep("paste"); setIssues([]); }}>
+            <Button variant="outline" onClick={() => { setStep("paste"); setAnalysis(null); }}>
               Paste New RFE
             </Button>
             <Button onClick={() => setStep("response")}>
@@ -264,7 +256,8 @@ export default function RFEAssistantPage() {
         </div>
       )}
 
-      {step === "response" && (
+      {/* Step 3: Full response */}
+      {step === "response" && analysis && (
         <div>
           <Card className="mb-4">
             <CardHeader>
@@ -275,7 +268,7 @@ export default function RFEAssistantPage() {
             </CardHeader>
             <Separator />
             <CardContent className="p-5 space-y-3">
-              {issues.map((issue, i) => (
+              {analysis.issues.map((issue, i) => (
                 <div key={i} className="rounded-lg border p-4">
                   <div className="flex items-center justify-between mb-2">
                     <p className="font-semibold text-sm">{issue.title}</p>
@@ -288,16 +281,15 @@ export default function RFEAssistantPage() {
                   </pre>
                 </div>
               ))}
-
-              <Button className="w-full mt-2">
-                <Download className="mr-2 h-4 w-4" /> Download as Word Document (.docx)
-              </Button>
             </CardContent>
           </Card>
 
           <div className="rounded-lg border border-yellow-200 bg-yellow-50 p-4 text-sm text-yellow-800">
-            <p className="font-semibold">Attorney Review Recommended</p>
-            <p className="mt-1 text-xs text-yellow-700">This AI-generated draft should be reviewed by a licensed immigration attorney before submission. RFE responses have strict deadlines — typically 87 days.</p>
+            <p className="font-semibold">Attorney Review Required</p>
+            <p className="mt-1 text-xs text-yellow-700">
+              This AI-generated draft must be reviewed and finalized by a licensed immigration attorney before
+              submission. RFE responses have strict deadlines — typically 87 days.
+            </p>
           </div>
 
           <Button variant="outline" className="mt-4" onClick={() => setStep("analyze")}>

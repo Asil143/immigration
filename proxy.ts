@@ -18,6 +18,9 @@ const isPublicRoute = createRouteMatcher([
   "/preview(.*)",
   "/privacy(.*)",
   "/terms(.*)",
+  "/about(.*)",
+  "/contact(.*)",
+  "/faq(.*)",
   // Tools accessible without login
   "/ai-assistant(.*)",
   "/dashboard/tools/checklists(.*)",

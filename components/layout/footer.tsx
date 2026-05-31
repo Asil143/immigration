@@ -25,11 +25,19 @@ const resources = [
   { href: "/pricing", label: "Pricing" },
 ];
 
+const company = [
+  { href: "/about", label: "About" },
+  { href: "/faq", label: "FAQ" },
+  { href: "/contact", label: "Contact" },
+  { href: "/blog", label: "Blog" },
+  { href: "/success-stories", label: "Success Stories" },
+];
+
 export function Footer() {
   return (
     <footer className="border-t bg-slate-900 text-slate-300">
       <div className="container mx-auto px-4 py-14">
-        <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-5">
 
           {/* Brand */}
           <div className="space-y-4 lg:col-span-1">
@@ -82,6 +90,20 @@ export function Footer() {
             <h3 className="font-semibold text-sm text-white">Resources</h3>
             <ul className="space-y-2.5">
               {resources.map((link) => (
+                <li key={link.href}>
+                  <Link href={link.href} className="text-sm text-slate-400 hover:text-white transition-colors">
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Company */}
+          <div className="space-y-4">
+            <h3 className="font-semibold text-sm text-white">Company</h3>
+            <ul className="space-y-2.5">
+              {company.map((link) => (
                 <li key={link.href}>
                   <Link href={link.href} className="text-sm text-slate-400 hover:text-white transition-colors">
                     {link.label}
