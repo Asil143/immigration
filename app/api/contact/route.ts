@@ -5,7 +5,7 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(req: NextRequest) {
   try {
-    const { name, email, subject, message } = await req.json();
+    const { name, email, subject, message, attachment } = await req.json();
 
     if (!name || !email || !message) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
@@ -17,6 +17,9 @@ export async function POST(req: NextRequest) {
       replyTo: email,
       subject: subject ? `[VisaPilot] ${subject}` : "[VisaPilot] Contact Form Submission",
       text: `From: ${name} <${email}>\n\n${message}`,
+      ...(attachment && {
+        attachments: [{ filename: attachment.filename, content: attachment.content }],
+      }),
     });
 
     return NextResponse.json({ ok: true });

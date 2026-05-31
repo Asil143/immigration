@@ -22,6 +22,8 @@ interface PlanInfo { name: string; price: number; id: string; }
 function PaymentModal({ plan, onClose, userEmail }: { plan: PlanInfo; onClose: () => void; userEmail: string }) {
   const [step, setStep] = useState<"choose" | "confirm" | "done">("choose");
   const [form, setForm] = useState({ email: userEmail, txNote: "" });
+  const [screenshot, setScreenshot] = useState<File | null>(null);
+  const [screenshotPreview, setScreenshotPreview] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [copied, setCopied] = useState<string | null>(null);
 
@@ -31,21 +33,41 @@ function PaymentModal({ plan, onClose, userEmail }: { plan: PlanInfo; onClose: (
     setTimeout(() => setCopied(null), 2000);
   }
 
+  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0] ?? null;
+    setScreenshot(file);
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => setScreenshotPreview(reader.result as string);
+      reader.readAsDataURL(file);
+    } else {
+      setScreenshotPreview(null);
+    }
+  }
+
   async function handleSubmit() {
+    if (!screenshot) return;
     setSubmitting(true);
     try {
-      await fetch("/api/contact", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: form.email,
-          email: form.email,
-          subject: `Payment Confirmation — ${plan.name} ($${plan.price})`,
-          message: `Plan: ${plan.name}\nAmount: $${plan.price}\nCustomer email: ${form.email}\n\nTransaction note:\n${form.txNote || "(none provided)"}`,
-        }),
-      });
-      setStep("done");
-    } finally {
+      const reader = new FileReader();
+      reader.readAsDataURL(screenshot);
+      reader.onload = async () => {
+        const base64 = (reader.result as string).split(",")[1];
+        await fetch("/api/contact", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name: form.email,
+            email: form.email,
+            subject: `Payment Confirmation — ${plan.name} ($${plan.price})`,
+            message: `Plan: ${plan.name}\nAmount: $${plan.price}\nCustomer email: ${form.email}\n\nTransaction note:\n${form.txNote || "(none provided)"}`,
+            attachment: { filename: screenshot.name, content: base64 },
+          }),
+        });
+        setStep("done");
+        setSubmitting(false);
+      };
+    } catch {
       setSubmitting(false);
     }
   }
@@ -96,7 +118,7 @@ function PaymentModal({ plan, onClose, userEmail }: { plan: PlanInfo; onClose: (
 
         {step === "confirm" && (
           <div className="p-6 space-y-4">
-            <p className="text-sm text-slate-500">Enter your email and any transaction note so we can activate your plan.</p>
+            <p className="text-sm text-slate-500">Upload your payment screenshot and enter your email to activate your plan.</p>
             <div className="space-y-1">
               <label className="text-xs font-medium text-slate-600">Your email</label>
               <input
@@ -107,8 +129,34 @@ function PaymentModal({ plan, onClose, userEmail }: { plan: PlanInfo; onClose: (
                 placeholder="you@email.com"
               />
             </div>
+
+            {/* Screenshot upload — required */}
             <div className="space-y-1">
-              <label className="text-xs font-medium text-slate-600">Transaction note <span className="text-slate-400 font-normal">(optional — last 4 digits, amount, or screenshot description)</span></label>
+              <label className="text-xs font-medium text-slate-600">
+                Payment screenshot <span className="text-red-500">*</span>
+              </label>
+              <label className={`flex flex-col items-center justify-center w-full rounded-xl border-2 border-dashed cursor-pointer transition-colors ${screenshot ? "border-green-400 bg-green-50" : "border-slate-200 hover:border-blue-400 bg-slate-50"}`}>
+                <input type="file" accept="image/*" className="hidden" onChange={handleFileChange} />
+                {screenshotPreview ? (
+                  <div className="w-full p-2">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={screenshotPreview} alt="Payment screenshot" className="max-h-32 mx-auto rounded-lg object-contain" />
+                    <p className="text-xs text-center text-green-600 mt-1.5 font-medium flex items-center justify-center gap-1">
+                      <Check className="h-3 w-3" /> {screenshot?.name}
+                    </p>
+                  </div>
+                ) : (
+                  <div className="py-5 text-center">
+                    <div className="text-2xl mb-1">📸</div>
+                    <p className="text-xs font-medium text-slate-600">Click to upload screenshot</p>
+                    <p className="text-xs text-slate-400 mt-0.5">PNG, JPG, WEBP up to 5MB</p>
+                  </div>
+                )}
+              </label>
+            </div>
+
+            <div className="space-y-1">
+              <label className="text-xs font-medium text-slate-600">Transaction note <span className="text-slate-400 font-normal">(optional)</span></label>
               <textarea
                 rows={2}
                 className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -119,7 +167,7 @@ function PaymentModal({ plan, onClose, userEmail }: { plan: PlanInfo; onClose: (
             </div>
             <div className="flex gap-2">
               <button onClick={() => setStep("choose")} className="px-4 py-2.5 rounded-xl border border-slate-200 text-sm font-medium text-slate-600 hover:bg-slate-50">← Back</button>
-              <button onClick={handleSubmit} disabled={!form.email || submitting}
+              <button onClick={handleSubmit} disabled={!form.email || !screenshot || submitting}
                 className="flex-1 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white font-bold text-sm transition-colors">
                 {submitting ? "Sending…" : "Submit — activate my plan"}
               </button>
