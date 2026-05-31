@@ -229,4 +229,11 @@ export const visaGuides = [
     icon: "🌍",
     color: "bg-orange-50 text-orange-700",
   },
+  {
+    slug: "travel-advisory",
+    title: "Travel Advisory",
+    subtitle: "Safe travel on a visa, re-entry rules & stamps",
+    icon: "✈️",
+    color: "bg-sky-50 text-sky-700",
+  },
 ] as const;
