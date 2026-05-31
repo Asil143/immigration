@@ -17,7 +17,6 @@ import {
   Wrench,
   Calculator,
   Trophy,
-  Lock,
   UserCircle,
   ScanLine,
   ClipboardList,
@@ -156,12 +155,6 @@ export const toolsNav: NavItem[] = [
     href: "/dashboard/tools/h1b-tracker",
     icon: Trophy,
     description: "Lottery odds & timeline",
-  },
-  {
-    title: "Document Vault",
-    href: "/dashboard/documents/vault",
-    icon: Lock,
-    description: "Store immigration documents",
   },
 ];
 
