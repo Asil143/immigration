@@ -25,7 +25,7 @@ export default function GuidesPage() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {visaGuides.map((guide) => (
             <Link key={guide.slug} href={`/guides/${guide.slug}`}>
               <Card className="h-full cursor-pointer transition-all hover:shadow-lg hover:-translate-y-1">
@@ -40,6 +40,10 @@ export default function GuidesPage() {
                       ? "Post-Graduation"
                       : guide.slug === "h1b-visa"
                       ? "Work Visa"
+                      : guide.slug === "j1-visa"
+                      ? "Exchange Visitor"
+                      : guide.slug === "travel-advisory"
+                      ? "Travel & Re-entry"
                       : "Permanent Residency"}
                   </Badge>
                   <h2 className="font-bold text-lg">{guide.title}</h2>

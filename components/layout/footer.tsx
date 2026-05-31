@@ -7,6 +7,7 @@ const visaGuides = [
   { href: "/guides/h1b-visa", label: "H-1B Work Visa" },
   { href: "/guides/green-card", label: "Green Card" },
   { href: "/guides/j1-visa", label: "J-1 Exchange Visa" },
+  { href: "/guides/travel-advisory", label: "Travel Advisory" },
 ];
 
 const tools = [
@@ -20,8 +21,11 @@ const tools = [
 
 const resources = [
   { href: "/visa-bulletin", label: "Visa Bulletin" },
+  { href: "/glossary", label: "Glossary" },
+  { href: "/employer-lookup", label: "Employer Lookup" },
   { href: "/dashboard/tools/processing-times", label: "Processing Times" },
   { href: "/dashboard/tools/fee-calculator", label: "Fee Calculator" },
+  { href: "/events", label: "Events" },
   { href: "/community", label: "Community" },
   { href: "/pricing", label: "Pricing" },
 ];
@@ -32,6 +36,8 @@ const company = [
   { href: "/contact", label: "Contact" },
   { href: "/blog", label: "Blog" },
   { href: "/success-stories", label: "Success Stories" },
+  { href: "/jobs", label: "Jobs" },
+  { href: "/lawyer-portal", label: "Attorney Portal" },
 ];
 
 export function Footer() {
