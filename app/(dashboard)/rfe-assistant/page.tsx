@@ -1,33 +1,36 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
+import { useUser } from "@clerk/nextjs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import {
   AlertTriangle, Sparkles, CheckCircle2, Circle, ChevronDown,
-  ChevronRight, FileText, Copy, Download, Info, Clock, AlertCircle,
+  FileText, Copy, Download, Info, Clock, AlertCircle, Mail,
+  Phone, MessageSquare, ArrowRight, Building2, User,
 } from "lucide-react";
 
-const SAMPLE_RFE = `USCIS — California Service Center
-Form I-129, Petition for H-1B Nonimmigrant Worker
-Receipt: WAC2512345678
+// ─── Service center lookup from receipt number prefix ─────────────────────────
+const SERVICE_CENTERS: Record<string, { name: string; address: string }> = {
+  WAC: { name: "USCIS California Service Center", address: "P.O. Box 30111, Laguna Niguel, CA 92607-0111" },
+  EAC: { name: "USCIS Vermont Service Center",    address: "75 Lower Welden Street, St. Albans, VT 05479" },
+  LIN: { name: "USCIS Nebraska Service Center",   address: "P.O. Box 82521, Lincoln, NE 68501-2521" },
+  SRC: { name: "USCIS Texas Service Center",      address: "P.O. Box 851488, Mesquite, TX 75185-1488" },
+  MSC: { name: "USCIS National Benefits Center",  address: "P.O. Box 648003, Lee's Summit, MO 64064" },
+  IOE: { name: "USCIS (Online Filing)",           address: "myuscis.gov — online response" },
+};
 
-REQUEST FOR EVIDENCE
+function getServiceCenter(receipt: string) {
+  const prefix = receipt?.slice(0, 3).toUpperCase();
+  return SERVICE_CENTERS[prefix] ?? { name: "USCIS Service Center", address: "[Service Center Address]" };
+}
 
-Issue 1: Specialty Occupation
-The evidence submitted does not sufficiently establish that the proffered position qualifies as a specialty occupation under 8 C.F.R. §214.2(h)(4)(ii). The position of "Software Engineer" as described does not demonstrate that a bachelor's degree in a specific specialty is normally required for the position.
-
-Issue 2: Employer-Employee Relationship
-The documentation submitted does not sufficiently demonstrate that the petitioner will maintain a valid employer-employee relationship with the beneficiary throughout the period of the requested H-1B status, particularly as it relates to control and supervision.
-
-Issue 3: Specialty Degree Requirement
-The evidence does not establish that the proffered position requires the theoretical and practical application of highly specialized knowledge typically acquired through the attainment of a bachelor's or higher degree in a specific specialty.
-
-You must respond to this notice within 87 days from the date of this notice.`;
-
+// ─── Types ────────────────────────────────────────────────────────────────────
 interface RFEIssue {
   title: string;
   description: string;
@@ -43,26 +46,219 @@ interface RFEAnalysis {
   issues: RFEIssue[];
 }
 
+interface Profile {
+  full_name?: string;
+  employer?: string;
+  visa_type?: string;
+}
+
+const SAMPLE_RFE = `USCIS — California Service Center
+Form I-129, Petition for H-1B Nonimmigrant Worker
+Receipt: WAC2512345678
+
+REQUEST FOR EVIDENCE
+
+Issue 1: Specialty Occupation
+The evidence submitted does not sufficiently establish that the proffered position qualifies as a specialty occupation under 8 C.F.R. §214.2(h)(4)(ii). The position of "Software Engineer" as described does not demonstrate that a bachelor's degree in a specific specialty is normally required for the position.
+
+Issue 2: Employer-Employee Relationship
+The documentation submitted does not sufficiently demonstrate that the petitioner will maintain a valid employer-employee relationship with the beneficiary throughout the period of the requested H-1B status.
+
+You must respond to this notice within 87 days from the date of this notice.`;
+
+// ─── PDF generation (client-side, no server needed) ──────────────────────────
+async function generatePDF(
+  analysis: RFEAnalysis,
+  receiptNumber: string,
+  profile: Profile | null,
+  coverLetter: string
+) {
+  const { jsPDF } = await import("jspdf");
+  const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "letter" });
+  const sc = getServiceCenter(receiptNumber);
+  const margin = 20;
+  const pageWidth = 215.9;
+  const usable = pageWidth - margin * 2;
+  let y = margin;
+
+  const addText = (text: string, fontSize: number, bold = false, color = "#000000") => {
+    doc.setFontSize(fontSize);
+    doc.setFont("helvetica", bold ? "bold" : "normal");
+    doc.setTextColor(color);
+    const lines = doc.splitTextToSize(text, usable);
+    lines.forEach((line: string) => {
+      if (y > 265) { doc.addPage(); y = margin; }
+      doc.text(line, margin, y);
+      y += fontSize * 0.45;
+    });
+  };
+
+  const addSpace = (mm = 4) => { y += mm; };
+  const addLine = () => {
+    doc.setDrawColor("#e2e8f0");
+    doc.line(margin, y, margin + usable, y);
+    y += 5;
+  };
+
+  // ── Cover Page ──
+  addText("RFE RESPONSE PACKAGE", 18, true, "#1e3a8a");
+  addSpace(2);
+  addText(`${analysis.visaType} — Request for Evidence`, 12, false, "#475569");
+  addSpace(6);
+  addLine();
+
+  addText("Addressed To:", 9, true, "#64748b");
+  addSpace(1);
+  addText(sc.name, 10, true);
+  addText(sc.address, 10);
+  addSpace(4);
+
+  if (receiptNumber) { addText(`Receipt Number: ${receiptNumber}`, 10, true); addSpace(1); }
+  if (profile?.employer) { addText(`Petitioner (Employer): ${profile.employer}`, 10); addSpace(1); }
+  if (profile?.full_name) { addText(`Beneficiary: ${profile.full_name}`, 10); addSpace(1); }
+  addText(`Response Deadline: ${analysis.deadline}`, 10, true, "#dc2626");
+  addText(`Issues Identified: ${analysis.issueCount}`, 10);
+  addSpace(4);
+  addLine();
+
+  // ── Cover Letter ──
+  doc.addPage(); y = margin;
+  addText("COVER LETTER", 14, true, "#1e3a8a");
+  addSpace(4);
+  const clLines = coverLetter.split("\n");
+  clLines.forEach(line => {
+    addText(line || " ", 10);
+    if (!line) addSpace(1);
+  });
+
+  // ── Response sections per issue ──
+  analysis.issues.forEach((issue, idx) => {
+    doc.addPage(); y = margin;
+
+    addText(`ISSUE ${idx + 1}: ${issue.title.replace(/^Issue \d+:\s*/i, "").toUpperCase()}`, 13, true, "#1e3a8a");
+    addSpace(2);
+    addText("USCIS Concern:", 9, true, "#64748b");
+    addText(issue.description, 10);
+    addSpace(4);
+
+    addText("EVIDENCE CHECKLIST", 10, true, "#059669");
+    addSpace(2);
+    issue.checklist.forEach((item, i) => {
+      addText(`${i + 1}. ${item}`, 10);
+      addSpace(1);
+    });
+    addSpace(4);
+
+    addText("DRAFT RESPONSE", 10, true, "#7c3aed");
+    addSpace(2);
+    addText(issue.sampleResponse, 10);
+    addSpace(6);
+    addLine();
+    addText("[ Attach supporting documents listed above after this section ]", 9, false, "#94a3b8");
+  });
+
+  // ── Disclaimer ──
+  doc.addPage(); y = margin;
+  addText("IMPORTANT DISCLAIMER", 12, true, "#dc2626");
+  addSpace(3);
+  addText(
+    "This package was prepared with AI assistance and is intended as a starting framework only. " +
+    "All response content, evidence selection, and legal arguments must be reviewed, verified, and " +
+    "finalized by a licensed U.S. immigration attorney before submission to USCIS. " +
+    "RFE responses have strict deadlines — typically 87 days from the notice date. " +
+    "Late or incomplete responses may result in denial.",
+    10
+  );
+  addSpace(6);
+  addText("Generated by VisaPilot · visapilot.app", 9, false, "#94a3b8");
+
+  doc.save(`RFE-Response-Package-${receiptNumber || "VisaPilot"}.pdf`);
+}
+
+// ─── Cover letter builder ─────────────────────────────────────────────────────
+function buildCoverLetter(analysis: RFEAnalysis, receiptNumber: string, profile: Profile | null): string {
+  const sc = getServiceCenter(receiptNumber);
+  const today = new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
+  const beneficiary = profile?.full_name || "[Beneficiary Name]";
+  const employer = profile?.employer || "[Employer / Petitioner Name]";
+
+  return `${today}
+
+${sc.name}
+${sc.address}
+
+Re: Response to Request for Evidence
+Receipt Number: ${receiptNumber || "[Receipt Number]"}
+Petition Type: ${analysis.visaType}
+Petitioner: ${employer}
+Beneficiary: ${beneficiary}
+Response Deadline: ${analysis.deadline}
+
+Dear USCIS Officer:
+
+We write on behalf of ${employer} ("Petitioner") in response to the Request for Evidence ("RFE") issued in connection with the above-referenced ${analysis.visaType} petition for ${beneficiary} ("Beneficiary").
+
+The Petitioner respectfully submits the following evidence to address each issue raised in the RFE. We are confident that the enclosed documentation fully satisfies the evidentiary requirements set forth by USCIS.
+
+This response addresses ${analysis.issueCount} issue${analysis.issueCount !== 1 ? "s" : ""} identified in the RFE:
+
+${analysis.issues.map((iss, i) => `  ${i + 1}. ${iss.title}`).join("\n")}
+
+The evidence submitted herewith demonstrates that the Petitioner and Beneficiary fully satisfy all applicable statutory and regulatory requirements. Should you require any additional information, please do not hesitate to contact the undersigned.
+
+Respectfully submitted,
+
+_______________________________
+[Attorney Name], Esq.
+[Law Firm Name]
+[Address]
+[Phone] | [Email]
+[Attorney Bar Number]
+
+Enclosures: As listed per issue response sections`;
+}
+
+// ─── Page ─────────────────────────────────────────────────────────────────────
 export default function RFEAssistantPage() {
+  const { user } = useUser();
   const [step, setStep] = useState<"paste" | "analyze" | "response">("paste");
   const [rfeText, setRfeText] = useState("");
+  const [receiptNumber, setReceiptNumber] = useState("");
   const [analyzing, setAnalyzing] = useState(false);
   const [analysis, setAnalysis] = useState<RFEAnalysis | null>(null);
+  const [profile, setProfile] = useState<Profile | null>(null);
   const [expanded, setExpanded] = useState<number | null>(0);
   const [copied, setCopied] = useState<number | null>(null);
+  const [exporting, setExporting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [ticketOpen, setTicketOpen] = useState(false);
+  const [ticketForm, setTicketForm] = useState({ name: user?.fullName ?? "", email: user?.emailAddresses?.[0]?.emailAddress ?? "", description: "", phone: "" });
+  const [ticketSent, setTicketSent] = useState(false);
 
   async function handleAnalyze() {
     setAnalyzing(true);
     setError(null);
     try {
-      const res = await fetch("/api/rfe-analyze", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ rfeText }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Analysis failed");
+      // Fetch profile for personalization
+      const [rfeRes, profRes] = await Promise.all([
+        fetch("/api/rfe-analyze", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ rfeText }),
+        }),
+        fetch("/api/profile"),
+      ]);
+      const data = await rfeRes.json();
+      if (!rfeRes.ok) throw new Error(data.error || "Analysis failed");
+      if (profRes.ok) {
+        const prof = await profRes.json();
+        if (prof) setProfile({ full_name: prof.full_name, employer: prof.employer, visa_type: prof.visa_type });
+      }
+      // Extract receipt number from text if not manually entered
+      if (!receiptNumber) {
+        const match = rfeText.match(/\b([A-Z]{3}\d{10,13})\b/);
+        if (match) setReceiptNumber(match[1]);
+      }
       setAnalysis({ ...data, issues: data.issues.map((i: Omit<RFEIssue, "resolved">) => ({ ...i, resolved: false })) });
       setStep("analyze");
     } catch (err) {
@@ -74,10 +270,7 @@ export default function RFEAssistantPage() {
 
   function toggleResolved(idx: number) {
     if (!analysis) return;
-    setAnalysis({
-      ...analysis,
-      issues: analysis.issues.map((iss, i) => i === idx ? { ...iss, resolved: !iss.resolved } : iss),
-    });
+    setAnalysis({ ...analysis, issues: analysis.issues.map((iss, i) => i === idx ? { ...iss, resolved: !iss.resolved } : iss) });
   }
 
   function handleCopy(idx: number) {
@@ -87,55 +280,97 @@ export default function RFEAssistantPage() {
     setTimeout(() => setCopied(null), 2000);
   }
 
-  const resolvedCount = analysis?.issues.filter((i) => i.resolved).length ?? 0;
+  async function handleExportPDF() {
+    if (!analysis) return;
+    setExporting(true);
+    try {
+      const coverLetter = buildCoverLetter(analysis, receiptNumber, profile);
+      await generatePDF(analysis, receiptNumber, profile, coverLetter);
+    } finally {
+      setExporting(false);
+    }
+  }
+
+  async function handleTicketSubmit() {
+    await fetch("/api/contact", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: ticketForm.name,
+        email: ticketForm.email,
+        subject: "Complex RFE Case — Expert Help Request",
+        message: `Phone: ${ticketForm.phone}\n\nCase description:\n${ticketForm.description}\n\nReceipt: ${receiptNumber || "Not provided"}`,
+      }),
+    });
+    setTicketSent(true);
+  }
+
+  const resolvedCount = analysis?.issues.filter(i => i.resolved).length ?? 0;
+  const coverLetter = analysis ? buildCoverLetter(analysis, receiptNumber, profile) : "";
 
   return (
     <div className="p-8 max-w-3xl">
+      {/* Header */}
       <div className="mb-8">
         <div className="flex items-center gap-3 mb-1">
           <AlertTriangle className="h-6 w-6 text-orange-500" />
           <h1 className="text-2xl font-bold">RFE Response Assistant</h1>
           <Badge variant="warning" className="text-xs">Pro</Badge>
         </div>
-        <p className="text-muted-foreground">
-          Paste your USCIS Request for Evidence — Claude AI will break it down and draft your response
+        <p className="text-muted-foreground text-sm">
+          Paste your USCIS Request for Evidence — AI breaks it down, builds your evidence checklist, drafts responses, and exports a complete PDF package.
         </p>
       </div>
 
-      {/* Step 1: Paste */}
+      {/* ── Step 1: Paste ── */}
       {step === "paste" && (
-        <div>
-          <Card className="mb-4">
+        <div className="space-y-4">
+          <Card>
             <CardContent className="p-5 space-y-4">
-              <div>
-                <p className="text-sm font-semibold mb-2">Paste your RFE notice</p>
-                <Textarea
-                  value={rfeText}
-                  onChange={(e) => setRfeText(e.target.value)}
-                  placeholder="Paste the full text from your USCIS Request for Evidence notice here..."
-                  rows={12}
-                  className="font-mono text-xs"
-                />
+              <div className="grid grid-cols-2 gap-4">
+                <div className="col-span-2 space-y-1.5">
+                  <Label>Paste your RFE notice</Label>
+                  <Textarea
+                    value={rfeText}
+                    onChange={e => setRfeText(e.target.value)}
+                    placeholder="Paste the full text from your USCIS Request for Evidence notice here..."
+                    rows={10}
+                    className="font-mono text-xs"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label>Receipt Number <span className="text-muted-foreground font-normal">(optional — for cover letter)</span></Label>
+                  <Input
+                    placeholder="e.g. WAC2512345678"
+                    value={receiptNumber}
+                    onChange={e => setReceiptNumber(e.target.value.toUpperCase())}
+                    className="font-mono"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label>Service Center <span className="text-muted-foreground font-normal">(auto-detected)</span></Label>
+                  <Input
+                    value={receiptNumber ? getServiceCenter(receiptNumber).name : "Enter receipt number above"}
+                    readOnly
+                    className="text-muted-foreground bg-slate-50 text-sm"
+                  />
+                </div>
               </div>
+
               {error && (
                 <div className="flex items-center gap-2 text-sm text-red-600 bg-red-50 border border-red-100 rounded-lg px-4 py-3">
-                  <AlertCircle className="h-4 w-4 flex-shrink-0" />
-                  {error}
+                  <AlertCircle className="h-4 w-4 shrink-0" /> {error}
                 </div>
               )}
+
               <div className="flex items-center justify-between">
-                <button
-                  onClick={() => setRfeText(SAMPLE_RFE)}
-                  className="text-xs text-primary hover:underline"
-                >
+                <button onClick={() => { setRfeText(SAMPLE_RFE); setReceiptNumber("WAC2512345678"); }} className="text-xs text-primary hover:underline">
                   Try sample RFE (H-1B)
                 </button>
                 <Button onClick={handleAnalyze} disabled={!rfeText.trim() || analyzing}>
-                  {analyzing ? (
-                    <><Sparkles className="mr-2 h-4 w-4 animate-pulse" /> Analyzing with AI…</>
-                  ) : (
-                    <><Sparkles className="mr-2 h-4 w-4" /> Analyze RFE</>
-                  )}
+                  {analyzing
+                    ? <><Sparkles className="mr-2 h-4 w-4 animate-pulse" />Analyzing with AI…</>
+                    : <><Sparkles className="mr-2 h-4 w-4" />Analyze RFE</>}
                 </Button>
               </div>
             </CardContent>
@@ -144,21 +379,22 @@ export default function RFEAssistantPage() {
           <div className="rounded-lg border border-blue-200 bg-blue-50 p-4 flex gap-3">
             <Info className="h-5 w-5 text-blue-500 shrink-0 mt-0.5" />
             <div className="text-sm text-blue-800">
-              <p className="font-semibold">What Claude will do</p>
+              <p className="font-semibold">What you get for $49</p>
               <ul className="mt-1 space-y-0.5 list-disc list-inside text-xs text-blue-700">
-                <li>Identify each distinct issue in your RFE</li>
-                <li>Generate a specific evidence checklist for each issue</li>
-                <li>Draft a professional response framework for each issue</li>
+                <li>AI identifies every USCIS issue with plain-English explanation</li>
+                <li>Specific evidence checklist for each issue</li>
+                <li>Attorney-style draft response for each issue</li>
+                <li>Cover letter addressed to the correct service center</li>
+                <li>Complete PDF export — ready to hand to your attorney</li>
               </ul>
             </div>
           </div>
         </div>
       )}
 
-      {/* Step 2: Analysis */}
+      {/* ── Step 2: Analysis ── */}
       {step === "analyze" && analysis && (
         <div>
-          {/* Summary bar */}
           <Card className="mb-5 border-orange-200 bg-orange-50/50">
             <CardContent className="p-4 flex items-center justify-between flex-wrap gap-3">
               <div className="flex items-center gap-3">
@@ -176,16 +412,23 @@ export default function RFEAssistantPage() {
               <div className="flex items-center gap-3">
                 <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
                   <Clock className="h-4 w-4" />
-                  <span>{analysis.deadline}</span>
+                  <span className="font-semibold text-red-600">{analysis.deadline}</span>
                 </div>
                 <Button size="sm" onClick={() => setStep("response")}>
-                  <FileText className="mr-2 h-4 w-4" /> Build Full Response
+                  <FileText className="mr-2 h-4 w-4" /> Build Package
                 </Button>
               </div>
             </CardContent>
           </Card>
 
-          {/* Issues */}
+          {receiptNumber && (
+            <div className="mb-4 flex items-center gap-2 text-xs text-muted-foreground bg-slate-50 border rounded-lg px-3 py-2">
+              <Building2 className="h-3.5 w-3.5" />
+              <span>Response addressed to: <strong>{getServiceCenter(receiptNumber).name}</strong></span>
+              {profile?.employer && <><span>·</span><User className="h-3.5 w-3.5" /><span>Petitioner: <strong>{profile.employer}</strong></span></>}
+            </div>
+          )}
+
           <div className="space-y-3">
             {analysis.issues.map((issue, idx) => (
               <Card key={idx} className={issue.resolved ? "opacity-60" : ""}>
@@ -193,10 +436,7 @@ export default function RFEAssistantPage() {
                   <CardHeader className="p-4">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
-                        <button
-                          onClick={(e) => { e.stopPropagation(); toggleResolved(idx); }}
-                          className="shrink-0"
-                        >
+                        <button onClick={e => { e.stopPropagation(); toggleResolved(idx); }} className="shrink-0">
                           {issue.resolved
                             ? <CheckCircle2 className="h-5 w-5 text-green-500" />
                             : <Circle className="h-5 w-5 text-muted-foreground hover:text-primary" />}
@@ -210,7 +450,6 @@ export default function RFEAssistantPage() {
                     </div>
                   </CardHeader>
                 </button>
-
                 {expanded === idx && (
                   <CardContent className="px-4 pb-4 pt-0">
                     <Separator className="mb-4" />
@@ -220,8 +459,10 @@ export default function RFEAssistantPage() {
                         <ul className="space-y-2">
                           {issue.checklist.map((item, i) => (
                             <li key={i} className="flex items-start gap-2 text-xs">
-                              <ChevronRight className="h-3.5 w-3.5 text-primary mt-0.5 shrink-0" />
-                              <span>{item}</span>
+                              <div className="h-4 w-4 rounded border border-slate-300 shrink-0 mt-0.5 flex items-center justify-center">
+                                <div className="h-1.5 w-1.5 rounded-full bg-slate-300" />
+                              </div>
+                              {item}
                             </li>
                           ))}
                         </ul>
@@ -230,8 +471,7 @@ export default function RFEAssistantPage() {
                         <div className="flex items-center justify-between mb-2">
                           <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Draft Response</p>
                           <Button variant="ghost" size="sm" className="h-6 text-xs" onClick={() => handleCopy(idx)}>
-                            <Copy className="h-3 w-3 mr-1" />
-                            {copied === idx ? "Copied!" : "Copy"}
+                            <Copy className="h-3 w-3 mr-1" />{copied === idx ? "Copied!" : "Copy"}
                           </Button>
                         </div>
                         <pre className="whitespace-pre-wrap font-mono text-xs bg-slate-50 rounded-lg p-3 leading-5 max-h-48 overflow-y-auto text-muted-foreground">
@@ -250,51 +490,162 @@ export default function RFEAssistantPage() {
               Paste New RFE
             </Button>
             <Button onClick={() => setStep("response")}>
-              <Download className="mr-2 h-4 w-4" /> Export Full Response Package
+              <Download className="mr-2 h-4 w-4" /> Export PDF Package
             </Button>
           </div>
         </div>
       )}
 
-      {/* Step 3: Full response */}
+      {/* ── Step 3: Full Response Package + PDF ── */}
       {step === "response" && analysis && (
-        <div>
-          <Card className="mb-4">
-            <CardHeader>
-              <CardTitle className="text-base flex items-center gap-2">
-                <CheckCircle2 className="h-5 w-5 text-green-500" />
-                Full Response Package Ready
-              </CardTitle>
+        <div className="space-y-4">
+          {/* Cover Letter Preview */}
+          <Card>
+            <CardHeader className="pb-3">
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-base flex items-center gap-2">
+                  <FileText className="h-5 w-5 text-blue-600" /> Cover Letter
+                </CardTitle>
+                <Badge variant="success" className="text-xs">Auto-generated</Badge>
+              </div>
             </CardHeader>
             <Separator />
-            <CardContent className="p-5 space-y-3">
-              {analysis.issues.map((issue, i) => (
-                <div key={i} className="rounded-lg border p-4">
-                  <div className="flex items-center justify-between mb-2">
-                    <p className="font-semibold text-sm">{issue.title}</p>
-                    <Button variant="outline" size="sm" className="h-7 text-xs" onClick={() => handleCopy(i)}>
-                      <Copy className="h-3 w-3 mr-1.5" /> {copied === i ? "Copied!" : "Copy"}
-                    </Button>
-                  </div>
-                  <pre className="whitespace-pre-wrap font-mono text-xs bg-slate-50 rounded-lg p-3 leading-5 text-muted-foreground">
-                    {issue.sampleResponse}
-                  </pre>
-                </div>
-              ))}
+            <CardContent className="p-5">
+              <pre className="whitespace-pre-wrap font-mono text-xs bg-slate-50 rounded-lg p-4 leading-5 text-slate-700 max-h-72 overflow-y-auto">
+                {coverLetter}
+              </pre>
             </CardContent>
           </Card>
 
+          {/* Response sections */}
+          {analysis.issues.map((issue, i) => (
+            <Card key={i}>
+              <CardContent className="p-5">
+                <div className="flex items-center justify-between mb-3">
+                  <p className="font-semibold text-sm">{issue.title}</p>
+                  <Button variant="outline" size="sm" className="h-7 text-xs" onClick={() => handleCopy(i)}>
+                    <Copy className="h-3 w-3 mr-1.5" />{copied === i ? "Copied!" : "Copy Response"}
+                  </Button>
+                </div>
+                <div className="mb-3">
+                  <p className="text-xs font-semibold text-green-700 mb-1.5">Evidence to attach:</p>
+                  <ul className="space-y-1">
+                    {issue.checklist.map((item, j) => (
+                      <li key={j} className="flex items-start gap-2 text-xs text-muted-foreground">
+                        <CheckCircle2 className="h-3.5 w-3.5 text-green-500 shrink-0 mt-0.5" />{item}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <Separator className="my-3" />
+                <p className="text-xs font-semibold text-purple-700 mb-1.5">Draft Response:</p>
+                <pre className="whitespace-pre-wrap font-mono text-xs bg-slate-50 rounded-lg p-3 leading-5 text-slate-700">
+                  {issue.sampleResponse}
+                </pre>
+              </CardContent>
+            </Card>
+          ))}
+
+          {/* Export + actions */}
+          <div className="flex gap-3 flex-wrap">
+            <Button onClick={handleExportPDF} disabled={exporting} className="flex-1">
+              {exporting
+                ? <><Sparkles className="mr-2 h-4 w-4 animate-pulse" />Generating PDF…</>
+                : <><Download className="mr-2 h-4 w-4" />Download PDF Package</>}
+            </Button>
+            <Button variant="outline" onClick={() => setStep("analyze")}>
+              ← Back to Issues
+            </Button>
+          </div>
+
           <div className="rounded-lg border border-yellow-200 bg-yellow-50 p-4 text-sm text-yellow-800">
-            <p className="font-semibold">Attorney Review Required</p>
+            <p className="font-semibold">Attorney Review Required Before Submission</p>
             <p className="mt-1 text-xs text-yellow-700">
-              This AI-generated draft must be reviewed and finalized by a licensed immigration attorney before
-              submission. RFE responses have strict deadlines — typically 87 days.
+              This AI-generated package is a complete starting framework. All content must be reviewed and finalized by a licensed immigration attorney. Deadline: {analysis.deadline}.
             </p>
           </div>
 
-          <Button variant="outline" className="mt-4" onClick={() => setStep("analyze")}>
-            ← Back to Issues
-          </Button>
+          {/* ── Concierge Section ── */}
+          <Card className="border-2 border-slate-200 bg-gradient-to-br from-slate-50 to-blue-50 mt-6">
+            <CardContent className="p-6">
+              <div className="flex items-start gap-4">
+                <div className="h-12 w-12 rounded-xl bg-blue-100 flex items-center justify-center shrink-0">
+                  <MessageSquare className="h-6 w-6 text-blue-600" />
+                </div>
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-1">
+                    <h3 className="font-bold text-base">Is your case complex?</h3>
+                    <Badge variant="info" className="text-xs">Concierge</Badge>
+                  </div>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    Multiple RFEs, prior denials, employer issues, O-1/EB-1 cases, or overlapping petitions? Our immigration specialists review your full case and guide you through every step — priced based on complexity.
+                  </p>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4 text-xs">
+                    {[
+                      { icon: Mail,  label: "Email us", value: "rfe@visapilot.app" },
+                      { icon: Phone, label: "Call / WhatsApp", value: "+1 (555) 000-0000" },
+                      { icon: Clock, label: "Response time", value: "Within 24 hours" },
+                    ].map(item => (
+                      <div key={item.label} className="flex items-center gap-2 bg-white rounded-lg border px-3 py-2">
+                        <item.icon className="h-3.5 w-3.5 text-blue-500 shrink-0" />
+                        <div>
+                          <p className="text-muted-foreground">{item.label}</p>
+                          <p className="font-semibold text-slate-700">{item.value}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {!ticketSent ? (
+                    ticketOpen ? (
+                      <div className="bg-white rounded-xl border p-4 space-y-3">
+                        <p className="text-sm font-semibold">Tell us about your case</p>
+                        <div className="grid grid-cols-2 gap-3">
+                          <div className="space-y-1">
+                            <Label className="text-xs">Your Name</Label>
+                            <Input className="h-8 text-sm" value={ticketForm.name} onChange={e => setTicketForm(f => ({ ...f, name: e.target.value }))} />
+                          </div>
+                          <div className="space-y-1">
+                            <Label className="text-xs">Email</Label>
+                            <Input className="h-8 text-sm" type="email" value={ticketForm.email} onChange={e => setTicketForm(f => ({ ...f, email: e.target.value }))} />
+                          </div>
+                          <div className="col-span-2 space-y-1">
+                            <Label className="text-xs">Phone / WhatsApp (optional)</Label>
+                            <Input className="h-8 text-sm" value={ticketForm.phone} onChange={e => setTicketForm(f => ({ ...f, phone: e.target.value }))} />
+                          </div>
+                          <div className="col-span-2 space-y-1">
+                            <Label className="text-xs">Briefly describe your situation</Label>
+                            <Textarea
+                              rows={3}
+                              className="text-sm resize-none"
+                              placeholder="e.g. H-1B RFE with 3 issues, prior denial in 2023, employer uncooperative with documentation..."
+                              value={ticketForm.description}
+                              onChange={e => setTicketForm(f => ({ ...f, description: e.target.value }))}
+                            />
+                          </div>
+                        </div>
+                        <div className="flex gap-2">
+                          <Button size="sm" className="flex-1" onClick={handleTicketSubmit} disabled={!ticketForm.email || !ticketForm.description}>
+                            <ArrowRight className="h-3.5 w-3.5 mr-1.5" /> Submit — We'll reach out within 24h
+                          </Button>
+                          <Button size="sm" variant="ghost" onClick={() => setTicketOpen(false)}>Cancel</Button>
+                        </div>
+                      </div>
+                    ) : (
+                      <Button variant="outline" className="border-blue-200 text-blue-700 hover:bg-blue-50" onClick={() => setTicketOpen(true)}>
+                        <MessageSquare className="h-4 w-4 mr-2" /> Get Expert Help →
+                      </Button>
+                    )
+                  ) : (
+                    <div className="flex items-center gap-2 text-sm text-green-700 bg-green-50 border border-green-200 rounded-lg px-4 py-3">
+                      <CheckCircle2 className="h-4 w-4" />
+                      Request received! We'll email you within 24 hours with next steps and pricing.
+                    </div>
+                  )}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         </div>
       )}
     </div>
