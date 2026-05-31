@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useUser } from "@clerk/nextjs";
 import {
   CheckCircle2, ArrowRight, Zap, Shield, Star,
   Users, ChevronDown, Bot, Calendar, Lock,
@@ -152,6 +153,8 @@ const faqs = [
 
 export default function PricingPage() {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const { isSignedIn } = useUser();
+  const dest = (path: string) => isSignedIn ? "/dashboard" : path;
 
   return (
     <div className="bg-white min-h-screen">
@@ -196,10 +199,10 @@ export default function PricingPage() {
             </div>
             <div className="shrink-0 text-center">
               <Link
-                href="/sign-up"
+                href={dest("/sign-up")}
                 className="block px-8 py-3 rounded-xl bg-slate-900 text-white font-semibold text-sm hover:bg-slate-700 transition-colors"
               >
-                Get started free
+                {isSignedIn ? "Go to Dashboard" : "Get started free"}
               </Link>
               <p className="text-xs text-slate-400 mt-2">No credit card needed</p>
             </div>
@@ -207,7 +210,7 @@ export default function PricingPage() {
         </div>
 
         {/* Event Packs — primary revenue */}
-        <div className="mb-20">
+        <div id="packs" className="mb-20">
           <div className="text-center mb-10">
             <p className="text-sm font-medium text-blue-600 mb-2">Pay once · Use when needed</p>
             <h2 className="text-3xl font-bold text-slate-900 mb-3">Event Packs</h2>
@@ -255,11 +258,11 @@ export default function PricingPage() {
                 </div>
                 <div className="p-4 bg-white border-t" style={{ borderColor: pack.border }}>
                   <Link
-                    href={`/sign-up?pack=${pack.id}`}
+                    href={dest(`/sign-up?pack=${pack.id}`)}
                     className="block text-center py-2.5 rounded-xl text-sm font-bold text-white transition-opacity hover:opacity-90"
                     style={{ backgroundColor: pack.accent }}
                   >
-                    Get {pack.name} →
+                    {isSignedIn ? "Go to Dashboard →" : `Get ${pack.name} →`}
                   </Link>
                 </div>
               </div>
@@ -311,16 +314,16 @@ export default function PricingPage() {
 
                 <div className="flex flex-col sm:flex-row gap-3">
                   <Link
-                    href="/sign-up?plan=all-access"
+                    href={dest("/sign-up?plan=all-access")}
                     className="flex-1 text-center py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm transition-colors"
                   >
-                    Get All-Access — $99/year
+                    {isSignedIn ? "Go to Dashboard" : "Get All-Access — $99/year"}
                   </Link>
                   <Link
-                    href="/sign-up"
+                    href={dest("/sign-up")}
                     className="flex-1 text-center py-3 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-white font-semibold text-sm transition-colors"
                   >
-                    Start free first
+                    {isSignedIn ? "Browse free tools" : "Start free first"}
                   </Link>
                 </div>
 
@@ -355,7 +358,7 @@ export default function PricingPage() {
               {
                 who: "I'm exploring options",
                 pick: "Free tier",
-                href: "/sign-up",
+                href: dest("/sign-up"),
                 color: "bg-slate-100 text-slate-700 border-slate-200",
                 btn: "bg-slate-800 text-white",
                 desc: "Use checklists, guides, and tools — no payment needed.",
@@ -371,7 +374,7 @@ export default function PricingPage() {
               {
                 who: "I'm mid-journey with multiple active steps",
                 pick: "All-Access $99/yr",
-                href: "/sign-up?plan=all-access",
+                href: dest("/sign-up?plan=all-access"),
                 color: "bg-purple-100 text-purple-800 border-purple-200",
                 btn: "bg-purple-600 text-white",
                 desc: "Everything included. Pay once for the year, cancel anytime.",
@@ -385,7 +388,7 @@ export default function PricingPage() {
                 </div>
                 <p className="text-xs text-slate-400 leading-5 flex-1">{item.desc}</p>
                 <Link href={item.href} className={`block text-center py-2 rounded-lg text-xs font-bold ${item.btn}`}>
-                  Get started
+                  {isSignedIn ? "Go to Dashboard" : "Get started"}
                 </Link>
               </div>
             ))}
@@ -501,8 +504,8 @@ export default function PricingPage() {
             No credit card. No commitment. Upgrade to a pack or All-Access the moment you need it.
           </p>
           <div className="flex justify-center gap-3 flex-wrap">
-            <Link href="/sign-up" className="px-7 py-3 rounded-xl text-sm font-bold bg-white text-blue-700 hover:bg-blue-50 transition-colors">
-              Get Started Free
+            <Link href={dest("/sign-up")} className="px-7 py-3 rounded-xl text-sm font-bold bg-white text-blue-700 hover:bg-blue-50 transition-colors">
+              {isSignedIn ? "Go to Dashboard" : "Get Started Free"}
             </Link>
             <Link href="/dashboard/tools/checklists" className="px-7 py-3 rounded-xl text-sm font-bold bg-white/10 border border-white/20 text-white hover:bg-white/20 transition-colors">
               Browse Free Checklists
