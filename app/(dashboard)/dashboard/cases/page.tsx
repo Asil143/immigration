@@ -31,6 +31,15 @@ interface VisaCase {
   created_at: string;
 }
 
+interface MonitoredCase {
+  id: string;
+  receipt_number: string;
+  form_type: string;
+  label: string | null;
+  last_status: string | null;
+  last_checked_at: string | null;
+}
+
 const statusConfig: Record<CaseStatus, { icon: React.ElementType; color: string; badge: "default" | "secondary" | "destructive" | "outline" | "success" | "warning" | "info" }> = {
   active:   { icon: CheckCircle2, color: "text-green-600",  badge: "success"     },
   pending:  { icon: Clock,        color: "text-yellow-600", badge: "warning"     },
@@ -67,6 +76,7 @@ const STATUSES: CaseStatus[] = ["active","pending","approved","denied","expired"
 export default function CasesPage() {
   const { isSignedIn } = useUser();
   const [cases, setCases] = useState<VisaCase[]>([]);
+  const [monitored, setMonitored] = useState<MonitoredCase[]>([]);
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState<VisaCase | null>(null);
@@ -80,10 +90,13 @@ export default function CasesPage() {
       setLoading(false);
       return;
     }
-    fetch("/api/visa-cases")
-      .then(r => r.ok ? r.json() : [])
-      .then(data => { if (Array.isArray(data)) setCases(data); })
-      .finally(() => setLoading(false));
+    Promise.all([
+      fetch("/api/visa-cases").then(r => r.ok ? r.json() : []),
+      fetch("/api/cases").then(r => r.ok ? r.json() : []),
+    ]).then(([visaCases, monitoredCases]) => {
+      if (Array.isArray(visaCases)) setCases(visaCases);
+      if (Array.isArray(monitoredCases)) setMonitored(monitoredCases);
+    }).finally(() => setLoading(false));
   }, [isSignedIn]);
 
   async function addCase() {
@@ -120,6 +133,7 @@ export default function CasesPage() {
 
   const active = cases.filter(c => c.status === "active" || c.status === "pending");
   const historical = cases.filter(c => ["approved","denied","expired","archived"].includes(c.status));
+  const totalAll = cases.length + monitored.length;
 
   return (
     <div className="p-8 max-w-4xl">
@@ -148,7 +162,7 @@ export default function CasesPage() {
           { label: "Active",   value: cases.filter(c=>c.status==="active").length,   color: "text-green-600"  },
           { label: "Pending",  value: cases.filter(c=>c.status==="pending").length,  color: "text-yellow-600" },
           { label: "Approved", value: cases.filter(c=>c.status==="approved").length, color: "text-blue-600"   },
-          { label: "Total",    value: cases.length,                                  color: "text-foreground" },
+          { label: "Total",    value: totalAll,                                       color: "text-foreground" },
         ].map(s => (
           <Card key={s.label}>
             <CardContent className="p-4 text-center">
@@ -161,14 +175,48 @@ export default function CasesPage() {
 
       {loading ? (
         <div className="flex justify-center py-16"><Loader2 className="h-6 w-6 animate-spin text-muted-foreground" /></div>
-      ) : cases.length === 0 ? (
+      ) : (cases.length === 0 && monitored.length === 0) ? (
         <div className="text-center py-16 rounded-2xl" style={{ backgroundColor: "#f8fafc", border: "1px dashed #e2e8f0" }}>
           <FolderOpen className="h-10 w-10 mx-auto mb-3 text-slate-300" />
           <p className="font-medium text-muted-foreground">No cases yet</p>
-          <p className="text-sm text-muted-foreground mt-1">Click New Case to start tracking a visa application.</p>
+          <p className="text-sm text-muted-foreground mt-1">Click New Case to start tracking a visa application, or add receipt numbers in your <a href="/dashboard/profile" className="text-primary underline">Profile</a>.</p>
         </div>
       ) : (
         <>
+          {monitored.length > 0 && (
+            <div className="space-y-3 mb-8">
+              <h2 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">USCIS Receipt Tracking</h2>
+              {monitored.map(c => (
+                <Card key={c.id}>
+                  <CardContent className="p-5">
+                    <div className="flex items-start justify-between gap-4 flex-wrap">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <Badge variant="secondary" className="text-xs font-mono">{c.receipt_number}</Badge>
+                          <Badge variant="outline" className="text-xs">{c.form_type}</Badge>
+                        </div>
+                        {c.label && <h3 className="font-semibold mt-2 text-sm">{c.label}</h3>}
+                        {c.last_status && (
+                          <p className="text-xs text-muted-foreground mt-1.5 leading-relaxed line-clamp-2">{c.last_status}</p>
+                        )}
+                        {c.last_checked_at && (
+                          <p className="text-xs text-muted-foreground mt-1">Updated {new Date(c.last_checked_at).toLocaleDateString()}</p>
+                        )}
+                      </div>
+                      <a
+                        href={`https://egov.uscis.gov/casestatus/mycasestatus.do?appReceiptNum=${c.receipt_number}`}
+                        target="_blank" rel="noopener noreferrer"
+                        className="text-xs text-primary hover:underline shrink-0 mt-1"
+                      >
+                        Check on USCIS ↗
+                      </a>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
+
           {active.length > 0 && (
             <div className="space-y-4 mb-8">
               <h2 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">Active & Pending</h2>
