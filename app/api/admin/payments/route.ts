@@ -1,4 +1,4 @@
-import { currentUser } from "@clerk/nextjs/server";
+import { auth, clerkClient } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/server";
 import { Resend } from "resend";
@@ -7,8 +7,15 @@ const ADMIN_EMAIL = "kamepalliasil143@gmail.com";
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 async function checkAdmin(): Promise<boolean> {
-  const user = await currentUser();
-  return user?.emailAddresses?.some(e => e.emailAddress === ADMIN_EMAIL) ?? false;
+  const { userId } = await auth();
+  if (!userId) return false;
+  try {
+    const client = await clerkClient();
+    const user = await client.users.getUser(userId);
+    return user.emailAddresses.some(e => e.emailAddress === ADMIN_EMAIL);
+  } catch {
+    return false;
+  }
 }
 
 export async function GET() {
@@ -51,7 +58,6 @@ export async function PATCH(req: NextRequest) {
     .eq("id", id);
 
   if (action === "activate") {
-    // Calculate expiry — All-Access is 1 year, packs are lifetime
     const expiresAt = sub.plan_id === "all-access"
       ? new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString()
       : null;
@@ -64,7 +70,6 @@ export async function PATCH(req: NextRequest) {
       expires_at: expiresAt,
     });
 
-    // Confirmation email to user
     try {
       await resend.emails.send({
         from: process.env.RESEND_FROM_EMAIL || "onboarding@resend.dev",
