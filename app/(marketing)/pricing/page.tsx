@@ -25,6 +25,7 @@ function PaymentModal({ plan, onClose, userEmail }: { plan: PlanInfo; onClose: (
   const [screenshot, setScreenshot] = useState<File | null>(null);
   const [screenshotPreview, setScreenshotPreview] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const [copied, setCopied] = useState<string | null>(null);
 
   function copyHandle(handle: string) {
@@ -48,27 +49,42 @@ function PaymentModal({ plan, onClose, userEmail }: { plan: PlanInfo; onClose: (
   async function handleSubmit() {
     if (!screenshot) return;
     setSubmitting(true);
+    setSubmitError(null);
     try {
-      const reader = new FileReader();
-      reader.readAsDataURL(screenshot);
-      reader.onload = async () => {
-        const base64 = (reader.result as string).split(",")[1];
-        await fetch("/api/payments/submit", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            email: form.email,
-            planId: plan.id,
-            planName: plan.name,
-            amount: plan.price,
-            txNote: form.txNote || null,
-            screenshot: { filename: screenshot.name, content: base64 },
-          }),
-        });
-        setStep("done");
-        setSubmitting(false);
-      };
-    } catch {
+      await new Promise<void>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(screenshot);
+        reader.onload = async () => {
+          try {
+            const base64 = (reader.result as string).split(",")[1];
+            const res = await fetch("/api/payments/submit", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                email: form.email,
+                planId: plan.id,
+                planName: plan.name,
+                amount: plan.price,
+                txNote: form.txNote || null,
+                screenshot: { filename: screenshot.name, content: base64 },
+              }),
+            });
+            if (!res.ok) {
+              const data = await res.json().catch(() => ({}));
+              reject(new Error(data.error || `Server error ${res.status}`));
+            } else {
+              resolve();
+            }
+          } catch (e) {
+            reject(e);
+          }
+        };
+        reader.onerror = () => reject(new Error("Failed to read file"));
+      });
+      setStep("done");
+    } catch (e) {
+      setSubmitError(e instanceof Error ? e.message : "Submission failed. Please try again.");
+    } finally {
       setSubmitting(false);
     }
   }
@@ -166,6 +182,11 @@ function PaymentModal({ plan, onClose, userEmail }: { plan: PlanInfo; onClose: (
                 placeholder="e.g. Sent $29 via Cash App at 3:45pm"
               />
             </div>
+            {submitError && (
+              <div className="text-xs text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
+                {submitError}
+              </div>
+            )}
             <div className="flex gap-2">
               <button onClick={() => setStep("choose")} className="px-4 py-2.5 rounded-xl border border-slate-200 text-sm font-medium text-slate-600 hover:bg-slate-50">← Back</button>
               <button onClick={handleSubmit} disabled={!form.email || !screenshot || submitting}
