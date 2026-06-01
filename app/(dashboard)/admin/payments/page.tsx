@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { useUser } from "@clerk/nextjs";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -48,7 +47,8 @@ export default function AdminPaymentsPage() {
     if (!isAdmin) { setLoading(false); return; }
     fetch("/api/admin/payments")
       .then(r => r.json())
-      .then(d => { setSubmissions(d); setLoading(false); });
+      .then(d => { setSubmissions(Array.isArray(d) ? d : []); setLoading(false); })
+      .catch(() => { setSubmissions([]); setLoading(false); });
   }, [isLoaded, isAdmin]);
 
   async function handleAction(id: string, action: "activate" | "reject") {
