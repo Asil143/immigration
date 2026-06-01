@@ -17,50 +17,25 @@ export async function POST(req: NextRequest) {
   const supabase = createAdminClient();
   let screenshotUrl: string | null = null;
 
-  // Upload screenshot to Supabase Storage
+  // Try to upload screenshot to Supabase Storage (best-effort)
   if (screenshot?.content && screenshot?.filename) {
     try {
       const buffer = Buffer.from(screenshot.content, "base64");
       const ext = screenshot.filename.split(".").pop()?.toLowerCase() || "png";
       const path = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
-
       const { error: uploadError } = await supabase.storage
         .from("payment-screenshots")
         .upload(path, buffer, { contentType: `image/${ext}`, upsert: false });
-
       if (!uploadError) {
         const { data } = supabase.storage.from("payment-screenshots").getPublicUrl(path);
         screenshotUrl = data.publicUrl;
-      } else {
-        console.error("[screenshot-upload]", uploadError);
       }
     } catch (e) {
       console.error("[screenshot-upload]", e);
     }
   }
 
-  // Save submission
-  const { data: submission, error } = await supabase
-    .from("payment_submissions")
-    .insert({
-      email,
-      clerk_id: userId ?? null,
-      plan_id: planId,
-      plan_name: planName,
-      amount,
-      tx_note: txNote || null,
-      screenshot_url: screenshotUrl,
-      status: "pending",
-    })
-    .select()
-    .single();
-
-  if (error) {
-    console.error("[payment-submit]", error);
-    return NextResponse.json({ error: "Failed to save submission" }, { status: 500 });
-  }
-
-  // Notify admin
+  // Send admin email FIRST — always, regardless of DB state
   try {
     await resend.emails.send({
       from: process.env.RESEND_FROM_EMAIL || "onboarding@resend.dev",
@@ -73,14 +48,36 @@ export async function POST(req: NextRequest) {
         `Amount: $${amount}`,
         `Customer: ${email}`,
         `Note: ${txNote || "none"}`,
-        `Screenshot: ${screenshotUrl ?? "not provided"}`,
+        `Screenshot: ${screenshotUrl ?? "(see attachment)"}`,
         ``,
         `Activate at: https://visapilot-one.vercel.app/admin/payments`,
       ].join("\n"),
+      // Attach screenshot directly in case storage upload failed
+      ...(screenshot?.content && !screenshotUrl && {
+        attachments: [{ filename: screenshot.filename || "payment.png", content: screenshot.content }],
+      }),
     });
   } catch (e) {
     console.error("[payment-notify]", e);
   }
 
-  return NextResponse.json({ ok: true, id: submission.id });
+  // Try to save submission to DB (best-effort — tables may not exist yet)
+  try {
+    await supabase
+      .from("payment_submissions")
+      .insert({
+        email,
+        clerk_id: userId ?? null,
+        plan_id: planId,
+        plan_name: planName,
+        amount,
+        tx_note: txNote || null,
+        screenshot_url: screenshotUrl,
+        status: "pending",
+      });
+  } catch (e) {
+    console.error("[payment-db]", e);
+  }
+
+  return NextResponse.json({ ok: true });
 }
