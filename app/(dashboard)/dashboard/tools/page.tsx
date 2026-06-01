@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Timer, BarChart3, Search, FilePlus2, AlertTriangle, Clock, Wrench, ListChecks } from "lucide-react";
+import { Timer, BarChart3, Search, FilePlus2, AlertTriangle, Clock, Wrench, ListChecks, MessageSquareText } from "lucide-react";
 
 const TOOLS = [
   {
@@ -65,6 +65,15 @@ const TOOLS = [
     href: "/rfe-assistant",
     color: "bg-red-50 text-red-600",
     badge: "Pro",
+    phase: "Pro",
+  },
+  {
+    icon: MessageSquareText,
+    title: "Form Filler (I-864)",
+    description: "Chat with our AI to fill the I-864 Affidavit of Support step by step. Watch the form complete itself live, then download a filled PDF.",
+    href: "/dashboard/tools/forms/i-864",
+    color: "bg-teal-50 text-teal-600",
+    badge: "New",
     phase: "Pro",
   },
 ];

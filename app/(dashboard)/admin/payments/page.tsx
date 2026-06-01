@@ -145,20 +145,8 @@ export default function AdminPaymentsPage() {
           {filtered.map(sub => (
             <Card key={sub.id} className={sub.status === "pending" ? "border-yellow-200 bg-yellow-50/30" : ""}>
               <CardContent className="p-5">
+                {/* Header row */}
                 <div className="flex items-start gap-4 flex-wrap">
-                  {/* Screenshot thumbnail */}
-                  <div
-                    className="h-14 w-14 rounded-xl border bg-slate-100 flex items-center justify-center shrink-0 cursor-pointer hover:opacity-80 transition-opacity overflow-hidden"
-                    onClick={() => sub.screenshot_url && setScreenshot(sub.screenshot_url)}
-                  >
-                    {sub.screenshot_url ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img src={sub.screenshot_url} alt="Payment screenshot" className="h-full w-full object-cover" />
-                    ) : (
-                      <ImageIcon className="h-5 w-5 text-slate-400" />
-                    )}
-                  </div>
-
                   {/* Info */}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap mb-1">
@@ -174,14 +162,6 @@ export default function AdminPaymentsPage() {
                     </div>
                     {sub.tx_note && (
                       <p className="text-xs text-slate-500 mt-1 italic">"{sub.tx_note}"</p>
-                    )}
-                    {sub.screenshot_url && (
-                      <button
-                        onClick={() => setScreenshot(sub.screenshot_url)}
-                        className="text-xs text-blue-600 hover:underline mt-1 flex items-center gap-1"
-                      >
-                        <ExternalLink className="h-3 w-3" /> View screenshot
-                      </button>
                     )}
                   </div>
 
@@ -219,6 +199,33 @@ export default function AdminPaymentsPage() {
                     </span>
                   )}
                 </div>
+
+                {/* Inline screenshot */}
+                {sub.screenshot_url ? (
+                  <div className="mt-3">
+                    <p className="text-xs text-muted-foreground mb-1.5 flex items-center gap-1">
+                      <ImageIcon className="h-3 w-3" /> Payment screenshot
+                    </p>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={sub.screenshot_url}
+                      alt="Payment screenshot"
+                      className="rounded-lg border max-h-56 object-contain cursor-pointer hover:opacity-90 transition-opacity"
+                      onClick={() => setScreenshot(sub.screenshot_url)}
+                    />
+                    <button
+                      onClick={() => setScreenshot(sub.screenshot_url)}
+                      className="text-xs text-blue-600 hover:underline mt-1 flex items-center gap-1"
+                    >
+                      <ExternalLink className="h-3 w-3" /> View full size
+                    </button>
+                  </div>
+                ) : (
+                  <div className="mt-3 flex items-center gap-2 text-xs text-slate-400">
+                    <ImageIcon className="h-3.5 w-3.5" />
+                    <span>No screenshot uploaded</span>
+                  </div>
+                )}
               </CardContent>
             </Card>
           ))}
