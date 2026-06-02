@@ -2,10 +2,51 @@
 
 import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
-import { Send, Download, Loader2, CheckCircle2, FileText } from "lucide-react";
+import { Send, Download, CheckCircle2, FileText } from "lucide-react";
 import { I864_QUESTIONS, I864_PARTS, type I864Question } from "@/lib/forms/i864";
 import I864FormFull from "@/components/forms/I864FormFull";
 import jsPDF from "jspdf";
+
+// Basic client-side normalization — no API needed
+function normalize(fieldId: string, raw: string): string {
+  const v = raw.trim();
+  if (!v || v.toLowerCase() === "n/a" || v.toLowerCase() === "none") return "N/A";
+
+  if (fieldId.includes("dob") || fieldId.includes("date")) {
+    // Try to parse any date format to MM/DD/YYYY
+    const d = new Date(v);
+    if (!isNaN(d.getTime())) {
+      const mm = String(d.getMonth() + 1).padStart(2, "0");
+      const dd = String(d.getDate()).padStart(2, "0");
+      return `${mm}/${dd}/${d.getFullYear()}`;
+    }
+    return v;
+  }
+  if (fieldId === "sponsor_ssn") {
+    const digits = v.replace(/\D/g, "");
+    if (digits.length === 9) return `${digits.slice(0,3)}-${digits.slice(3,5)}-${digits.slice(5)}`;
+  }
+  if (fieldId.includes("phone") || fieldId.includes("phone")) {
+    const digits = v.replace(/\D/g, "");
+    if (digits.length === 10) return `(${digits.slice(0,3)}) ${digits.slice(3,6)}-${digits.slice(6)}`;
+  }
+  if (fieldId.includes("state") && v.length <= 3) return v.toUpperCase();
+  if (fieldId.includes("zip")) return v;
+  if (fieldId.includes("income") || fieldId.includes("annual")) {
+    const digits = v.replace(/[^0-9.]/g, "");
+    if (digits) return `$${Number(digits).toLocaleString()}`;
+  }
+  if (fieldId.includes("same_physical") || fieldId.includes("military") || fieldId.includes("sponsoring_principal")) {
+    const lower = v.toLowerCase();
+    if (lower.startsWith("y")) return "Yes";
+    if (lower.startsWith("n")) return "No";
+  }
+  // Title case for names
+  if (fieldId.includes("name") || fieldId.includes("city") || fieldId.includes("country") || fieldId.includes("employer") || fieldId.includes("occupation") || fieldId.includes("citizenship") || fieldId.includes("employment") || fieldId.includes("domicile")) {
+    return v.replace(/\w\S*/g, t => t.charAt(0).toUpperCase() + t.slice(1).toLowerCase());
+  }
+  return v;
+}
 
 interface Message { role: "assistant" | "user"; content: string; }
 type Fields = Record<string, string>;
@@ -129,7 +170,6 @@ export default function I864Page() {
   const [currentQuestion, setCurrentQuestion] = useState<I864Question | null>(null);
   const [activeFieldId, setActiveFieldId] = useState<string | null>(null);
   const [input, setInput] = useState("");
-  const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [isComplete, setIsComplete] = useState(false);
   const [started, setStarted] = useState(false);
@@ -149,39 +189,42 @@ export default function I864Page() {
     setTimeout(() => inputRef.current?.focus(), 100);
   }
 
-  async function sendAnswer() {
-    if (!input.trim() || loading || !currentQuestion) return;
+  function sendAnswer() {
+    if (!input.trim() || !currentQuestion) return;
     const userAnswer = input.trim();
+    const normalized = normalize(currentQuestion.id, userAnswer);
     setInput("");
+
+    // Fill field instantly
+    setFields(prev => ({ ...prev, [currentQuestion.id]: normalized }));
+
+    const currentIdx = I864_QUESTIONS.findIndex(q => q.id === currentQuestion.id);
+    const nextQ = I864_QUESTIONS[currentIdx + 1] ?? null;
+    const newProgress = Math.round(((currentIdx + 1) / I864_QUESTIONS.length) * 100);
+    setProgress(newProgress);
+
     setMessages(prev => [...prev, { role: "user", content: userAnswer }]);
-    setLoading(true);
 
-    try {
-      const res = await fetch("/api/forms/i864", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ answer: userAnswer, currentFieldId: currentQuestion.id }),
-      });
-      const data = await res.json();
-
-      setFields(prev => ({ ...prev, [currentQuestion.id]: data.extractedValue }));
-      setProgress(data.progress);
-
-      if (data.isComplete) {
-        setIsComplete(true);
-        setCurrentQuestion(null);
-        setActiveFieldId(null);
-      } else {
-        setCurrentQuestion(data.nextQuestion);
-        setActiveFieldId(data.nextQuestion.id);
-      }
-      setMessages(prev => [...prev, { role: "assistant", content: data.assistantMessage }]);
-    } catch {
-      setMessages(prev => [...prev, { role: "assistant", content: "Something went wrong. Please try again." }]);
-    } finally {
-      setLoading(false);
-      setTimeout(() => inputRef.current?.focus(), 50);
+    if (nextQ) {
+      // If moving to a new Part, announce it
+      const partChanged = nextQ.part !== currentQuestion.part;
+      const reply = partChanged
+        ? `✓ Saved.\n\n**${nextQ.part}: ${nextQ.partTitle}**\n\n${nextQ.question}`
+        : `✓ Saved.\n\n${nextQ.question}`;
+      setMessages(prev => [...prev, { role: "assistant", content: reply }]);
+      setCurrentQuestion(nextQ);
+      setActiveFieldId(nextQ.id);
+    } else {
+      setIsComplete(true);
+      setCurrentQuestion(null);
+      setActiveFieldId(null);
+      setMessages(prev => [...prev, {
+        role: "assistant",
+        content: "✅ All done! Every section is filled in.\n\nClick **Download PDF** above to save your completed data sheet.",
+      }]);
     }
+
+    setTimeout(() => inputRef.current?.focus(), 50);
   }
 
   const currentPart = currentQuestion
@@ -231,6 +274,7 @@ export default function I864Page() {
             <Download className="h-3.5 w-3.5" /> Download PDF
           </Button>
         )}
+
       </div>
 
       <div className="flex flex-1 overflow-hidden">
@@ -251,20 +295,6 @@ export default function I864Page() {
                 </div>
               </div>
             ))}
-            {loading && (
-              <div className="flex justify-start">
-                <div className="w-7 h-7 rounded-full bg-blue-600 flex items-center justify-center mr-2 shrink-0">
-                  <Loader2 className="h-3.5 w-3.5 text-white animate-spin" />
-                </div>
-                <div className="bg-white border border-slate-200 rounded-2xl rounded-bl-sm px-3.5 py-2.5 shadow-sm">
-                  <div className="flex gap-1 items-center h-4">
-                    <span className="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce [animation-delay:0ms]" />
-                    <span className="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce [animation-delay:150ms]" />
-                    <span className="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce [animation-delay:300ms]" />
-                  </div>
-                </div>
-              </div>
-            )}
             {isComplete && (
               <div className="flex justify-center pt-2">
                 <div className="flex items-center gap-2 bg-green-50 border border-green-200 rounded-full px-4 py-2 text-sm text-green-700 font-medium">
@@ -287,10 +317,10 @@ export default function I864Page() {
                 onKeyDown={e => e.key === "Enter" && !e.shiftKey && sendAnswer()}
                 placeholder="Type your answer…"
                 className="flex-1 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm outline-none focus:border-blue-400 focus:bg-white transition-colors"
-                disabled={loading}
+                disabled={false}
               />
-              <Button size="sm" onClick={sendAnswer} disabled={!input.trim() || loading} className="h-9 w-9 p-0 rounded-xl shrink-0">
-                {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+              <Button size="sm" onClick={sendAnswer} disabled={!input.trim()} className="h-9 w-9 p-0 rounded-xl shrink-0">
+                <Send className="h-4 w-4" />
               </Button>
             </div>
           )}
