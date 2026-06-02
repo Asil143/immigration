@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Timer, BarChart3, Search, FilePlus2, AlertTriangle, Clock, Wrench, ListChecks, MessageSquareText } from "lucide-react";
+import { Timer, BarChart3, Search, FilePlus2, AlertTriangle, Clock, Wrench, ListChecks, ScrollText } from "lucide-react";
 
 const TOOLS = [
   {
@@ -68,13 +68,13 @@ const TOOLS = [
     phase: "Pro",
   },
   {
-    icon: MessageSquareText,
-    title: "Form Filler (I-864)",
-    description: "Chat with our AI to fill the I-864 Affidavit of Support step by step. Watch the form complete itself live, then download a filled PDF.",
-    href: "/dashboard/tools/forms/i-864",
+    icon: ScrollText,
+    title: "Form Guides",
+    description: "AI-guided interviews for USCIS forms — I-864, I-765, I-485, N-400 and more. Get all your answers organized before filling the official form.",
+    href: "/dashboard/tools/forms",
     color: "bg-teal-50 text-teal-600",
     badge: "New",
-    phase: "Pro",
+    phase: "Free",
   },
 ];
 

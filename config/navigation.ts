@@ -22,6 +22,7 @@ import {
   ClipboardList,
   ListChecks,
   GitCompare,
+  ScrollText,
   type LucideIcon,
 } from "lucide-react";
 
@@ -87,11 +88,17 @@ export const dashboardNav: NavItem[] = [
 
 export const toolsNav: NavItem[] = [
   {
+    title: "Form Guides",
+    href: "/dashboard/tools/forms",
+    icon: ScrollText,
+    description: "AI-guided interviews for USCIS forms",
+    badge: "New",
+  },
+  {
     title: "Visa Checklists",
     href: "/dashboard/tools/checklists",
     icon: ListChecks,
     description: "Step-by-step guides for OPT, H-1B, Green Card & more",
-    badge: "New",
   },
   {
     title: "Visa Comparison",

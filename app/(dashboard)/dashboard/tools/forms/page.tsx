@@ -1,0 +1,185 @@
+import Link from "next/link";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { FileText, MessageSquareText, ExternalLink } from "lucide-react";
+
+interface FormCard {
+  number: string;
+  title: string;
+  description: string;
+  who: string;
+  href?: string;
+  uscisUrl: string;
+  status: "available" | "coming-soon";
+}
+
+const FORMS: FormCard[] = [
+  {
+    number: "I-864",
+    title: "Affidavit of Support",
+    description: "Required when a U.S. citizen or LPR sponsors a family member for a green card. Proves the sponsor can financially support the immigrant.",
+    who: "Petitioning sponsors, joint sponsors",
+    href: "/dashboard/tools/forms/i-864",
+    uscisUrl: "https://www.uscis.gov/i-864",
+    status: "available",
+  },
+  {
+    number: "I-765",
+    title: "Application for Employment Authorization",
+    description: "Apply for or renew an Employment Authorization Document (EAD / work permit) for OPT, STEM OPT, H-4, asylum, and other categories.",
+    who: "OPT / STEM OPT students, H-4 spouses, asylum seekers",
+    uscisUrl: "https://www.uscis.gov/i-765",
+    status: "coming-soon",
+  },
+  {
+    number: "I-485",
+    title: "Application to Register Permanent Residence",
+    description: "Adjust status to lawful permanent resident (green card) from inside the United States.",
+    who: "Family-based, employment-based, asylum/refugee applicants",
+    uscisUrl: "https://www.uscis.gov/i-485",
+    status: "coming-soon",
+  },
+  {
+    number: "I-130",
+    title: "Petition for Alien Relatives",
+    description: "U.S. citizens and LPRs file this to establish a qualifying relationship with a foreign national family member.",
+    who: "U.S. citizens and LPRs petitioning for family",
+    uscisUrl: "https://www.uscis.gov/i-130",
+    status: "coming-soon",
+  },
+  {
+    number: "I-131",
+    title: "Application for Travel Document",
+    description: "Apply for Advance Parole, Refugee Travel Document, or Re-entry Permit to travel outside the U.S. while your immigration case is pending.",
+    who: "Green card applicants, refugees, asylees",
+    uscisUrl: "https://www.uscis.gov/i-131",
+    status: "coming-soon",
+  },
+  {
+    number: "I-539",
+    title: "Application to Extend/Change Nonimmigrant Status",
+    description: "Extend your current visa status or change to a different nonimmigrant category without leaving the U.S.",
+    who: "F-1, B-1/B-2, H-4, L-2, and other nonimmigrant visa holders",
+    uscisUrl: "https://www.uscis.gov/i-539",
+    status: "coming-soon",
+  },
+  {
+    number: "I-140",
+    title: "Immigrant Petition for Alien Workers",
+    description: "Employer files this to sponsor a foreign worker for a permanent employment-based green card (EB-1, EB-2, EB-3).",
+    who: "Employers sponsoring foreign workers",
+    uscisUrl: "https://www.uscis.gov/i-140",
+    status: "coming-soon",
+  },
+  {
+    number: "I-90",
+    title: "Application to Replace Permanent Resident Card",
+    description: "Renew or replace a green card that is expired, lost, stolen, or incorrect.",
+    who: "Current lawful permanent residents",
+    uscisUrl: "https://www.uscis.gov/i-90",
+    status: "coming-soon",
+  },
+  {
+    number: "N-400",
+    title: "Application for Naturalization",
+    description: "Apply to become a U.S. citizen. Requires 3–5 years as a permanent resident, English proficiency, and passing a civics test.",
+    who: "LPRs eligible for U.S. citizenship",
+    uscisUrl: "https://www.uscis.gov/n-400",
+    status: "coming-soon",
+  },
+  {
+    number: "I-864A",
+    title: "Contract Between Sponsor and Household Member",
+    description: "Household members who are combining income with the primary sponsor on Form I-864 must complete this contract.",
+    who: "Household members of the primary I-864 sponsor",
+    uscisUrl: "https://www.uscis.gov/i-864a",
+    status: "coming-soon",
+  },
+];
+
+export default function FormsPage() {
+  const available = FORMS.filter(f => f.status === "available");
+  const coming = FORMS.filter(f => f.status === "coming-soon");
+
+  return (
+    <div className="p-8 max-w-6xl">
+      <div className="mb-8 flex items-center gap-3">
+        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-50">
+          <FileText className="h-5 w-5 text-blue-600" />
+        </div>
+        <div>
+          <h1 className="text-2xl font-bold">USCIS Form Guides</h1>
+          <p className="text-muted-foreground text-sm mt-0.5">
+            Step-by-step guided interviews for the most common immigration forms
+          </p>
+        </div>
+      </div>
+
+      {/* How it works */}
+      <div className="mb-8 rounded-xl border bg-blue-50/60 border-blue-100 p-5">
+        <p className="text-sm font-semibold text-blue-800 mb-1">How it works</p>
+        <p className="text-sm text-blue-700 leading-relaxed">
+          Select a form below. Our AI will guide you through every question in plain English, one step at a time.
+          At the end you get a complete data sheet — organized by Part and Item number exactly as USCIS requires —
+          that you use to fill the official form in Adobe Reader. Takes the confusion out of complex forms.
+        </p>
+      </div>
+
+      {/* Available now */}
+      <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-3">Available Now</h2>
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 mb-10">
+        {available.map(form => (
+          <Link key={form.number} href={form.href!}>
+            <Card className="h-full cursor-pointer hover:shadow-md hover:-translate-y-0.5 transition-all group border-blue-100">
+              <CardContent className="p-5">
+                <div className="flex items-start justify-between mb-3">
+                  <div className="flex items-center gap-2">
+                    <div className="rounded-lg bg-blue-600 text-white px-2 py-0.5 text-xs font-bold">{form.number}</div>
+                    <Badge className="bg-green-100 text-green-700 border-green-200 text-[10px]">Available</Badge>
+                  </div>
+                  <MessageSquareText className="h-4 w-4 text-blue-400 shrink-0" />
+                </div>
+                <h3 className="font-bold text-sm mb-1 group-hover:text-blue-600 transition-colors">{form.title}</h3>
+                <p className="text-xs text-muted-foreground leading-relaxed mb-3">{form.description}</p>
+                <p className="text-[10px] text-slate-400 font-medium">Who files: {form.who}</p>
+                <div className="mt-3 text-xs font-semibold text-blue-600 opacity-0 group-hover:opacity-100 transition-opacity">
+                  Start guided interview →
+                </div>
+              </CardContent>
+            </Card>
+          </Link>
+        ))}
+      </div>
+
+      {/* Coming soon */}
+      <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-3">Coming Soon</h2>
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+        {coming.map(form => (
+          <Card key={form.number} className="h-full opacity-70">
+            <CardContent className="p-5">
+              <div className="flex items-start justify-between mb-3">
+                <div className="flex items-center gap-2">
+                  <div className="rounded-lg bg-slate-400 text-white px-2 py-0.5 text-xs font-bold">{form.number}</div>
+                  <Badge variant="secondary" className="text-[10px]">Coming Soon</Badge>
+                </div>
+                <a
+                  href={form.uscisUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={e => e.stopPropagation()}
+                  className="text-slate-400 hover:text-blue-500 transition-colors"
+                  title="View on USCIS.gov"
+                >
+                  <ExternalLink className="h-3.5 w-3.5" />
+                </a>
+              </div>
+              <h3 className="font-bold text-sm mb-1">{form.title}</h3>
+              <p className="text-xs text-muted-foreground leading-relaxed mb-3">{form.description}</p>
+              <p className="text-[10px] text-slate-400 font-medium">Who files: {form.who}</p>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    </div>
+  );
+}

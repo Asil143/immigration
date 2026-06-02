@@ -13,7 +13,7 @@ export function Sidebar() {
   const pathname = usePathname();
   const { user } = useUser();
   const [toolsOpen, setToolsOpen] = useState(
-    pathname.includes("/tools") || pathname.includes("/rfe-assistant") || pathname.includes("/generate")
+    pathname.includes("/tools") || pathname.includes("/rfe-assistant") || pathname.includes("/generate") || pathname.includes("/forms")
   );
 
   // Mock plan — will come from DB later
