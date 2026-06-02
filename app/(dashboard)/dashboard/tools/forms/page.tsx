@@ -166,7 +166,6 @@ export default function FormsPage() {
                   href={form.uscisUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  onClick={e => e.stopPropagation()}
                   className="text-slate-400 hover:text-blue-500 transition-colors"
                   title="View on USCIS.gov"
                 >
