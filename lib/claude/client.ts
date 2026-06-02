@@ -59,6 +59,89 @@ export async function streamChatResponse(
   return fullResponse;
 }
 
+const IMMIGRATION_DOC_PROMPT = `You are an immigration document analysis system. Extract every visible field from this document.
+
+Return ONLY a valid JSON object — no markdown fences, no explanation. Use this exact structure:
+{
+  "summary": "one sentence description of the document",
+  "extracted_fields": {
+    "first_name": null,
+    "last_name": null,
+    "middle_name": null,
+    "date_of_birth": null,
+    "country_of_birth": null,
+    "nationality": null,
+    "a_number": null,
+    "passport_number": null,
+    "passport_expiry": null,
+    "employer_name": null,
+    "visa_type": null,
+    "receipt_number": null,
+    "sevis_id": null,
+    "school_name": null,
+    "h1b_start_date": null,
+    "h1b_expiry": null,
+    "ead_expiry": null,
+    "i20_end_date": null,
+    "priority_date": null
+  },
+  "expiry_date": null,
+  "issues": [],
+  "recommendations": []
+}
+
+Rules:
+- Only populate fields that are clearly readable in the document — never guess
+- All dates must be in YYYY-MM-DD format
+- A-Number format: A-XXXXXXXXX (9 digits after the dash)
+- Leave null for any field not present or illegible`;
+
+export async function extractDocumentFields(
+  base64Data: string,
+  mediaType: string,
+  docType: string
+): Promise<{
+  summary: string;
+  extracted_fields: Record<string, string | null>;
+  expiry_date: string | null;
+  issues: string[];
+  recommendations: string[];
+}> {
+  const anthropic = getAnthropicClient();
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const contentBlock: any =
+    mediaType === "application/pdf"
+      ? { type: "document", source: { type: "base64", media_type: "application/pdf", data: base64Data } }
+      : { type: "image", source: { type: "base64", media_type: mediaType, data: base64Data } };
+
+  const response = await anthropic.messages.create({
+    model: "claude-sonnet-4-6",
+    max_tokens: 1500,
+    messages: [{
+      role: "user",
+      content: [
+        contentBlock,
+        { type: "text", text: `Document type selected by user: ${docType}\n\n${IMMIGRATION_DOC_PROMPT}` },
+      ],
+    }],
+  });
+
+  const text = response.content[0].type === "text" ? response.content[0].text : "";
+  try {
+    const match = text.match(/\{[\s\S]*\}/);
+    if (match) return JSON.parse(match[0]);
+  } catch {}
+
+  return {
+    summary: "Could not parse document",
+    extracted_fields: {},
+    expiry_date: null,
+    issues: ["Could not extract fields — please try a clearer scan or different file format."],
+    recommendations: [],
+  };
+}
+
 export async function analyzeDocument(
   base64Image: string,
   mediaType: "image/jpeg" | "image/png" | "image/gif" | "image/webp",

@@ -6,6 +6,7 @@ export interface I864Question {
   question: string;
   hint: string;
   optional?: boolean;
+  options?: string[];
 }
 
 export const I864_QUESTIONS: I864Question[] = [
@@ -16,8 +17,17 @@ export const I864_QUESTIONS: I864Question[] = [
     partTitle: "Basis for Filing Affidavit of Support",
     label: "Sponsor Type",
     question:
-      "Welcome! Let's fill out Form I-864 together.\n\nFirst — why are you filing this affidavit? Choose the one that applies:\n\n• **1a** — I am the petitioner filing for my relative\n• **1b** — I filed an alien worker petition and am related to the immigrant\n• **1c** — I have at least 5% ownership in a company that filed an alien worker petition\n• **1d** — I am the only joint sponsor\n• **1e** — I am the first or second of two joint sponsors\n• **1f** — The original petitioner is deceased and I am the substitute sponsor",
-    hint: "e.g., 1a, 1d, 1e first, 1e second, 1f",
+      "Welcome! Let's fill out Form I-864 together.\n\nFirst — why are you filing this affidavit? Select the one that applies:",
+    hint: "Select one",
+    options: [
+      "1a — Petitioner filing for my relative",
+      "1b — Filed alien worker petition, related to immigrant",
+      "1c — ≥5% ownership in company that filed alien worker petition",
+      "1d — I am the only joint sponsor",
+      "1e — First of two joint sponsors",
+      "1e — Second of two joint sponsors",
+      "1f — Original petitioner is deceased; I am substitute sponsor",
+    ],
   },
 
   // ── Part 2: Sponsor Info ──────────────────────────────────────────────────
@@ -84,7 +94,8 @@ export const I864_QUESTIONS: I864Question[] = [
     partTitle: "Information About You (Sponsor)",
     label: "Physical Address Same as Mailing?",
     question: "Is your physical (home) address the same as the mailing address you just gave?",
-    hint: "Yes or No",
+    hint: "Select one",
+    options: ["Yes", "No"],
   },
   {
     id: "sponsor_domicile_country",
@@ -124,8 +135,9 @@ export const I864_QUESTIONS: I864Question[] = [
     partTitle: "Information About You (Sponsor)",
     label: "Immigration Status",
     question:
-      "What is your U.S. immigration status?\n• U.S. Citizen\n• U.S. National\n• Lawful Permanent Resident",
-    hint: "e.g., U.S. Citizen",
+      "What is your U.S. immigration status?",
+    hint: "Select one",
+    options: ["U.S. Citizen", "U.S. National", "Lawful Permanent Resident"],
   },
   {
     id: "sponsor_a_number",
@@ -142,7 +154,8 @@ export const I864_QUESTIONS: I864Question[] = [
     partTitle: "Information About You (Sponsor)",
     label: "Active Military Duty",
     question: "Are you currently on active duty in the U.S. Armed Forces or U.S. Coast Guard?",
-    hint: "Yes or No",
+    hint: "Select one",
+    options: ["Yes", "No"],
   },
 
   // ── Part 3: Principal Immigrant ───────────────────────────────────────────
@@ -211,8 +224,9 @@ export const I864_QUESTIONS: I864Question[] = [
     part: "Part 4",
     partTitle: "Information About the Immigrants You Are Sponsoring",
     label: "Sponsoring Principal Immigrant?",
-    question: "Are you sponsoring the principal immigrant named in Part 3?\n\n• **Yes** — you are sponsoring them directly\n• **No** — you are a second joint sponsor sponsoring only family members, or sponsoring members arriving more than 6 months later",
-    hint: "Yes or No",
+    question: "Are you sponsoring the principal immigrant named in Part 3?",
+    hint: "Select one",
+    options: ["Yes", "No"],
   },
   {
     id: "additional_family_members",
@@ -265,8 +279,9 @@ export const I864_QUESTIONS: I864Question[] = [
     part: "Part 6",
     partTitle: "Sponsor's Employment and Income",
     label: "Employment Status",
-    question: "What is your current employment status?\n• Employed\n• Self-Employed\n• Retired\n• Unemployed",
-    hint: "e.g., Employed",
+    question: "What is your current employment status?",
+    hint: "Select one",
+    options: ["Employed", "Self-Employed", "Retired", "Unemployed"],
   },
   {
     id: "employer_name_1",

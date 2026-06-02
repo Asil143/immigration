@@ -3,125 +3,64 @@
 import { useState, useRef } from "react";
 import {
   Upload, FileText, CheckCircle2, Sparkles, ArrowRight,
-  RefreshCw, AlertCircle, Save, Eye, ChevronDown,
+  RefreshCw, AlertCircle, Save, Eye,
 } from "lucide-react";
 
-
 type DocType = "I-797" | "I-20" | "EAD" | "Passport" | "I-485 Receipt" | "I-140 Approval";
-
-const DOC_MOCKS: Record<DocType, {
-  title: string; icon: string; color: string; textColor: string; border: string;
-  fields: Record<string, string>; profileUpdates: Record<string, string>;
-  summary: string; alerts: string[];
-}> = {
-  "I-797": {
-    title: "H-1B Approval Notice (I-797)",
-    icon: "🏢", color: "#f0fdf4", textColor: "#15803d", border: "#86efac",
-    fields: {
-      "Receipt Number": "WAC-25-123-45678",
-      "Petitioner": "Google LLC",
-      "Beneficiary": "Detected from upload",
-      "Visa Classification": "H-1B",
-      "Validity Period Start": "October 1, 2025",
-      "Validity Period End": "September 30, 2028",
-      "Service Center": "California Service Center",
-      "Notice Date": "June 15, 2025",
-    },
-    profileUpdates: { visaType: "H-1B", employer: "Google LLC", h1bStartDate: "2025-10-01", i94Expiry: "2028-09-30" },
-    summary: "H-1B approval for Google LLC, valid Oct 2025 – Sep 2028. Receipt number saved for case monitoring.",
-    alerts: ["H-1B expires Sep 30, 2028 — set a renewal reminder for Jun 2028", "Start green card PERM process as early as possible with your employer"],
-  },
-  "I-20": {
-    title: "Certificate of Eligibility (I-20)",
-    icon: "🎓", color: "#eff6ff", textColor: "#1d4ed8", border: "#bfdbfe",
-    fields: {
-      "SEVIS ID": "N001234567",
-      "Student Name": "Detected from upload",
-      "School": "University of Texas Austin",
-      "Program": "Master of Science – Computer Science",
-      "Program Start Date": "August 22, 2023",
-      "Program End Date": "May 15, 2025",
-      "OPT Authorization": "Pending DSO signature",
-      "Issued By": "Designated School Official",
-    },
-    profileUpdates: { visaType: "F-1 Student", employer: "University of Texas Austin" },
-    summary: "F-1 I-20 for UT Austin MS Computer Science. Program ends May 2025 — OPT application window is now open.",
-    alerts: ["Apply for OPT within 90 days of program end (May 2025)", "OPT application window is open — file I-765 now", "Consider STEM OPT if your degree qualifies"],
-  },
-  "EAD": {
-    title: "Employment Authorization Card (EAD)",
-    icon: "💼", color: "#faf5ff", textColor: "#6d28d9", border: "#d8b4fe",
-    fields: {
-      "Card Number": "SRC25901234567",
-      "Category": "C(3)(C) — STEM OPT",
-      "Card Expires": "May 15, 2027",
-      "USCIS Online Account": "Detected from upload",
-      "Employment Authorization": "Full — any employer",
-      "Issuing Authority": "USCIS Nebraska Service Center",
-    },
-    profileUpdates: { visaType: "STEM OPT", eadExpiry: "2027-05-15" },
-    summary: "STEM OPT EAD valid until May 15, 2027. Full work authorization for any employer in the US.",
-    alerts: ["EAD expires May 15, 2027 — file H-1B in March 2026 or March 2027 lottery", "Cap-gap protection applies if H-1B filed before OPT expiry", "I-983 training plan must be updated every 6 months"],
-  },
-  "Passport": {
-    title: "Passport",
-    icon: "🛂", color: "#fff7ed", textColor: "#c2410c", border: "#fed7aa",
-    fields: {
-      "Passport Number": "Detected from upload",
-      "Country of Issue": "India",
-      "Date of Birth": "Detected from upload",
-      "Issue Date": "June 10, 2021",
-      "Expiry Date": "June 9, 2031",
-      "Nationality": "Indian",
-    },
-    profileUpdates: { countryOfBirth: "India", passportExpiry: "2031-06-09" },
-    summary: "Indian passport valid until June 2031. No action needed for 5+ years.",
-    alerts: ["Passport valid until 2031 — renew at Indian consulate 1 year before expiry", "For H-1B visa stamping: bring this passport + I-797 + offer letter"],
-  },
-  "I-485 Receipt": {
-    title: "I-485 Receipt Notice",
-    icon: "🌿", color: "#f0fdf4", textColor: "#15803d", border: "#86efac",
-    fields: {
-      "Receipt Number": "MSC-25-901-23456",
-      "Form": "I-485 — Application to Register Permanent Residence",
-      "Priority Date": "June 15, 2022",
-      "Category": "EB-2",
-      "Country of Birth": "India",
-      "Receipt Date": "January 10, 2025",
-      "Service Center": "National Benefits Center",
-    },
-    profileUpdates: { visaType: "Green Card (Pending I-485)", greenCardStage: "I-485 pending", greenCardCategory: "EB-2 (Advanced Degree)", priorityDate: "2022-06-15" },
-    summary: "I-485 pending for India EB-2. Priority date June 2022. Monitor visa bulletin monthly for movement.",
-    alerts: ["DO NOT travel without Advance Parole — file I-131 immediately if you plan to travel", "Monitor visa bulletin monthly — alert when Jun 2022 India EB-2 becomes current", "Any job change must be in same or similar occupation (AC21 portability)"],
-  },
-  "I-140 Approval": {
-    title: "I-140 Approval Notice",
-    icon: "📋", color: "#ecfeff", textColor: "#0891b2", border: "#a5f3fc",
-    fields: {
-      "Receipt Number": "LIN-24-801-23456",
-      "Form": "I-140 — Immigrant Petition for Alien Workers",
-      "Classification": "EB-2 — Advanced Degree",
-      "Petitioner/Company": "Microsoft Corporation",
-      "Priority Date": "March 3, 2023",
-      "Approval Date": "November 20, 2024",
-      "Service Center": "Nebraska Service Center",
-    },
-    profileUpdates: { greenCardStage: "I-140 approved", greenCardCategory: "EB-2 (Advanced Degree)", priorityDate: "2023-03-03" },
-    summary: "I-140 approved for EB-2. Priority date March 2023. You can now change employers with AC21 portability if needed.",
-    alerts: ["I-140 approval gives you AC21 portability — you can change jobs to same occupation", "You are now eligible for H-1B extensions beyond 6 years", "File I-485 when India EB-2 March 2023 priority date becomes current"],
-  },
-};
 
 const DOC_OPTIONS: { type: DocType; label: string; icon: string; desc: string }[] = [
   { type: "I-797", label: "I-797 Approval Notice", icon: "🏢", desc: "H-1B, O-1, L-1, or other nonimmigrant approvals" },
   { type: "I-20", label: "I-20 (F-1 Students)", icon: "🎓", desc: "Certificate of Eligibility from your school" },
   { type: "EAD", label: "EAD Card", icon: "💼", desc: "Employment Authorization Document (OPT/STEM OPT)" },
-  { type: "Passport", label: "Passport", icon: "🛂", desc: "Extract expiry date and nationality" },
+  { type: "Passport", label: "Passport", icon: "🛂", desc: "Extract name, DOB, expiry and nationality" },
   { type: "I-485 Receipt", label: "I-485 Receipt", icon: "🌿", desc: "Adjustment of Status receipt notice" },
   { type: "I-140 Approval", label: "I-140 Approval", icon: "📋", desc: "Immigrant petition approval" },
 ];
 
-type Stage = "select" | "upload" | "analyzing" | "result";
+const DOC_ICON: Record<string, string> = {
+  "I-797": "🏢", "I-20": "🎓", "EAD": "💼", "Passport": "🛂",
+  "I-485 Receipt": "🌿", "I-140 Approval": "📋",
+};
+
+const FIELD_LABELS: Record<string, string> = {
+  first_name: "First Name", last_name: "Last Name", middle_name: "Middle Name",
+  date_of_birth: "Date of Birth", country_of_birth: "Country of Birth",
+  nationality: "Nationality", a_number: "A-Number",
+  passport_number: "Passport Number", passport_expiry: "Passport Expiry",
+  employer_name: "Employer / Company", visa_type: "Visa Classification",
+  receipt_number: "Receipt Number", sevis_id: "SEVIS ID", school_name: "School / University",
+  h1b_start_date: "H-1B Start Date", h1b_expiry: "H-1B Expiry",
+  ead_expiry: "EAD Expiry", i20_end_date: "I-20 Program End Date",
+  priority_date: "Priority Date",
+};
+
+// Map extracted_fields → Supabase profile column names
+function buildProfileUpdates(fields: Record<string, string | null>): Record<string, string> {
+  const out: Record<string, string> = {};
+  const m: Record<string, string> = {
+    first_name: "first_name", last_name: "last_name", middle_name: "middle_name",
+    date_of_birth: "date_of_birth", country_of_birth: "country_of_birth",
+    a_number: "a_number", employer_name: "employer",
+    passport_expiry: "passport_expiry", h1b_start_date: "h1b_start_date",
+    h1b_expiry: "h1b_expiry", ead_expiry: "ead_expiry",
+    i20_end_date: "i20_end_date", priority_date: "priority_date",
+  };
+  for (const [k, col] of Object.entries(m)) {
+    const v = fields[k];
+    if (v) out[col] = v;
+  }
+  return out;
+}
+
+interface ExtractionResult {
+  summary: string;
+  extracted_fields: Record<string, string | null>;
+  expiry_date: string | null;
+  issues: string[];
+  recommendations: string[];
+}
+
+type Stage = "select" | "upload" | "analyzing" | "result" | "error";
 
 export default function SmartImportPage() {
   const [stage, setStage] = useState<Stage>("select");
@@ -130,25 +69,51 @@ export default function SmartImportPage() {
   const [fileName, setFileName] = useState("");
   const [progress, setProgress] = useState(0);
   const [saved, setSaved] = useState(false);
+  const [extraction, setExtraction] = useState<ExtractionResult | null>(null);
+  const [errorMsg, setErrorMsg] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
-
-  const result = docType ? DOC_MOCKS[docType] : null;
 
   function selectDoc(type: DocType) {
     setDocType(type);
     setStage("upload");
   }
 
-  function handleFile(file: File) {
+  async function handleFile(file: File) {
+    if (!docType) return;
     setFileName(file.name);
     setStage("analyzing");
     setProgress(0);
+    setExtraction(null);
+    setSaved(false);
+
     const interval = setInterval(() => {
-      setProgress(p => {
-        if (p >= 100) { clearInterval(interval); setStage("result"); return 100; }
-        return p + Math.random() * 18 + 5;
-      });
-    }, 250);
+      setProgress(p => p >= 88 ? 88 : p + Math.random() * 14 + 4);
+    }, 400);
+
+    try {
+      const fd = new FormData();
+      fd.append("file", file);
+      fd.append("docType", docType);
+
+      const res = await fetch("/api/documents/upload", { method: "POST", body: fd });
+      clearInterval(interval);
+
+      if (!res.ok) {
+        const { error } = await res.json();
+        setErrorMsg(error ?? "Upload failed");
+        setStage("error");
+        return;
+      }
+
+      const data = await res.json();
+      setExtraction(data.extraction);
+      setProgress(100);
+      setStage("result");
+    } catch {
+      clearInterval(interval);
+      setErrorMsg("Network error — please try again.");
+      setStage("error");
+    }
   }
 
   function handleDrop(e: React.DragEvent) {
@@ -158,28 +123,15 @@ export default function SmartImportPage() {
     if (file) handleFile(file);
   }
 
-  function simulateUpload() {
-    handleFile(new File([""], `${docType?.replace(" ", "_")}_sample.pdf`, { type: "application/pdf" }));
-  }
-
   async function saveToProfile() {
-    if (!result) return;
-    const body: Record<string, string> = {};
-    const keyMap: Record<string, string> = {
-      visaType: "visa_type", employer: "employer", eadExpiry: "ead_expiry",
-      h1bStartDate: "h1b_start_date", i94Expiry: "i94_expiry",
-      passportExpiry: "passport_expiry", countryOfBirth: "country_of_birth",
-      greenCardStage: "green_card_stage", greenCardCategory: "green_card_category",
-      priorityDate: "priority_date",
-    };
-    for (const [k, v] of Object.entries(result.profileUpdates)) {
-      const snakeKey = keyMap[k] ?? k;
-      body[snakeKey] = v;
-    }
+    if (!extraction) return;
+    const updates = buildProfileUpdates(extraction.extracted_fields);
+    if (Object.keys(updates).length === 0) return;
+
     const res = await fetch("/api/profile", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
+      body: JSON.stringify(updates),
     });
     if (res.ok) setSaved(true);
   }
@@ -190,7 +142,15 @@ export default function SmartImportPage() {
     setFileName("");
     setProgress(0);
     setSaved(false);
+    setExtraction(null);
+    setErrorMsg("");
   }
+
+  const visibleFields = extraction
+    ? Object.entries(extraction.extracted_fields).filter(([, v]) => v !== null && v !== "")
+    : [];
+
+  const profileUpdates = extraction ? buildProfileUpdates(extraction.extracted_fields) : {};
 
   return (
     <div className="p-8 max-w-3xl">
@@ -202,7 +162,7 @@ export default function SmartImportPage() {
           <h1 className="text-2xl font-bold">Document Smart Import</h1>
         </div>
         <p className="text-sm" style={{ color: "#64748b" }}>
-          Upload your I-797, EAD, I-20, or passport — AI extracts all key dates and auto-fills your profile.
+          Upload your I-797, EAD, I-20, or passport — AI extracts all key dates and auto-fills your profile and forms.
         </p>
       </div>
 
@@ -233,7 +193,7 @@ export default function SmartImportPage() {
       )}
 
       {/* Step 2: Upload */}
-      {stage === "upload" && result && (
+      {stage === "upload" && docType && (
         <div>
           <button onClick={reset} className="text-xs font-medium mb-5 flex items-center gap-1" style={{ color: "#64748b" }}>
             ← Change document type
@@ -246,12 +206,13 @@ export default function SmartImportPage() {
             style={{ borderColor: dragOver ? "#2563eb" : "#e2e8f0", backgroundColor: dragOver ? "#eff6ff" : "#fafafa" }}
             onClick={() => inputRef.current?.click()}
           >
-            <input ref={inputRef} type="file" accept=".pdf,.jpg,.jpeg,.png" className="hidden" onChange={e => e.target.files?.[0] && handleFile(e.target.files[0])} />
-            <div className="h-16 w-16 rounded-2xl flex items-center justify-center mx-auto mb-4" style={{ backgroundColor: result.color }}>
-              <span className="text-3xl">{result.icon}</span>
+            <input ref={inputRef} type="file" accept=".pdf,.jpg,.jpeg,.png,.webp" className="hidden"
+              onChange={e => e.target.files?.[0] && handleFile(e.target.files[0])} />
+            <div className="h-16 w-16 rounded-2xl flex items-center justify-center mx-auto mb-4" style={{ backgroundColor: "#eff6ff" }}>
+              <span className="text-3xl">{DOC_ICON[docType] ?? "📄"}</span>
             </div>
             <p className="font-bold text-lg mb-1">Drop your {docType} here</p>
-            <p className="text-sm mb-4" style={{ color: "#64748b" }}>or click to browse — PDF, JPG, or PNG</p>
+            <p className="text-sm mb-4" style={{ color: "#64748b" }}>or click to browse — PDF, JPG, PNG, or WebP · max 10 MB</p>
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm" style={{ backgroundColor: "#f1f5f9", color: "#475569" }}>
               <Upload className="h-4 w-4" /> Choose file
             </div>
@@ -261,15 +222,10 @@ export default function SmartImportPage() {
             <Eye className="h-4 w-4 text-blue-600 shrink-0 mt-0.5" />
             <div>
               <p className="text-xs font-semibold text-blue-900">What AI will extract from your {docType}</p>
-              <p className="text-xs text-blue-700 mt-0.5">{Object.keys(DOC_MOCKS[docType!].fields).join(" · ")}</p>
+              <p className="text-xs text-blue-700 mt-0.5">
+                {Object.values(FIELD_LABELS).join(" · ")}
+              </p>
             </div>
-          </div>
-
-          <div className="mt-4 text-center">
-            <p className="text-xs mb-2" style={{ color: "#94a3b8" }}>Don't have the file handy? Try a demo extract:</p>
-            <button onClick={simulateUpload} className="text-xs font-semibold px-4 py-2 rounded-xl border" style={{ borderColor: "#e2e8f0", color: "#2563eb" }}>
-              ✨ Run Demo Extract for {docType}
-            </button>
           </div>
         </div>
       )}
@@ -285,20 +241,17 @@ export default function SmartImportPage() {
             </div>
           </div>
           <h2 className="text-xl font-bold mb-2">AI is reading your document...</h2>
-          <p className="text-sm mb-6" style={{ color: "#64748b" }}>{fileName || "Processing document"}</p>
+          <p className="text-sm mb-6" style={{ color: "#64748b" }}>{fileName}</p>
 
           <div className="max-w-sm mx-auto">
             <div className="h-2 rounded-full" style={{ backgroundColor: "#e2e8f0" }}>
-              <div
-                className="h-2 rounded-full transition-all duration-300"
-                style={{ width: `${Math.min(progress, 100)}%`, backgroundColor: "#2563eb" }}
-              />
+              <div className="h-2 rounded-full transition-all duration-300" style={{ width: `${Math.min(progress, 100)}%`, backgroundColor: "#2563eb" }} />
             </div>
             <div className="flex justify-between mt-2 text-xs" style={{ color: "#94a3b8" }}>
               <span>
                 {progress < 30 ? "Detecting document type..." :
                  progress < 60 ? "Extracting key fields..." :
-                 progress < 85 ? "Computing deadline dates..." : "Generating insights..."}
+                 progress < 85 ? "Mapping to your profile..." : "Finishing up..."}
               </span>
               <span>{Math.min(Math.round(progress), 100)}%</span>
             </div>
@@ -306,15 +259,13 @@ export default function SmartImportPage() {
 
           <div className="mt-6 space-y-2 max-w-sm mx-auto text-left">
             {[
-              { label: "Document type", done: progress > 20 },
-              { label: "Key dates extracted", done: progress > 50 },
-              { label: "Profile fields mapped", done: progress > 75 },
-              { label: "Alerts generated", done: progress >= 100 },
+              { label: "Document type detected", done: progress > 20 },
+              { label: "Key fields extracted", done: progress > 55 },
+              { label: "Profile fields mapped", done: progress > 78 },
+              { label: "Insights generated", done: progress >= 100 },
             ].map(item => (
               <div key={item.label} className="flex items-center gap-2 text-sm">
-                {item.done
-                  ? <CheckCircle2 className="h-4 w-4 text-green-500" />
-                  : <div className="h-4 w-4 rounded-full border-2 border-gray-200" />}
+                {item.done ? <CheckCircle2 className="h-4 w-4 text-green-500" /> : <div className="h-4 w-4 rounded-full border-2 border-gray-200" />}
                 <span style={{ color: item.done ? "#0f172a" : "#94a3b8" }}>{item.label}</span>
               </div>
             ))}
@@ -323,67 +274,76 @@ export default function SmartImportPage() {
       )}
 
       {/* Step 4: Results */}
-      {stage === "result" && result && (
+      {stage === "result" && extraction && (
         <div>
-          <div className="flex items-center gap-3 p-4 rounded-2xl mb-6" style={{ backgroundColor: result.color, border: `1px solid ${result.border}` }}>
-            <span className="text-3xl">{result.icon}</span>
+          <div className="flex items-center gap-3 p-4 rounded-2xl mb-6" style={{ backgroundColor: "#f0fdf4", border: "1px solid #86efac" }}>
+            <span className="text-3xl">{DOC_ICON[docType ?? ""] ?? "📄"}</span>
             <div className="flex-1">
-              <p className="font-bold" style={{ color: result.textColor }}>{result.title}</p>
-              <p className="text-xs mt-0.5" style={{ color: "#64748b" }}>{result.summary}</p>
+              <p className="font-bold text-green-900">{docType}</p>
+              <p className="text-xs mt-0.5" style={{ color: "#64748b" }}>{extraction.summary}</p>
             </div>
-            <CheckCircle2 className="h-6 w-6 shrink-0" style={{ color: result.textColor }} />
+            <CheckCircle2 className="h-6 w-6 shrink-0 text-green-600" />
           </div>
 
           {/* Extracted fields */}
-          <div className="rounded-2xl border overflow-hidden mb-5" style={{ borderColor: "#e2e8f0" }}>
-            <div className="px-5 py-3 border-b" style={{ borderColor: "#e2e8f0", backgroundColor: "#f8fafc" }}>
-              <p className="text-sm font-bold flex items-center gap-2">
-                <FileText className="h-4 w-4 text-blue-600" /> Extracted Fields
-              </p>
+          {visibleFields.length > 0 ? (
+            <div className="rounded-2xl border overflow-hidden mb-5" style={{ borderColor: "#e2e8f0" }}>
+              <div className="px-5 py-3 border-b" style={{ borderColor: "#e2e8f0", backgroundColor: "#f8fafc" }}>
+                <p className="text-sm font-bold flex items-center gap-2">
+                  <FileText className="h-4 w-4 text-blue-600" /> Extracted Fields ({visibleFields.length})
+                </p>
+              </div>
+              <div className="divide-y" style={{ borderColor: "#e2e8f0" }}>
+                {visibleFields.map(([key, value]) => (
+                  <div key={key} className="px-5 py-3 flex items-center justify-between">
+                    <span className="text-xs font-medium" style={{ color: "#64748b" }}>{FIELD_LABELS[key] ?? key}</span>
+                    <span className="text-xs font-semibold text-right" style={{ color: "#0f172a" }}>{String(value)}</span>
+                  </div>
+                ))}
+              </div>
             </div>
-            <div className="divide-y" style={{ borderColor: "#e2e8f0" }}>
-              {Object.entries(result.fields).map(([key, value]) => (
-                <div key={key} className="px-5 py-3 flex items-center justify-between">
-                  <span className="text-xs font-medium" style={{ color: "#64748b" }}>{key}</span>
-                  <span className="text-xs font-semibold text-right" style={{ color: "#0f172a" }}>{value}</span>
-                </div>
-              ))}
+          ) : (
+            <div className="p-4 rounded-xl mb-5 text-center" style={{ backgroundColor: "#fff7ed", border: "1px solid #fed7aa" }}>
+              <p className="text-sm text-orange-700">No fields could be extracted — try a clearer scan or different format.</p>
             </div>
-          </div>
+          )}
 
-          {/* Smart alerts */}
-          <div className="mb-5">
-            <p className="text-sm font-bold mb-3 flex items-center gap-2">
-              <AlertCircle className="h-4 w-4 text-orange-500" /> Smart Alerts from This Document
-            </p>
-            <div className="space-y-2">
-              {result.alerts.map((alert, i) => (
-                <div key={i} className="flex items-start gap-3 p-3 rounded-xl" style={{ backgroundColor: "#fff7ed", border: "1px solid #fed7aa" }}>
-                  <span className="text-orange-500 shrink-0 mt-0.5">⚠</span>
-                  <p className="text-xs leading-relaxed" style={{ color: "#92400e" }}>{alert}</p>
-                </div>
-              ))}
+          {/* Issues */}
+          {extraction.issues.length > 0 && (
+            <div className="mb-5">
+              <p className="text-sm font-bold mb-3 flex items-center gap-2">
+                <AlertCircle className="h-4 w-4 text-orange-500" /> Notes
+              </p>
+              <div className="space-y-2">
+                {extraction.issues.map((issue, i) => (
+                  <div key={i} className="flex items-start gap-3 p-3 rounded-xl" style={{ backgroundColor: "#fff7ed", border: "1px solid #fed7aa" }}>
+                    <span className="text-orange-500 shrink-0 mt-0.5">⚠</span>
+                    <p className="text-xs leading-relaxed" style={{ color: "#92400e" }}>{issue}</p>
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Profile updates preview */}
-          <div className="mb-6 p-4 rounded-2xl" style={{ backgroundColor: "#f0fdf4", border: "1px solid #86efac" }}>
-            <p className="text-sm font-bold text-green-900 mb-2">Profile will be updated with:</p>
-            <div className="flex flex-wrap gap-2">
-              {Object.entries(result.profileUpdates).map(([key, value]) => (
-                <span key={key} className="text-xs px-2 py-1 rounded-full font-medium" style={{ backgroundColor: "#dcfce7", color: "#15803d" }}>
-                  {key.replace(/([A-Z])/g, ' $1').trim()}: {value}
-                </span>
-              ))}
+          {Object.keys(profileUpdates).length > 0 && (
+            <div className="mb-6 p-4 rounded-2xl" style={{ backgroundColor: "#f0fdf4", border: "1px solid #86efac" }}>
+              <p className="text-sm font-bold text-green-900 mb-2">Will be saved to your profile:</p>
+              <div className="flex flex-wrap gap-2">
+                {Object.entries(profileUpdates).map(([key, value]) => (
+                  <span key={key} className="text-xs px-2 py-1 rounded-full font-medium" style={{ backgroundColor: "#dcfce7", color: "#15803d" }}>
+                    {FIELD_LABELS[key] ?? key}: {value}
+                  </span>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
 
-          {/* Action buttons */}
           <div className="flex flex-col sm:flex-row gap-3">
             <button
               onClick={saveToProfile}
-              disabled={saved}
-              className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl font-bold text-sm text-white transition-all"
+              disabled={saved || Object.keys(profileUpdates).length === 0}
+              className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl font-bold text-sm text-white transition-all disabled:opacity-40"
               style={{ backgroundColor: saved ? "#16a34a" : "#2563eb" }}
             >
               {saved ? <><CheckCircle2 className="h-4 w-4" /> Saved to Profile!</> : <><Save className="h-4 w-4" /> Save to My Profile</>}
@@ -404,6 +364,20 @@ export default function SmartImportPage() {
               </a>
             </div>
           )}
+        </div>
+      )}
+
+      {/* Error state */}
+      {stage === "error" && (
+        <div className="text-center py-12">
+          <div className="h-16 w-16 rounded-2xl flex items-center justify-center mx-auto mb-4" style={{ backgroundColor: "#fef2f2" }}>
+            <AlertCircle className="h-8 w-8 text-red-500" />
+          </div>
+          <h2 className="text-xl font-bold mb-2 text-red-700">Upload Failed</h2>
+          <p className="text-sm mb-6" style={{ color: "#64748b" }}>{errorMsg}</p>
+          <button onClick={() => setStage("upload")} className="px-6 py-2.5 rounded-xl font-semibold text-sm text-white" style={{ backgroundColor: "#2563eb" }}>
+            Try Again
+          </button>
         </div>
       )}
     </div>

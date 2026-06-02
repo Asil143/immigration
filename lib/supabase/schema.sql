@@ -144,6 +144,25 @@ create table if not exists public.notifications (
   created_at timestamptz default now()
 );
 
+-- ─── Personal Info columns (run these ALTER TABLE statements in Supabase SQL editor) ──────────
+-- alter table public.profiles add column if not exists first_name text;
+-- alter table public.profiles add column if not exists last_name text;
+-- alter table public.profiles add column if not exists middle_name text;
+-- alter table public.profiles add column if not exists date_of_birth date;
+-- alter table public.profiles add column if not exists ssn text;
+-- alter table public.profiles add column if not exists mailing_street text;
+-- alter table public.profiles add column if not exists mailing_city text;
+-- alter table public.profiles add column if not exists mailing_state text;
+-- alter table public.profiles add column if not exists mailing_zip text;
+-- alter table public.profiles add column if not exists phone text;
+-- alter table public.profiles add column if not exists a_number text;
+
+-- ─── Storage bucket (create in Supabase dashboard → Storage → New bucket) ──────
+-- Bucket name: documents
+-- Public: false (private)
+-- Allowed MIME types: image/jpeg, image/png, image/webp, application/pdf
+-- Max file size: 10 MB
+
 -- ─── Indexes ─────────────────────────────────────────────────────────────────
 
 create index if not exists idx_profiles_clerk_id        on public.profiles(clerk_id);

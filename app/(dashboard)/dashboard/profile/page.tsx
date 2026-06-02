@@ -24,6 +24,19 @@ const FORM_TYPES = ["I-765 (EAD)", "I-129 (H-1B/O-1/L-1)", "I-140 (Immigrant Pet
 interface CaseEntry { id: string; receipt_number: string; form_type: string; label: string; last_status: string | null; last_checked_at: string | null; }
 
 interface Profile {
+  // Personal info (for form pre-fill)
+  firstName: string;
+  lastName: string;
+  middleName: string;
+  dateOfBirth: string;
+  ssn: string;
+  mailingStreet: string;
+  mailingCity: string;
+  mailingState: string;
+  mailingZip: string;
+  phone: string;
+  aNumber: string;
+  // Immigration status
   visaType: string;
   countryOfBirth: string;
   employer: string;
@@ -58,6 +71,9 @@ interface Profile {
 }
 
 const empty: Profile = {
+  firstName: "", lastName: "", middleName: "", dateOfBirth: "",
+  ssn: "", mailingStreet: "", mailingCity: "", mailingState: "", mailingZip: "",
+  phone: "", aNumber: "",
   visaType: "", countryOfBirth: "", employer: "",
   i94Expiry: "", i94IsDS: false, i20EndDate: "",
   eadExpiry: "", visaStampExpiry: "", visaStartDate: "",
@@ -77,6 +93,17 @@ const empty: Profile = {
 
 function fromApi(data: Record<string, string | null | boolean>): Profile {
   return {
+    firstName: data.first_name as string ?? "",
+    lastName: data.last_name as string ?? "",
+    middleName: data.middle_name as string ?? "",
+    dateOfBirth: data.date_of_birth as string ?? "",
+    ssn: data.ssn as string ?? "",
+    mailingStreet: data.mailing_street as string ?? "",
+    mailingCity: data.mailing_city as string ?? "",
+    mailingState: data.mailing_state as string ?? "",
+    mailingZip: data.mailing_zip as string ?? "",
+    phone: data.phone as string ?? "",
+    aNumber: data.a_number as string ?? "",
     visaType: data.visa_type as string ?? "",
     countryOfBirth: data.country_of_birth as string ?? "",
     employer: data.employer as string ?? "",
@@ -113,6 +140,17 @@ function fromApi(data: Record<string, string | null | boolean>): Profile {
 
 function toApi(p: Profile) {
   return {
+    first_name: p.firstName || null,
+    last_name: p.lastName || null,
+    middle_name: p.middleName || null,
+    date_of_birth: p.dateOfBirth || null,
+    ssn: p.ssn || null,
+    mailing_street: p.mailingStreet || null,
+    mailing_city: p.mailingCity || null,
+    mailing_state: p.mailingState || null,
+    mailing_zip: p.mailingZip || null,
+    phone: p.phone || null,
+    a_number: p.aNumber || null,
     visa_type: p.visaType || null,
     country_of_birth: p.countryOfBirth || null,
     employer: p.employer || null,
@@ -159,6 +197,7 @@ function urgencyColor(days: number, threshold: number) {
 }
 
 const tabs = [
+  { id: "personal", label: "Personal Info", icon: User },
   { id: "status", label: "Visa Status", icon: User },
   { id: "dates", label: "Key Dates", icon: Calendar },
   { id: "cases", label: "USCIS Cases", icon: FileSearch },
@@ -329,6 +368,104 @@ export default function ProfilePage() {
               );
             })}
           </div>
+
+          {/* Tab: Personal Info */}
+          {activeTab === "personal" && (
+            <div className="space-y-5">
+              <div className="p-4 rounded-xl flex items-start gap-3" style={{ backgroundColor: "#eff6ff", border: "1px solid #bfdbfe" }}>
+                <ShieldCheck className="h-5 w-5 text-blue-600 shrink-0 mt-0.5" />
+                <p className="text-xs text-blue-700 leading-relaxed">
+                  This information is used to <strong>pre-fill USCIS forms</strong> like I-864, I-765, and I-485 automatically.
+                  Your SSN is stored securely and never shared.
+                </p>
+              </div>
+
+              {/* Legal Name */}
+              <div className="p-5 rounded-2xl border" style={{ borderColor: "#e2e8f0", backgroundColor: "#ffffff" }}>
+                <h3 className="font-semibold mb-4 text-sm" style={{ color: "#0f172a" }}>Legal Name (as on your ID / Passport)</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  <div>
+                    <label className="text-xs font-semibold mb-1.5 block" style={{ color: "#475569" }}>First Name</label>
+                    <input type="text" value={profile.firstName} onChange={e => set("firstName", e.target.value)}
+                      placeholder="e.g. John" className="w-full px-3 py-2 rounded-lg border text-sm focus:outline-none" style={{ borderColor: "#e2e8f0" }} />
+                  </div>
+                  <div>
+                    <label className="text-xs font-semibold mb-1.5 block" style={{ color: "#475569" }}>Last Name</label>
+                    <input type="text" value={profile.lastName} onChange={e => set("lastName", e.target.value)}
+                      placeholder="e.g. Smith" className="w-full px-3 py-2 rounded-lg border text-sm focus:outline-none" style={{ borderColor: "#e2e8f0" }} />
+                  </div>
+                  <div>
+                    <label className="text-xs font-semibold mb-1.5 block" style={{ color: "#475569" }}>Middle Name <span style={{ color: "#94a3b8" }}>(if any)</span></label>
+                    <input type="text" value={profile.middleName} onChange={e => set("middleName", e.target.value)}
+                      placeholder="e.g. Michael" className="w-full px-3 py-2 rounded-lg border text-sm focus:outline-none" style={{ borderColor: "#e2e8f0" }} />
+                  </div>
+                </div>
+              </div>
+
+              {/* Identity */}
+              <div className="p-5 rounded-2xl border" style={{ borderColor: "#e2e8f0", backgroundColor: "#ffffff" }}>
+                <h3 className="font-semibold mb-4 text-sm" style={{ color: "#0f172a" }}>Identity</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-xs font-semibold mb-1.5 block" style={{ color: "#475569" }}>Date of Birth</label>
+                    <input type="date" value={profile.dateOfBirth} onChange={e => set("dateOfBirth", e.target.value)}
+                      className="w-full px-3 py-2 rounded-lg border text-sm focus:outline-none" style={{ borderColor: "#e2e8f0" }} />
+                  </div>
+                  <div>
+                    <label className="text-xs font-semibold mb-1.5 block" style={{ color: "#475569" }}>Alien Registration Number (A-Number) <span style={{ color: "#94a3b8" }}>(if any)</span></label>
+                    <input type="text" value={profile.aNumber} onChange={e => set("aNumber", e.target.value)}
+                      placeholder="e.g. A-123456789" className="w-full px-3 py-2 rounded-lg border text-sm focus:outline-none font-mono" style={{ borderColor: "#e2e8f0" }} />
+                  </div>
+                  <div className="sm:col-span-2">
+                    <label className="text-xs font-semibold mb-1.5 block" style={{ color: "#475569" }}>Social Security Number</label>
+                    <input type="text" value={profile.ssn} onChange={e => set("ssn", e.target.value)}
+                      placeholder="XXX-XX-XXXX" maxLength={11}
+                      className="w-full px-3 py-2 rounded-lg border text-sm focus:outline-none font-mono" style={{ borderColor: "#e2e8f0" }} />
+                    <p className="text-[10px] mt-1" style={{ color: "#94a3b8" }}>Used only to pre-fill Form I-864 and similar forms. Never shared with third parties.</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Mailing Address */}
+              <div className="p-5 rounded-2xl border" style={{ borderColor: "#e2e8f0", backgroundColor: "#ffffff" }}>
+                <h3 className="font-semibold mb-4 text-sm" style={{ color: "#0f172a" }}>Mailing Address</h3>
+                <div className="space-y-3">
+                  <div>
+                    <label className="text-xs font-semibold mb-1.5 block" style={{ color: "#475569" }}>Street Number and Name</label>
+                    <input type="text" value={profile.mailingStreet} onChange={e => set("mailingStreet", e.target.value)}
+                      placeholder="e.g. 123 Main St Apt 4B" className="w-full px-3 py-2 rounded-lg border text-sm focus:outline-none" style={{ borderColor: "#e2e8f0" }} />
+                  </div>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    <div className="col-span-2">
+                      <label className="text-xs font-semibold mb-1.5 block" style={{ color: "#475569" }}>City</label>
+                      <input type="text" value={profile.mailingCity} onChange={e => set("mailingCity", e.target.value)}
+                        placeholder="e.g. Houston" className="w-full px-3 py-2 rounded-lg border text-sm focus:outline-none" style={{ borderColor: "#e2e8f0" }} />
+                    </div>
+                    <div>
+                      <label className="text-xs font-semibold mb-1.5 block" style={{ color: "#475569" }}>State</label>
+                      <input type="text" value={profile.mailingState} onChange={e => set("mailingState", e.target.value.toUpperCase())}
+                        placeholder="TX" maxLength={2} className="w-full px-3 py-2 rounded-lg border text-sm focus:outline-none uppercase font-mono" style={{ borderColor: "#e2e8f0" }} />
+                    </div>
+                    <div>
+                      <label className="text-xs font-semibold mb-1.5 block" style={{ color: "#475569" }}>ZIP Code</label>
+                      <input type="text" value={profile.mailingZip} onChange={e => set("mailingZip", e.target.value)}
+                        placeholder="77001" maxLength={10} className="w-full px-3 py-2 rounded-lg border text-sm focus:outline-none font-mono" style={{ borderColor: "#e2e8f0" }} />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Contact */}
+              <div className="p-5 rounded-2xl border" style={{ borderColor: "#e2e8f0", backgroundColor: "#ffffff" }}>
+                <h3 className="font-semibold mb-4 text-sm" style={{ color: "#0f172a" }}>Contact</h3>
+                <div>
+                  <label className="text-xs font-semibold mb-1.5 block" style={{ color: "#475569" }}>Daytime Phone Number</label>
+                  <input type="tel" value={profile.phone} onChange={e => set("phone", e.target.value)}
+                    placeholder="(713) 555-1234" className="w-full px-3 py-2 rounded-lg border text-sm focus:outline-none font-mono" style={{ borderColor: "#e2e8f0" }} />
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Tab: Visa Status */}
           {activeTab === "status" && (
@@ -829,10 +966,11 @@ export default function ProfilePage() {
           <div className="p-4 rounded-2xl border" style={{ borderColor: "#e2e8f0", backgroundColor: "#ffffff" }}>
             <p className="text-xs font-semibold mb-3" style={{ color: "#475569" }}>Profile Completeness</p>
             {[
+              { label: "Full name saved", done: !!(profile.firstName && profile.lastName) },
+              { label: "Date of birth", done: !!profile.dateOfBirth },
+              { label: "Mailing address", done: !!(profile.mailingStreet && profile.mailingCity) },
               { label: "Visa type set", done: !!profile.visaType },
-              { label: "Country of birth", done: !!profile.countryOfBirth },
               { label: "At least one key date", done: !!(profile.i94Expiry || profile.eadExpiry || profile.passportExpiry) },
-              { label: "Employer/school", done: !!profile.employer },
               { label: "Case number added", done: cases.length > 0 },
             ].map(item => (
               <div key={item.label} className="flex items-center gap-2 mb-2">
