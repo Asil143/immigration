@@ -207,8 +207,12 @@ const priorityConfig: Record<Priority, { badgeVariant: "destructive" | "warning"
   low:      { badgeVariant: "secondary"   },
 };
 
-function daysLeftBadge(days: number) {
-  if (days < 0)  return <Badge variant="destructive">{Math.abs(days)}d overdue</Badge>;
+function daysLeftBadge(days: number, category?: string) {
+  const isStatusDate = category && !["Document"].includes(category);
+  if (days < 0) {
+    const label = isStatusDate ? `Ended ${Math.abs(days)}d ago` : `Expired ${Math.abs(days)}d ago`;
+    return <Badge variant="secondary" className="text-slate-500">{label}</Badge>;
+  }
   if (days === 0) return <Badge variant="destructive">Today</Badge>;
   if (days <= 30) return <Badge variant="destructive">{days}d left</Badge>;
   if (days <= 90) return <Badge variant="warning">{days}d left</Badge>;
@@ -432,7 +436,7 @@ export default function TimelinePage() {
                           </span>
                         </div>
                         <div className="shrink-0">
-                          {days !== null ? daysLeftBadge(days) : null}
+                          {days !== null ? daysLeftBadge(days, kd.category) : null}
                         </div>
                       </div>
                       <p className="text-xs text-slate-400 mt-1">
