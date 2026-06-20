@@ -26,7 +26,7 @@ interface Deadline {
 
 interface KeyDate {
   label: string; date: string; icon: string;
-  actionHint?: string; category: string;
+  actionHint?: string; actionLink?: string; category: string;
 }
 
 interface SmartAction {
@@ -66,26 +66,26 @@ function daysUntil(dateStr?: string): number | null {
 
 function buildKeyDates(p: Profile): KeyDate[] {
   const out: KeyDate[] = [];
-  const add = (label: string, date: string | undefined, icon: string, category: string, actionHint?: string) => {
-    if (date && isValid(parseISO(date))) out.push({ label, date, icon, category, actionHint });
+  const add = (label: string, date: string | undefined, icon: string, category: string, actionHint?: string, actionLink?: string) => {
+    if (date && isValid(parseISO(date))) out.push({ label, date, icon, category, actionHint, actionLink });
   };
-  add("Passport Expiry",         p.passport_expiry,         "🛂", "document", "Renew 6–12 months before expiry");
-  add("Visa Stamp Expiry",       p.visa_stamp_expiry,       "🏷️", "document", "Required for US re-entry");
-  add("I-94 Expiry",             p.i94_is_ds ? undefined : p.i94_expiry, "📋", "status", "Last day of authorized stay");
-  add("I-20 Program End",        p.i20_end_date,            "🎓", "document", "Contact DSO to extend if needed");
-  add("EAD Expiry",              p.ead_expiry,              "💳", "document", "File I-765 renewal 6 months early");
-  add("OPT End Date",            p.opt_end_date,            "📅", "status",   "Plan next status before this date");
-  add("STEM OPT End Date",       p.stem_opt_end_date,       "📅", "status",   "H-1B must be approved by this date");
-  add("H-1B Start Date",         p.h1b_start_date,          "🏢", "status");
-  add("H-1B Expiry",             p.h1b_expiry,              "🏢", "status",   "File extension 6 months early");
-  add("Advance Parole Expiry",   p.advance_parole_expiry,   "✈️", "document", "File I-131 renewal 4+ months early");
-  add("I-140 Approval Date",     p.i140_approval_date,      "🌿", "filing");
-  add("PERM Filing Date",        p.perm_filing_date,        "📝", "filing");
-  add("Priority Date",           p.priority_date,           "🗓️", "filing",   "Monitor Visa Bulletin each month");
-  add("H-4 EAD Expiry",         p.h4_ead_expiry,           "💳", "document", "File renewal 6 months early");
-  add("J-1 Program End",         p.j1_end_date,             "🌍", "status",   "Apply for extension or change status");
-  add("TN Expiry",               p.tn_expiry,               "🇨🇦", "status",  "Renew at border or by filing");
-  add("L-1 Expiry",              p.l1_expiry,               "🏢", "status",   "File extension 6 months early");
+  add("Passport Expiry",       p.passport_expiry,         "🛂", "Document", "Renew 6–12 months before expiry — most US visas require 6 months validity beyond your stay", "/guides/travel-advisory");
+  add("Visa Stamp Expiry",     p.visa_stamp_expiry,       "🏷️", "Document", "Needed to re-enter the US — get a new stamp at a consulate abroad before traveling", "/guides/travel-advisory");
+  add("I-94 Expiry",           p.i94_is_ds ? undefined : p.i94_expiry, "📋", "Status", "Last day of your authorized stay — file extension or change status before this date");
+  add("I-20 Program End",      p.i20_end_date,            "🎓", "F-1 Status", "Request a program extension from your DSO at least 15 days before this date — required to stay in F-1 status");
+  add("EAD Expiry",            p.ead_expiry,              "💳", "Document", "File Form I-765 renewal up to 180 days (6 months) before this date to avoid a work gap", "/dashboard/tools/checklists");
+  add("OPT End Date",          p.opt_end_date,            "📅", "OPT Status", "Apply for STEM OPT extension (I-765 + I-983) up to 90 days before this date if your employer is E-Verify enrolled", "/dashboard/tools/opt-tracker");
+  add("STEM OPT End Date",     p.stem_opt_end_date,       "📅", "STEM OPT", "H-1B must be approved and active by this date — no grace period extensions exist after STEM OPT ends", "/dashboard/tools/opt-tracker");
+  add("H-1B Start Date",       p.h1b_start_date,          "🏢", "H-1B Status", "First day you can begin working on H-1B — confirm I-797 approval notice with employer");
+  add("H-1B Expiry",           p.h1b_expiry,              "🏢", "H-1B Status", "Ask your employer to file I-129 extension at least 6 months early — USCIS processing can take 3–6 months");
+  add("Advance Parole Expiry", p.advance_parole_expiry,   "✈️", "Document", "File I-131 renewal 4+ months before expiry — traveling after expiration abandons a pending I-485");
+  add("I-140 Approval Date",   p.i140_approval_date,      "🌿", "Filing", "Priority date is locked from this date — keep the approval notice safe");
+  add("PERM Filing Date",      p.perm_filing_date,        "📝", "Filing", "Labor certification filed — employer should receive audit/decision within 6–18 months");
+  add("Priority Date",         p.priority_date,           "🗓️", "Filing", "Check the DOS Visa Bulletin each month — you can file I-485 when your date becomes current", "/dashboard/tools/visa-bulletin");
+  add("H-4 EAD Expiry",       p.h4_ead_expiry,           "💳", "Document", "File Form I-765 renewal concurrently with H-4 extension — tie it to your spouse's H-1B extension");
+  add("J-1 Program End",       p.j1_end_date,             "🌍", "J-1 Status", "Request DS-2019 extension from your sponsor or change status before this date — 30-day grace period applies");
+  add("TN Expiry",             p.tn_expiry,               "🇨🇦", "TN Status", "Renew at a US port of entry with a new offer letter, or file I-129 with USCIS 6 months early");
+  add("L-1 Expiry",            p.l1_expiry,               "🏢", "L-1 Status", "Employer must file I-129 extension — L-1A max is 7 years, L-1B max is 5 years total");
   return out.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 }
 
@@ -413,21 +413,41 @@ export default function TimelinePage() {
                       {kd.icon}
                     </div>
                     {/* Card */}
-                    <div className={`flex-1 flex items-center justify-between gap-3 rounded-xl border px-4 py-3 flex-wrap ${
+                    <div className={`flex-1 rounded-xl border px-4 py-3 ${
                       isPast ? "bg-slate-50 border-slate-200 opacity-60" :
                       isUrgent ? "bg-red-50/50 border-red-200" :
                       "bg-white border-slate-200"
                     }`}>
-                      <div>
-                        <p className={`text-sm font-medium ${isPast ? "text-muted-foreground" : ""}`}>{kd.label}</p>
-                        <p className="text-xs text-muted-foreground mt-0.5">
-                          {format(parseISO(kd.date), "MMMM d, yyyy")}
-                          {kd.actionHint && <span className="ml-2 text-slate-400">· {kd.actionHint}</span>}
+                      <div className="flex items-center justify-between gap-3 flex-wrap">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <p className={`text-sm font-semibold ${isPast ? "text-muted-foreground" : ""}`}>{kd.label}</p>
+                          <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-full border ${
+                            kd.category.includes("Status") || kd.category === "F-1 Status" || kd.category === "OPT Status" || kd.category === "STEM OPT" || kd.category === "H-1B Status" || kd.category === "J-1 Status" || kd.category === "TN Status" || kd.category === "L-1 Status"
+                              ? "bg-purple-50 text-purple-700 border-purple-200"
+                              : kd.category === "Filing"
+                              ? "bg-green-50 text-green-700 border-green-200"
+                              : "bg-blue-50 text-blue-700 border-blue-200"
+                          }`}>
+                            {kd.category}
+                          </span>
+                        </div>
+                        <div className="shrink-0">
+                          {days !== null ? daysLeftBadge(days) : null}
+                        </div>
+                      </div>
+                      <p className="text-xs text-slate-400 mt-1">
+                        {format(parseISO(kd.date), "MMMM d, yyyy")}
+                      </p>
+                      {kd.actionHint && (
+                        <p className="text-xs text-slate-600 mt-1.5 leading-relaxed">
+                          {kd.actionHint}
+                          {kd.actionLink && (
+                            <Link href={kd.actionLink} className="ml-1.5 text-blue-600 font-semibold hover:underline inline-flex items-center gap-0.5">
+                              Take action <ExternalLink className="h-3 w-3" />
+                            </Link>
+                          )}
                         </p>
-                      </div>
-                      <div className="shrink-0">
-                        {days !== null ? daysLeftBadge(days) : null}
-                      </div>
+                      )}
                     </div>
                   </div>
                 );
