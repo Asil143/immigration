@@ -93,6 +93,10 @@ export default function AdminPaymentsPage() {
 
   return (
     <div className="p-8 max-w-5xl">
+      <div className="mb-6 flex gap-2">
+        <span className="px-3 py-1.5 rounded-lg bg-primary text-primary-foreground text-xs font-semibold">Payments</span>
+        <a href="/admin/form-submissions" className="px-3 py-1.5 rounded-lg border text-xs font-semibold text-muted-foreground hover:bg-accent transition-colors">Form Submissions</a>
+      </div>
       <div className="mb-8">
         <h1 className="text-2xl font-bold mb-1">Payment Submissions</h1>
         <p className="text-muted-foreground text-sm">Review and activate incoming plan purchases.</p>

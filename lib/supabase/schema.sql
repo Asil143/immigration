@@ -157,6 +157,23 @@ create table if not exists public.notifications (
 -- alter table public.profiles add column if not exists phone text;
 -- alter table public.profiles add column if not exists a_number text;
 
+-- ─── Form Submissions ────────────────────────────────────────────────────────
+-- Run this in Supabase SQL editor to create the form_submissions table:
+-- create table if not exists public.form_submissions (
+--   id           uuid primary key default uuid_generate_v4(),
+--   clerk_id     text not null references public.profiles(clerk_id) on delete cascade,
+--   form_type    text not null default 'I-864',
+--   fields       jsonb not null default '{}',
+--   user_email   text,
+--   user_name    text,
+--   status       text not null default 'submitted',
+--   admin_notes  text,
+--   created_at   timestamptz default now(),
+--   updated_at   timestamptz default now()
+-- );
+-- create index if not exists idx_form_submissions_clerk_id on public.form_submissions(clerk_id);
+-- create index if not exists idx_form_submissions_status   on public.form_submissions(status);
+
 -- ─── Storage bucket (create in Supabase dashboard → Storage → New bucket) ──────
 -- Bucket name: documents
 -- Public: false (private)

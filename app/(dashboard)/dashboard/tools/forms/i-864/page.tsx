@@ -291,7 +291,8 @@ export default function I864Page() {
   }
 
   function advanceQuestion(currentQ: I864Question, userAnswer: string, normalized: string) {
-    setFields(prev => ({ ...prev, [currentQ.id]: normalized }));
+    const updatedFields = { ...fields, [currentQ.id]: normalized };
+    setFields(updatedFields);
 
     const currentIdx = I864_QUESTIONS.findIndex(q => q.id === currentQ.id);
     const nextQ = I864_QUESTIONS[currentIdx + 1] ?? null;
@@ -314,8 +315,14 @@ export default function I864Page() {
       setActiveFieldId(null);
       setMessages(prev => [...prev, {
         role: "assistant",
-        content: "✅ All done! Every section is filled in.\n\nClick **Download PDF** above to save your completed data sheet.",
+        content: "✅ All done! Every section is filled in.\n\nYour answers have been saved and sent to the VisaPilot team — we'll prepare your I-864 and reach out shortly.\n\nYou can also click **Download PDF** above for a personal copy.",
       }]);
+      // Auto-save completed submission
+      fetch("/api/forms/submissions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ form_type: "I-864", fields: updatedFields }),
+      }).catch(console.error);
     }
 
     setTimeout(() => inputRef.current?.focus(), 50);
