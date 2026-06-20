@@ -35,21 +35,21 @@ interface KeyDate {
   group: Group; isStart?: boolean;
 }
 
-const GROUP_COLORS: Record<Group, { dot: string; border: string; badge: string }> = {
-  passport:  { dot: "bg-slate-500",   border: "border-l-slate-400",   badge: "bg-slate-100 text-slate-700 border-slate-300"   },
-  visa:      { dot: "bg-amber-500",   border: "border-l-amber-400",   badge: "bg-amber-50 text-amber-700 border-amber-200"    },
-  i94:       { dot: "bg-indigo-500",  border: "border-l-indigo-400",  badge: "bg-indigo-50 text-indigo-700 border-indigo-200" },
-  f1:        { dot: "bg-emerald-500", border: "border-l-emerald-400", badge: "bg-emerald-50 text-emerald-700 border-emerald-200" },
-  ead:       { dot: "bg-cyan-600",    border: "border-l-cyan-500",    badge: "bg-cyan-50 text-cyan-700 border-cyan-200"       },
-  opt:       { dot: "bg-blue-500",    border: "border-l-blue-400",    badge: "bg-blue-50 text-blue-700 border-blue-200"       },
-  stem_opt:  { dot: "bg-violet-500",  border: "border-l-violet-400",  badge: "bg-violet-50 text-violet-700 border-violet-200" },
-  h1b:       { dot: "bg-orange-500",  border: "border-l-orange-400",  badge: "bg-orange-50 text-orange-700 border-orange-200" },
-  ap:        { dot: "bg-teal-500",    border: "border-l-teal-400",    badge: "bg-teal-50 text-teal-700 border-teal-200"       },
-  filing:    { dot: "bg-green-600",   border: "border-l-green-500",   badge: "bg-green-50 text-green-700 border-green-200"    },
-  h4_ead:    { dot: "bg-pink-500",    border: "border-l-pink-400",    badge: "bg-pink-50 text-pink-700 border-pink-200"       },
-  j1:        { dot: "bg-rose-500",    border: "border-l-rose-400",    badge: "bg-rose-50 text-rose-700 border-rose-200"       },
-  tn:        { dot: "bg-red-500",     border: "border-l-red-400",     badge: "bg-red-50 text-red-700 border-red-200"          },
-  l1:        { dot: "bg-sky-500",     border: "border-l-sky-400",     badge: "bg-sky-50 text-sky-700 border-sky-200"          },
+const GROUP_COLORS: Record<Group, { dot: string; border: string; bg: string; text: string; bdColor: string }> = {
+  passport:  { dot: "#64748b", border: "#94a3b8",  bg: "#f1f5f9", text: "#334155", bdColor: "#cbd5e1" },
+  visa:      { dot: "#d97706", border: "#fbbf24",  bg: "#fffbeb", text: "#78350f", bdColor: "#fde68a" },
+  i94:       { dot: "#4f46e5", border: "#818cf8",  bg: "#eef2ff", text: "#312e81", bdColor: "#c7d2fe" },
+  f1:        { dot: "#059669", border: "#34d399",  bg: "#ecfdf5", text: "#065f46", bdColor: "#a7f3d0" },
+  ead:       { dot: "#0891b2", border: "#22d3ee",  bg: "#ecfeff", text: "#164e63", bdColor: "#a5f3fc" },
+  opt:       { dot: "#2563eb", border: "#60a5fa",  bg: "#eff6ff", text: "#1e3a8a", bdColor: "#bfdbfe" },
+  stem_opt:  { dot: "#7c3aed", border: "#a78bfa",  bg: "#f5f3ff", text: "#4c1d95", bdColor: "#ddd6fe" },
+  h1b:       { dot: "#ea580c", border: "#fb923c",  bg: "#fff7ed", text: "#7c2d12", bdColor: "#fed7aa" },
+  ap:        { dot: "#0d9488", border: "#2dd4bf",  bg: "#f0fdfa", text: "#134e4a", bdColor: "#99f6e4" },
+  filing:    { dot: "#16a34a", border: "#4ade80",  bg: "#f0fdf4", text: "#14532d", bdColor: "#bbf7d0" },
+  h4_ead:    { dot: "#db2777", border: "#f472b6",  bg: "#fdf2f8", text: "#831843", bdColor: "#fbcfe8" },
+  j1:        { dot: "#e11d48", border: "#fb7185",  bg: "#fff1f2", text: "#881337", bdColor: "#fecdd3" },
+  tn:        { dot: "#dc2626", border: "#f87171",  bg: "#fef2f2", text: "#7f1d1d", bdColor: "#fecaca" },
+  l1:        { dot: "#0284c7", border: "#38bdf8",  bg: "#f0f9ff", text: "#0c4a6e", bdColor: "#bae6fd" },
 };
 
 interface SmartAction {
@@ -484,8 +484,9 @@ export default function TimelinePage() {
               .map(([g, cfg]) => {
                 const label = keyDates.find(kd => kd.group === g)?.category ?? g;
                 return (
-                  <span key={g} className={`flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full border ${cfg.badge}`}>
-                    <span className={`h-2 w-2 rounded-full ${cfg.dot}`} />
+                  <span key={g} className="flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full border"
+                    style={{ backgroundColor: cfg.bg, color: cfg.text, borderColor: cfg.bdColor }}>
+                    <span className="h-2 w-2 rounded-full" style={{ backgroundColor: cfg.dot }} />
                     {label}
                   </span>
                 );
@@ -506,28 +507,28 @@ export default function TimelinePage() {
                   <div key={i} className="flex items-start gap-4">
                     {/* Dot — group color */}
                     <div className={`relative z-10 h-10 w-10 rounded-full flex items-center justify-center shrink-0 text-base border-2 ${
-                      isPast
-                        ? "bg-slate-100 border-slate-200 opacity-50"
-                        : isUrgent
-                        ? "bg-red-50 border-red-300"
-                        : "bg-white border-slate-200"
+                      isPast ? "bg-slate-100 border-slate-200 opacity-50"
+                      : isUrgent ? "bg-red-50 border-red-300"
+                      : "bg-white border-slate-200"
                     }`}>
                       {kd.isStart
-                        ? <span className={`h-3 w-3 rounded-full ${isPast ? "bg-slate-400" : gc.dot}`} />
+                        ? <span className="h-3 w-3 rounded-full" style={{ backgroundColor: isPast ? "#94a3b8" : gc.dot }} />
                         : <span className="text-base">{kd.icon}</span>}
                     </div>
                     {/* Card — colored left border per group */}
-                    <div className={`flex-1 rounded-xl border border-l-4 px-4 py-3 ${gc.border} ${
-                      isPast
-                        ? "bg-slate-50 border-slate-200 opacity-60"
-                        : isUrgent
-                        ? "bg-red-50/40 border-red-200"
+                    <div
+                      className={`flex-1 rounded-xl border border-l-4 px-4 py-3 ${
+                        isPast ? "bg-slate-50 border-slate-200 opacity-60"
+                        : isUrgent ? "border-red-200"
                         : "bg-white border-slate-200"
-                    }`}>
+                      }`}
+                      style={{ borderLeftColor: gc.border, backgroundColor: isPast ? undefined : isUrgent ? "#fff5f5" : undefined }}
+                    >
                       <div className="flex items-center justify-between gap-3 flex-wrap">
                         <div className="flex items-center gap-2 flex-wrap">
                           <p className={`text-sm font-semibold ${isPast ? "text-muted-foreground" : ""}`}>{kd.label}</p>
-                          <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-full border ${gc.badge}`}>
+                          <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full border"
+                            style={{ backgroundColor: gc.bg, color: gc.text, borderColor: gc.bdColor }}>
                             {kd.category}
                           </span>
                           {kd.isStart && (
