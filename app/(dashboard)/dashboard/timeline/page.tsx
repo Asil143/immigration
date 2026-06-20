@@ -550,10 +550,22 @@ export default function TimelinePage() {
                             </span>
                           )}
                         </div>
-                        <div className="shrink-0">
+                        <div className="flex items-center gap-2 shrink-0">
                           {days !== null && !kd.isStart ? daysLeftBadge(days, kd.category) : null}
                           {kd.isStart && days !== null && days >= 0 && (
                             <Badge variant="secondary" className="text-slate-500">Upcoming</Badge>
+                          )}
+                          {matchedDoc && (
+                            <a
+                              href={matchedDoc.signed_url!}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1 text-[11px] font-semibold px-2.5 py-1.5 rounded-lg border transition-all hover:opacity-80"
+                              style={{ color: gc.text, backgroundColor: gc.bg, borderColor: gc.bdColor }}
+                            >
+                              <FileText className="h-3 w-3" />
+                              View doc
+                            </a>
                           )}
                         </div>
                       </div>
@@ -569,18 +581,6 @@ export default function TimelinePage() {
                             </Link>
                           )}
                         </p>
-                      )}
-                      {matchedDoc && (
-                        <a
-                          href={matchedDoc.signed_url!}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1.5 mt-2 text-[11px] font-semibold px-2.5 py-1 rounded-lg border transition-colors hover:opacity-80"
-                          style={{ color: gc.text, backgroundColor: gc.bg, borderColor: gc.bdColor }}
-                        >
-                          <FileText className="h-3 w-3" />
-                          View uploaded {matchedDoc.document_type}
-                        </a>
                       )}
                     </div>
                   </div>
