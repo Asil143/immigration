@@ -9,12 +9,22 @@ export async function GET() {
   const supabase = createAdminClient();
   const { data, error } = await supabase
     .from("documents")
-    .select("id, name, document_type, file_size, extracted_data, created_at")
+    .select("id, name, document_type, file_size, storage_path, extracted_data, created_at")
     .eq("clerk_id", userId)
     .order("created_at", { ascending: false });
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
-  return NextResponse.json(data ?? []);
+
+  // Generate 1-hour signed URLs so the client can open documents directly
+  const withUrls = await Promise.all((data ?? []).map(async (doc) => {
+    if (!doc.storage_path) return { ...doc, signed_url: null };
+    const { data: urlData } = await supabase.storage
+      .from("documents")
+      .createSignedUrl(doc.storage_path, 3600);
+    return { ...doc, signed_url: urlData?.signedUrl ?? null };
+  }));
+
+  return NextResponse.json(withUrls);
 }
 
 export async function DELETE(req: NextRequest) {

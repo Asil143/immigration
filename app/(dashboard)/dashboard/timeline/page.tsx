@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
   Plus, Calendar, AlertCircle, Clock, CheckCircle2, Trash2, Loader2,
-  Sparkles, ArrowRight, ExternalLink, UserCircle,
+  Sparkles, ArrowRight, ExternalLink, UserCircle, FileText,
 } from "lucide-react";
 import { differenceInDays, format, parseISO, isValid } from "date-fns";
 import Link from "next/link";
@@ -33,6 +33,11 @@ interface KeyDate {
   label: string; date: string; icon: string;
   actionHint?: string; actionLink?: string; category: string;
   group: Group; isStart?: boolean;
+  docType?: string; // matches document_type from uploads
+}
+
+interface UploadedDoc {
+  id: string; name: string; document_type: string; signed_url: string | null;
 }
 
 const GROUP_COLORS: Record<Group, { dot: string; border: string; bg: string; text: string; bdColor: string }> = {
@@ -91,16 +96,16 @@ function buildKeyDates(p: Profile): KeyDate[] {
   const add = (
     label: string, date: string | undefined, icon: string,
     category: string, group: Group, isStart?: boolean,
-    actionHint?: string, actionLink?: string,
+    actionHint?: string, actionLink?: string, docType?: string,
   ) => {
     if (date && isValid(parseISO(date)))
-      out.push({ label, date, icon, category, group, isStart, actionHint, actionLink });
+      out.push({ label, date, icon, category, group, isStart, actionHint, actionLink, docType });
   };
 
   // Passport
-  add("Passport Issued",        p.passport_issue_date,   "🛂", "Passport", "passport", true);
+  add("Passport Issued",        p.passport_issue_date,   "🛂", "Passport", "passport", true,  undefined, undefined, "Passport");
   add("Passport Expiry",        p.passport_expiry,       "🛂", "Passport", "passport", false,
-    "Renew 6–12 months early — most US visas require 6 months validity beyond your stay", "/guides/travel-advisory");
+    "Renew 6–12 months early — most US visas require 6 months validity beyond your stay", "/guides/travel-advisory", "Passport");
 
   // Visa stamp
   add("Visa Stamp Expiry",      p.visa_stamp_expiry,     "🏷️", "Visa Stamp", "visa", false,
@@ -112,29 +117,29 @@ function buildKeyDates(p: Profile): KeyDate[] {
 
   // F-1 / I-20
   add("I-20 Program Start",     p.i20_start_date,        "🎓", "F-1 / I-20", "f1", true,
-    "First day of your authorized program — recorded in SEVIS");
+    "First day of your authorized program — recorded in SEVIS", undefined, "I-20");
   add("I-20 Program End",       p.i20_end_date,          "🎓", "F-1 / I-20", "f1", false,
-    "Request a program extension from your DSO at least 15 days before this date");
+    "Request a program extension from your DSO at least 15 days before this date", undefined, "I-20");
 
   // EAD
   add("EAD Expiry",             p.ead_expiry,            "💳", "EAD", "ead", false,
-    "File Form I-765 renewal up to 180 days (6 months) before this date to avoid a work gap", "/dashboard/tools/checklists");
+    "File Form I-765 renewal up to 180 days (6 months) before this date to avoid a work gap", "/dashboard/tools/checklists", "EAD");
 
   // OPT
-  add("OPT Start Date",         p.opt_start_date,        "📅", "OPT", "opt", true);
+  add("OPT Start Date",         p.opt_start_date,        "📅", "OPT", "opt", true,  undefined, undefined, "EAD");
   add("OPT End Date",           p.opt_end_date,          "📅", "OPT", "opt", false,
-    "Apply for STEM OPT extension (I-765 + I-983) up to 90 days before this date if your employer is E-Verify enrolled", "/dashboard/tools/opt-tracker");
+    "Apply for STEM OPT extension (I-765 + I-983) up to 90 days before this date if your employer is E-Verify enrolled", "/dashboard/tools/opt-tracker", "EAD");
 
   // STEM OPT
-  add("STEM OPT Start",         p.stem_opt_start_date,   "📅", "STEM OPT", "stem_opt", true);
+  add("STEM OPT Start",         p.stem_opt_start_date,   "📅", "STEM OPT", "stem_opt", true,  undefined, undefined, "EAD");
   add("STEM OPT End Date",      p.stem_opt_end_date,     "📅", "STEM OPT", "stem_opt", false,
-    "H-1B must be approved and active by this date — no grace period after STEM OPT ends", "/dashboard/tools/opt-tracker");
+    "H-1B must be approved and active by this date — no grace period after STEM OPT ends", "/dashboard/tools/opt-tracker", "EAD");
 
   // H-1B
   add("H-1B Start Date",        p.h1b_start_date,        "🏢", "H-1B", "h1b", true,
-    "First day you can begin working on H-1B — confirm I-797 approval notice with employer");
+    "First day you can begin working on H-1B — confirm I-797 approval notice with employer", undefined, "I-797");
   add("H-1B Expiry",            p.h1b_expiry,            "🏢", "H-1B", "h1b", false,
-    "Ask your employer to file I-129 extension at least 6 months early");
+    "Ask your employer to file I-129 extension at least 6 months early", undefined, "I-797");
 
   // Advance Parole
   add("Advance Parole Issued",  p.advance_parole_issue_date, "✈️", "Advance Parole", "ap", true);
@@ -145,7 +150,7 @@ function buildKeyDates(p: Profile): KeyDate[] {
   add("PERM Filing Date",       p.perm_filing_date,      "📝", "Filing", "filing", true,
     "Labor certification filed — employer should receive audit/decision within 6–18 months");
   add("I-140 Approval Date",    p.i140_approval_date,    "🌿", "Filing", "filing", false,
-    "Priority date is locked from this date — keep the approval notice safe");
+    "Priority date is locked from this date — keep the approval notice safe", undefined, "I-140 Approval");
   add("Priority Date",          p.priority_date,         "🗓️", "Filing", "filing", false,
     "Check the DOS Visa Bulletin each month — you can file I-485 when your date becomes current", "/dashboard/tools/visa-bulletin");
 
@@ -320,6 +325,7 @@ export default function TimelinePage() {
   const { isSignedIn } = useUser();
   const [profile, setProfile] = useState<Profile | null>(null);
   const [deadlines, setDeadlines] = useState<Deadline[]>([]);
+  const [docs, setDocs] = useState<UploadedDoc[]>([]);
   const [loading, setLoading] = useState(true);
   const [showAdd, setShowAdd] = useState(false);
   const [newTitle, setNewTitle] = useState("");
@@ -337,9 +343,11 @@ export default function TimelinePage() {
     Promise.all([
       fetch("/api/profile").then(r => r.ok ? r.json() : null),
       fetch("/api/deadlines").then(r => r.ok ? r.json() : []),
-    ]).then(([prof, dl]) => {
+      fetch("/api/documents").then(r => r.ok ? r.json() : []),
+    ]).then(([prof, dl, docList]) => {
       setProfile(prof ?? {});
       if (Array.isArray(dl)) setDeadlines(dl);
+      if (Array.isArray(docList)) setDocs(docList);
     }).finally(() => setLoading(false));
   }, [isSignedIn]);
 
@@ -505,6 +513,9 @@ export default function TimelinePage() {
                 const isPast = days !== null && days < 0;
                 const isUrgent = days !== null && days <= 90 && !isPast;
                 const gc = GROUP_COLORS[kd.group];
+                const matchedDoc = kd.docType
+                  ? docs.find(d => d.document_type === kd.docType && d.signed_url)
+                  : undefined;
                 return (
                   <div key={i} className="flex items-start gap-4">
                     {/* Dot — group color */}
@@ -558,6 +569,18 @@ export default function TimelinePage() {
                             </Link>
                           )}
                         </p>
+                      )}
+                      {matchedDoc && (
+                        <a
+                          href={matchedDoc.signed_url!}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1.5 mt-2 text-[11px] font-semibold px-2.5 py-1 rounded-lg border transition-colors hover:opacity-80"
+                          style={{ color: gc.text, backgroundColor: gc.bg, borderColor: gc.bdColor }}
+                        >
+                          <FileText className="h-3 w-3" />
+                          View uploaded {matchedDoc.document_type}
+                        </a>
                       )}
                     </div>
                   </div>
