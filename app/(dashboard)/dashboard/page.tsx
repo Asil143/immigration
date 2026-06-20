@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
   Bot, Calendar, FileText, FolderOpen, ArrowRight, AlertCircle,
-  CheckCircle2, Clock, UserCircle, Shield, TrendingUp, Zap,
+  CheckCircle2, Clock, UserCircle, Shield, TrendingUp, Zap, ClipboardList,
 } from "lucide-react";
 import { useUser } from "@clerk/nextjs";
 import { GuestPreviewBanner } from "@/components/ui/guest-preview-banner";
@@ -24,6 +24,42 @@ interface DeadlineAlert {
   priority: "critical" | "high" | "medium";
   action: string;
   actionHref: string;
+}
+
+interface StemDeadline {
+  date: string;         // ISO yyyy-mm-dd
+  label: string;
+  type: "validation" | "evaluation";
+  daysUntil: number;
+  isPast: boolean;
+}
+
+function addMonths(dateStr: string, months: number): string {
+  const d = new Date(dateStr);
+  d.setMonth(d.getMonth() + months);
+  return d.toISOString().split("T")[0];
+}
+
+function computeStemOptDeadlines(startDate: string): StemDeadline[] {
+  const deadlines: StemDeadline[] = [];
+  const schedule = [
+    { months: 6,  type: "validation" as const },
+    { months: 12, type: "validation" as const },
+    { months: 12, type: "evaluation" as const },
+    { months: 18, type: "validation" as const },
+    { months: 24, type: "validation" as const },
+    { months: 24, type: "evaluation" as const },
+  ];
+  const labels: Record<string, string> = {
+    validation: "Validation report — confirm address & employer in SEVIS",
+    evaluation: "Form I-983 (page 5) — Evaluation of Student Progress",
+  };
+  for (const s of schedule) {
+    const date = addMonths(startDate, s.months);
+    const days = Math.ceil((new Date(date).getTime() - Date.now()) / 86400000);
+    deadlines.push({ date, label: labels[s.type], type: s.type, daysUntil: days, isPast: days < 0 });
+  }
+  return deadlines;
 }
 
 function computeAlerts(profile: Record<string, string>): DeadlineAlert[] {
@@ -92,6 +128,7 @@ export default function DashboardPage() {
   const { isSignedIn } = useUser();
   const [profile, setProfile] = useState<Record<string, string> | null>(null);
   const [alerts, setAlerts] = useState<DeadlineAlert[]>([]);
+  const [stemDeadlines, setStemDeadlines] = useState<StemDeadline[]>([]);
   const [caseCount, setCaseCount] = useState(0);
 
   useEffect(() => {
@@ -116,9 +153,11 @@ export default function DashboardPage() {
           passportExpiry: profileData.passport_expiry ?? "",
           greenCardStage: profileData.green_card_stage ?? "",
           greenCardCategory: profileData.green_card_category ?? "",
+          stemOptStartDate: profileData.stem_opt_start_date ?? "",
         };
         setProfile(p);
         setAlerts(computeAlerts(p));
+        if (p.stemOptStartDate) setStemDeadlines(computeStemOptDeadlines(p.stemOptStartDate));
       } else {
         setProfile({});
       }
@@ -263,6 +302,74 @@ export default function DashboardPage() {
               )}
             </CardContent>
           </Card>
+
+          {/* STEM OPT Reporting Deadlines */}
+          {stemDeadlines.length > 0 && (
+            <Card className="border-amber-200 bg-amber-50/40">
+              <CardHeader className="flex flex-row items-center justify-between pb-3">
+                <CardTitle className="text-base flex items-center gap-2">
+                  <ClipboardList className="h-4 w-4 text-amber-600" />
+                  STEM OPT Reporting Deadlines
+                </CardTitle>
+                <span className="text-[10px] font-semibold text-amber-700 bg-amber-100 border border-amber-200 rounded-full px-2 py-0.5">
+                  Required by SEVP
+                </span>
+              </CardHeader>
+              <CardContent>
+                <p className="text-xs text-amber-800 mb-3 leading-relaxed">
+                  Missing these deadlines can affect your SEVIS record. Report every 6 months to your DSO even if nothing changed.
+                </p>
+                <div className="space-y-2">
+                  {stemDeadlines.map((dl, i) => {
+                    const isPast = dl.isPast;
+                    const isSoon = !isPast && dl.daysUntil <= 30;
+                    const isWarning = !isPast && dl.daysUntil <= 60;
+                    return (
+                      <div key={i} className={`flex items-start gap-3 rounded-lg border px-3 py-2.5 ${
+                        isPast
+                          ? "bg-slate-50 border-slate-200 opacity-60"
+                          : isSoon
+                          ? "bg-red-50 border-red-200"
+                          : isWarning
+                          ? "bg-orange-50 border-orange-200"
+                          : "bg-white border-slate-200"
+                      }`}>
+                        <div className="shrink-0 mt-0.5">
+                          {isPast
+                            ? <CheckCircle2 className="h-4 w-4 text-slate-400" />
+                            : isSoon
+                            ? <AlertCircle className="h-4 w-4 text-red-500" />
+                            : <Clock className="h-4 w-4 text-amber-500" />}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center justify-between gap-2">
+                            <p className={`text-xs font-semibold ${dl.type === "evaluation" ? "text-purple-800" : "text-slate-700"}`}>
+                              {dl.type === "validation" ? "Validation Report" : "Form I-983 Evaluation"}
+                            </p>
+                            <span className={`text-[10px] font-bold shrink-0 ${
+                              isPast ? "text-slate-400"
+                              : isSoon ? "text-red-600"
+                              : isWarning ? "text-orange-600"
+                              : "text-slate-500"
+                            }`}>
+                              {isPast ? "Past" : `${dl.daysUntil}d`}
+                            </span>
+                          </div>
+                          <p className="text-[11px] text-slate-500 mt-0.5">{dl.label}</p>
+                          <p className="text-[10px] font-medium text-slate-400 mt-0.5">
+                            {new Date(dl.date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+                          </p>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+                <p className="text-[10px] text-amber-700 mt-3 pt-2 border-t border-amber-100">
+                  If you stop working for your STEM employer early, submit Form I-983 to your DSO within 10 days.
+                </p>
+              </CardContent>
+            </Card>
+          )}
 
           {/* Stats row */}
           {profileSetUp && (
