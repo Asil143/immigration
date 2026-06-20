@@ -555,6 +555,14 @@ export default function ProfilePage() {
                   ],
                 },
                 {
+                  section: "I-20 / F-1 Program",
+                  color: "#ecfdf5", border: "#6ee7b7", textColor: "#065f46",
+                  fields: [
+                    { key: "i20StartDate", label: "Program Start Date", hint: "The start date on your I-20 form", isExpiry: false },
+                    { key: "i20EndDate",   label: "Program End Date",   hint: "The program end date on your I-20 form", isExpiry: true  },
+                  ],
+                },
+                {
                   section: "I-94 Authorized Stay",
                   color: "#fff7ed", border: "#fed7aa", textColor: "#c2410c",
                   fields: [],
@@ -688,35 +696,6 @@ export default function ProfilePage() {
                             )}
                           </div>
                         )}
-                        {/* I-20 start date */}
-                        <div>
-                          <label className="text-xs font-semibold mb-1 block" style={{ color: "#475569" }}>I-20 Program Start Date</label>
-                          <input
-                            type="date"
-                            value={profile.i20StartDate}
-                            onChange={e => set("i20StartDate", e.target.value)}
-                            className="w-full px-3 py-2 rounded-lg border text-sm focus:outline-none"
-                            style={{ borderColor: "#e2e8f0" }}
-                          />
-                          <p className="text-[10px] mt-1" style={{ color: "#94a3b8" }}>The program start date on your I-20 form</p>
-                        </div>
-                        {/* I-20 end date always shown */}
-                        <div>
-                          <label className="text-xs font-semibold mb-1 block" style={{ color: "#475569" }}>I-20 Program End Date</label>
-                          <input
-                            type="date"
-                            value={profile.i20EndDate}
-                            onChange={e => set("i20EndDate", e.target.value)}
-                            className="w-full px-3 py-2 rounded-lg border text-sm focus:outline-none"
-                            style={{ borderColor: "#e2e8f0" }}
-                          />
-                          <p className="text-[10px] mt-1" style={{ color: "#94a3b8" }}>The program end date on your I-20 form</p>
-                          {profile.i20EndDate && daysUntil(profile.i20EndDate) !== null && (
-                            <p className="text-[10px] font-semibold mt-0.5" style={{ color: daysUntil(profile.i20EndDate)! < 90 ? "#dc2626" : "#16a34a" }}>
-                              {daysUntil(profile.i20EndDate)! > 0 ? `${daysUntil(profile.i20EndDate)} days remaining` : "EXPIRED"}
-                            </p>
-                          )}
-                        </div>
                       </div>
                     )}
                     {/* Standard fields */}
