@@ -24,10 +24,33 @@ interface Deadline {
   due_date: string; priority: Priority; is_completed: boolean;
 }
 
+type Group =
+  | "passport" | "visa" | "i94" | "f1" | "ead"
+  | "opt" | "stem_opt" | "h1b" | "ap" | "filing" | "h4_ead"
+  | "j1" | "tn" | "l1";
+
 interface KeyDate {
   label: string; date: string; icon: string;
   actionHint?: string; actionLink?: string; category: string;
+  group: Group; isStart?: boolean;
 }
+
+const GROUP_COLORS: Record<Group, { dot: string; border: string; badge: string }> = {
+  passport:  { dot: "bg-slate-500",   border: "border-l-slate-400",   badge: "bg-slate-100 text-slate-700 border-slate-300"   },
+  visa:      { dot: "bg-amber-500",   border: "border-l-amber-400",   badge: "bg-amber-50 text-amber-700 border-amber-200"    },
+  i94:       { dot: "bg-indigo-500",  border: "border-l-indigo-400",  badge: "bg-indigo-50 text-indigo-700 border-indigo-200" },
+  f1:        { dot: "bg-emerald-500", border: "border-l-emerald-400", badge: "bg-emerald-50 text-emerald-700 border-emerald-200" },
+  ead:       { dot: "bg-cyan-600",    border: "border-l-cyan-500",    badge: "bg-cyan-50 text-cyan-700 border-cyan-200"       },
+  opt:       { dot: "bg-blue-500",    border: "border-l-blue-400",    badge: "bg-blue-50 text-blue-700 border-blue-200"       },
+  stem_opt:  { dot: "bg-violet-500",  border: "border-l-violet-400",  badge: "bg-violet-50 text-violet-700 border-violet-200" },
+  h1b:       { dot: "bg-orange-500",  border: "border-l-orange-400",  badge: "bg-orange-50 text-orange-700 border-orange-200" },
+  ap:        { dot: "bg-teal-500",    border: "border-l-teal-400",    badge: "bg-teal-50 text-teal-700 border-teal-200"       },
+  filing:    { dot: "bg-green-600",   border: "border-l-green-500",   badge: "bg-green-50 text-green-700 border-green-200"    },
+  h4_ead:    { dot: "bg-pink-500",    border: "border-l-pink-400",    badge: "bg-pink-50 text-pink-700 border-pink-200"       },
+  j1:        { dot: "bg-rose-500",    border: "border-l-rose-400",    badge: "bg-rose-50 text-rose-700 border-rose-200"       },
+  tn:        { dot: "bg-red-500",     border: "border-l-red-400",     badge: "bg-red-50 text-red-700 border-red-200"          },
+  l1:        { dot: "bg-sky-500",     border: "border-l-sky-400",     badge: "bg-sky-50 text-sky-700 border-sky-200"          },
+};
 
 interface SmartAction {
   title: string; description: string;
@@ -36,7 +59,7 @@ interface SmartAction {
 
 interface Profile {
   visa_type?: string;
-  passport_expiry?: string;
+  passport_expiry?: string; passport_issue_date?: string;
   visa_stamp_expiry?: string;
   i94_expiry?: string; i94_is_ds?: boolean;
   i20_end_date?: string;
@@ -44,13 +67,12 @@ interface Profile {
   opt_start_date?: string; opt_end_date?: string;
   stem_opt_start_date?: string; stem_opt_end_date?: string;
   h1b_start_date?: string; h1b_expiry?: string;
-  advance_parole_expiry?: string;
-  advance_parole_issue_date?: string;
+  advance_parole_expiry?: string; advance_parole_issue_date?: string;
   i140_approval_date?: string;
-  h4_ead_expiry?: string;
+  h4_ead_expiry?: string; h4_ead_issue_date?: string;
   j1_end_date?: string;
-  tn_expiry?: string;
-  l1_expiry?: string;
+  tn_start_date?: string; tn_expiry?: string;
+  l1_start_date?: string; l1_expiry?: string;
   perm_filing_date?: string;
   priority_date?: string;
   green_card_stage?: string;
@@ -66,26 +88,84 @@ function daysUntil(dateStr?: string): number | null {
 
 function buildKeyDates(p: Profile): KeyDate[] {
   const out: KeyDate[] = [];
-  const add = (label: string, date: string | undefined, icon: string, category: string, actionHint?: string, actionLink?: string) => {
-    if (date && isValid(parseISO(date))) out.push({ label, date, icon, category, actionHint, actionLink });
+  const add = (
+    label: string, date: string | undefined, icon: string,
+    category: string, group: Group, isStart?: boolean,
+    actionHint?: string, actionLink?: string,
+  ) => {
+    if (date && isValid(parseISO(date)))
+      out.push({ label, date, icon, category, group, isStart, actionHint, actionLink });
   };
-  add("Passport Expiry",       p.passport_expiry,         "🛂", "Document", "Renew 6–12 months before expiry — most US visas require 6 months validity beyond your stay", "/guides/travel-advisory");
-  add("Visa Stamp Expiry",     p.visa_stamp_expiry,       "🏷️", "Document", "Needed to re-enter the US — get a new stamp at a consulate abroad before traveling", "/guides/travel-advisory");
-  add("I-94 Expiry",           p.i94_is_ds ? undefined : p.i94_expiry, "📋", "Status", "Last day of your authorized stay — file extension or change status before this date");
-  add("I-20 Program End",      p.i20_end_date,            "🎓", "F-1 Status", "Request a program extension from your DSO at least 15 days before this date — required to stay in F-1 status");
-  add("EAD Expiry",            p.ead_expiry,              "💳", "Document", "File Form I-765 renewal up to 180 days (6 months) before this date to avoid a work gap", "/dashboard/tools/checklists");
-  add("OPT End Date",          p.opt_end_date,            "📅", "OPT Status", "Apply for STEM OPT extension (I-765 + I-983) up to 90 days before this date if your employer is E-Verify enrolled", "/dashboard/tools/opt-tracker");
-  add("STEM OPT End Date",     p.stem_opt_end_date,       "📅", "STEM OPT", "H-1B must be approved and active by this date — no grace period extensions exist after STEM OPT ends", "/dashboard/tools/opt-tracker");
-  add("H-1B Start Date",       p.h1b_start_date,          "🏢", "H-1B Status", "First day you can begin working on H-1B — confirm I-797 approval notice with employer");
-  add("H-1B Expiry",           p.h1b_expiry,              "🏢", "H-1B Status", "Ask your employer to file I-129 extension at least 6 months early — USCIS processing can take 3–6 months");
-  add("Advance Parole Expiry", p.advance_parole_expiry,   "✈️", "Document", "File I-131 renewal 4+ months before expiry — traveling after expiration abandons a pending I-485");
-  add("I-140 Approval Date",   p.i140_approval_date,      "🌿", "Filing", "Priority date is locked from this date — keep the approval notice safe");
-  add("PERM Filing Date",      p.perm_filing_date,        "📝", "Filing", "Labor certification filed — employer should receive audit/decision within 6–18 months");
-  add("Priority Date",         p.priority_date,           "🗓️", "Filing", "Check the DOS Visa Bulletin each month — you can file I-485 when your date becomes current", "/dashboard/tools/visa-bulletin");
-  add("H-4 EAD Expiry",       p.h4_ead_expiry,           "💳", "Document", "File Form I-765 renewal concurrently with H-4 extension — tie it to your spouse's H-1B extension");
-  add("J-1 Program End",       p.j1_end_date,             "🌍", "J-1 Status", "Request DS-2019 extension from your sponsor or change status before this date — 30-day grace period applies");
-  add("TN Expiry",             p.tn_expiry,               "🇨🇦", "TN Status", "Renew at a US port of entry with a new offer letter, or file I-129 with USCIS 6 months early");
-  add("L-1 Expiry",            p.l1_expiry,               "🏢", "L-1 Status", "Employer must file I-129 extension — L-1A max is 7 years, L-1B max is 5 years total");
+
+  // Passport
+  add("Passport Issued",        p.passport_issue_date,   "🛂", "Passport", "passport", true);
+  add("Passport Expiry",        p.passport_expiry,       "🛂", "Passport", "passport", false,
+    "Renew 6–12 months early — most US visas require 6 months validity beyond your stay", "/guides/travel-advisory");
+
+  // Visa stamp
+  add("Visa Stamp Expiry",      p.visa_stamp_expiry,     "🏷️", "Visa Stamp", "visa", false,
+    "Needed to re-enter the US — get a new stamp at a consulate abroad before traveling", "/guides/travel-advisory");
+
+  // I-94
+  add("I-94 Expiry",            p.i94_is_ds ? undefined : p.i94_expiry, "📋", "I-94 / Status", "i94", false,
+    "Last day of your authorized stay — file extension or change status before this date");
+
+  // F-1 / I-20
+  add("I-20 Program End",       p.i20_end_date,          "🎓", "F-1 / I-20", "f1", false,
+    "Request a program extension from your DSO at least 15 days before this date");
+
+  // EAD
+  add("EAD Expiry",             p.ead_expiry,            "💳", "EAD", "ead", false,
+    "File Form I-765 renewal up to 180 days (6 months) before this date to avoid a work gap", "/dashboard/tools/checklists");
+
+  // OPT
+  add("OPT Start Date",         p.opt_start_date,        "📅", "OPT", "opt", true);
+  add("OPT End Date",           p.opt_end_date,          "📅", "OPT", "opt", false,
+    "Apply for STEM OPT extension (I-765 + I-983) up to 90 days before this date if your employer is E-Verify enrolled", "/dashboard/tools/opt-tracker");
+
+  // STEM OPT
+  add("STEM OPT Start",         p.stem_opt_start_date,   "📅", "STEM OPT", "stem_opt", true);
+  add("STEM OPT End Date",      p.stem_opt_end_date,     "📅", "STEM OPT", "stem_opt", false,
+    "H-1B must be approved and active by this date — no grace period after STEM OPT ends", "/dashboard/tools/opt-tracker");
+
+  // H-1B
+  add("H-1B Start Date",        p.h1b_start_date,        "🏢", "H-1B", "h1b", true,
+    "First day you can begin working on H-1B — confirm I-797 approval notice with employer");
+  add("H-1B Expiry",            p.h1b_expiry,            "🏢", "H-1B", "h1b", false,
+    "Ask your employer to file I-129 extension at least 6 months early");
+
+  // Advance Parole
+  add("Advance Parole Issued",  p.advance_parole_issue_date, "✈️", "Advance Parole", "ap", true);
+  add("Advance Parole Expiry",  p.advance_parole_expiry,     "✈️", "Advance Parole", "ap", false,
+    "File I-131 renewal 4+ months before expiry — traveling after expiration abandons a pending I-485");
+
+  // Green card / filing
+  add("PERM Filing Date",       p.perm_filing_date,      "📝", "Filing", "filing", true,
+    "Labor certification filed — employer should receive audit/decision within 6–18 months");
+  add("I-140 Approval Date",    p.i140_approval_date,    "🌿", "Filing", "filing", false,
+    "Priority date is locked from this date — keep the approval notice safe");
+  add("Priority Date",          p.priority_date,         "🗓️", "Filing", "filing", false,
+    "Check the DOS Visa Bulletin each month — you can file I-485 when your date becomes current", "/dashboard/tools/visa-bulletin");
+
+  // H-4 EAD
+  add("H-4 EAD Issued",        p.h4_ead_issue_date,     "💳", "H-4 EAD", "h4_ead", true);
+  add("H-4 EAD Expiry",        p.h4_ead_expiry,         "💳", "H-4 EAD", "h4_ead", false,
+    "File Form I-765 renewal concurrently with H-4 extension — tie it to your spouse's H-1B extension");
+
+  // J-1
+  add("J-1 Program End",        p.j1_end_date,           "🌍", "J-1", "j1", false,
+    "Request DS-2019 extension from your sponsor or change status before this date — 30-day grace period applies");
+
+  // TN
+  add("TN Start Date",          p.tn_start_date,         "🇨🇦", "TN", "tn", true);
+  add("TN Expiry",              p.tn_expiry,             "🇨🇦", "TN", "tn", false,
+    "Renew at a US port of entry with a new offer letter, or file I-129 with USCIS 6 months early");
+
+  // L-1
+  add("L-1 Start Date",         p.l1_start_date,         "🏢", "L-1", "l1", true);
+  add("L-1 Expiry",             p.l1_expiry,             "🏢", "L-1", "l1", false,
+    "Employer must file I-129 extension — L-1A max is 7 years, L-1B max is 5 years total");
+
   return out.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 }
 
@@ -397,6 +477,21 @@ export default function TimelinePage() {
             )}
           </div>
 
+          {/* Color legend */}
+          <div className="mb-3 flex flex-wrap gap-2">
+            {(Object.entries(GROUP_COLORS) as [Group, typeof GROUP_COLORS[Group]][])
+              .filter(([g]) => keyDates.some(kd => kd.group === g))
+              .map(([g, cfg]) => {
+                const label = keyDates.find(kd => kd.group === g)?.category ?? g;
+                return (
+                  <span key={g} className={`flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full border ${cfg.badge}`}>
+                    <span className={`h-2 w-2 rounded-full ${cfg.dot}`} />
+                    {label}
+                  </span>
+                );
+              })}
+          </div>
+
           <div className="relative">
             {/* Vertical line */}
             <div className="absolute left-[19px] top-3 bottom-3 w-0.5 bg-slate-200" />
@@ -406,37 +501,46 @@ export default function TimelinePage() {
                 const days = daysUntil(kd.date);
                 const isPast = days !== null && days < 0;
                 const isUrgent = days !== null && days <= 90 && !isPast;
+                const gc = GROUP_COLORS[kd.group];
                 return (
                   <div key={i} className="flex items-start gap-4">
-                    {/* Dot */}
+                    {/* Dot — group color */}
                     <div className={`relative z-10 h-10 w-10 rounded-full flex items-center justify-center shrink-0 text-base border-2 ${
-                      isPast ? "bg-slate-100 border-slate-200" :
-                      isUrgent ? "bg-red-50 border-red-300" :
-                      "bg-white border-slate-200"
+                      isPast
+                        ? "bg-slate-100 border-slate-200 opacity-50"
+                        : isUrgent
+                        ? "bg-red-50 border-red-300"
+                        : "bg-white border-slate-200"
                     }`}>
-                      {kd.icon}
+                      {kd.isStart
+                        ? <span className={`h-3 w-3 rounded-full ${isPast ? "bg-slate-400" : gc.dot}`} />
+                        : <span className="text-base">{kd.icon}</span>}
                     </div>
-                    {/* Card */}
-                    <div className={`flex-1 rounded-xl border px-4 py-3 ${
-                      isPast ? "bg-slate-50 border-slate-200 opacity-60" :
-                      isUrgent ? "bg-red-50/50 border-red-200" :
-                      "bg-white border-slate-200"
+                    {/* Card — colored left border per group */}
+                    <div className={`flex-1 rounded-xl border border-l-4 px-4 py-3 ${gc.border} ${
+                      isPast
+                        ? "bg-slate-50 border-slate-200 opacity-60"
+                        : isUrgent
+                        ? "bg-red-50/40 border-red-200"
+                        : "bg-white border-slate-200"
                     }`}>
                       <div className="flex items-center justify-between gap-3 flex-wrap">
                         <div className="flex items-center gap-2 flex-wrap">
                           <p className={`text-sm font-semibold ${isPast ? "text-muted-foreground" : ""}`}>{kd.label}</p>
-                          <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-full border ${
-                            kd.category.includes("Status") || kd.category === "F-1 Status" || kd.category === "OPT Status" || kd.category === "STEM OPT" || kd.category === "H-1B Status" || kd.category === "J-1 Status" || kd.category === "TN Status" || kd.category === "L-1 Status"
-                              ? "bg-purple-50 text-purple-700 border-purple-200"
-                              : kd.category === "Filing"
-                              ? "bg-green-50 text-green-700 border-green-200"
-                              : "bg-blue-50 text-blue-700 border-blue-200"
-                          }`}>
+                          <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-full border ${gc.badge}`}>
                             {kd.category}
                           </span>
+                          {kd.isStart && (
+                            <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-slate-100 text-slate-500 border border-slate-200">
+                              Start
+                            </span>
+                          )}
                         </div>
                         <div className="shrink-0">
-                          {days !== null ? daysLeftBadge(days, kd.category) : null}
+                          {days !== null && !kd.isStart ? daysLeftBadge(days, kd.category) : null}
+                          {kd.isStart && days !== null && days >= 0 && (
+                            <Badge variant="secondary" className="text-slate-500">Upcoming</Badge>
+                          )}
                         </div>
                       </div>
                       <p className="text-xs text-slate-400 mt-1">
