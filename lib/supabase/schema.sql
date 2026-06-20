@@ -156,6 +156,7 @@ create table if not exists public.notifications (
 -- alter table public.profiles add column if not exists mailing_zip text;
 -- alter table public.profiles add column if not exists phone text;
 -- alter table public.profiles add column if not exists a_number text;
+-- alter table public.profiles add column if not exists i20_start_date date;
 
 -- ─── Form Submissions ────────────────────────────────────────────────────────
 -- Run this in Supabase SQL editor to create the form_submissions table:

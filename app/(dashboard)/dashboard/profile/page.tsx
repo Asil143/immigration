@@ -42,6 +42,7 @@ interface Profile {
   employer: string;
   i94Expiry: string;
   i94IsDS: boolean;
+  i20StartDate: string;
   i20EndDate: string;
   eadExpiry: string;
   visaStampExpiry: string;
@@ -75,7 +76,7 @@ const empty: Profile = {
   ssn: "", mailingStreet: "", mailingCity: "", mailingState: "", mailingZip: "",
   phone: "", aNumber: "",
   visaType: "", countryOfBirth: "", employer: "",
-  i94Expiry: "", i94IsDS: false, i20EndDate: "",
+  i94Expiry: "", i94IsDS: false, i20StartDate: "", i20EndDate: "",
   eadExpiry: "", visaStampExpiry: "", visaStartDate: "",
   passportExpiry: "", passportIssueDate: "",
   h1bStartDate: "", h1bExpiry: "",
@@ -109,6 +110,7 @@ function fromApi(data: Record<string, string | null | boolean>): Profile {
     employer: data.employer as string ?? "",
     i94Expiry: data.i94_expiry as string ?? "",
     i94IsDS: (data.i94_is_ds as boolean) ?? false,
+    i20StartDate: data.i20_start_date as string ?? "",
     i20EndDate: data.i20_end_date as string ?? "",
     eadExpiry: data.ead_expiry as string ?? "",
     visaStampExpiry: data.visa_stamp_expiry as string ?? "",
@@ -156,6 +158,7 @@ function toApi(p: Profile) {
     employer: p.employer || null,
     i94_expiry: p.i94IsDS ? null : (p.i94Expiry || null),
     i94_is_ds: p.i94IsDS,
+    i20_start_date: p.i20StartDate || null,
     i20_end_date: p.i20EndDate || null,
     ead_expiry: p.eadExpiry || null,
     visa_stamp_expiry: p.visaStampExpiry || null,
@@ -685,6 +688,18 @@ export default function ProfilePage() {
                             )}
                           </div>
                         )}
+                        {/* I-20 start date */}
+                        <div>
+                          <label className="text-xs font-semibold mb-1 block" style={{ color: "#475569" }}>I-20 Program Start Date</label>
+                          <input
+                            type="date"
+                            value={profile.i20StartDate}
+                            onChange={e => set("i20StartDate", e.target.value)}
+                            className="w-full px-3 py-2 rounded-lg border text-sm focus:outline-none"
+                            style={{ borderColor: "#e2e8f0" }}
+                          />
+                          <p className="text-[10px] mt-1" style={{ color: "#94a3b8" }}>The program start date on your I-20 form</p>
+                        </div>
                         {/* I-20 end date always shown */}
                         <div>
                           <label className="text-xs font-semibold mb-1 block" style={{ color: "#475569" }}>I-20 Program End Date</label>

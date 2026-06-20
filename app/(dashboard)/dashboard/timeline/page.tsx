@@ -62,7 +62,7 @@ interface Profile {
   passport_expiry?: string; passport_issue_date?: string;
   visa_stamp_expiry?: string;
   i94_expiry?: string; i94_is_ds?: boolean;
-  i20_end_date?: string;
+  i20_start_date?: string; i20_end_date?: string;
   ead_expiry?: string;
   opt_start_date?: string; opt_end_date?: string;
   stem_opt_start_date?: string; stem_opt_end_date?: string;
@@ -111,6 +111,8 @@ function buildKeyDates(p: Profile): KeyDate[] {
     "Last day of your authorized stay — file extension or change status before this date");
 
   // F-1 / I-20
+  add("I-20 Program Start",     p.i20_start_date,        "🎓", "F-1 / I-20", "f1", true,
+    "First day of your authorized program — recorded in SEVIS");
   add("I-20 Program End",       p.i20_end_date,          "🎓", "F-1 / I-20", "f1", false,
     "Request a program extension from your DSO at least 15 days before this date");
 
