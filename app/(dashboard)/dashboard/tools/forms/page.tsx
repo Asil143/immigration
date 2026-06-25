@@ -53,8 +53,9 @@ const FORMS: FormCard[] = [
     title: "Application for Travel Document",
     description: "Apply for Advance Parole, Refugee Travel Document, or Re-entry Permit to travel outside the U.S. while your immigration case is pending.",
     who: "Green card applicants, refugees, asylees",
+    href: "/dashboard/tools/forms/i-131",
     uscisUrl: "https://www.uscis.gov/i-131",
-    status: "coming-soon",
+    status: "available",
   },
   {
     number: "I-539",

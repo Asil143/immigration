@@ -34,7 +34,7 @@ export async function POST(req: NextRequest) {
   }
 
   if (evt.type === "user.created") {
-    const supabase = await createAdminClient();
+    const supabase = createAdminClient();
     const userData = evt.data as {
       id: string;
       email_addresses: Array<{ email_address: string }>;
