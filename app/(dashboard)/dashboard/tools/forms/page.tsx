@@ -28,8 +28,9 @@ const FORMS: FormCard[] = [
     title: "Application for Employment Authorization",
     description: "Apply for or renew an Employment Authorization Document (EAD / work permit) for OPT, STEM OPT, H-4, asylum, and other categories.",
     who: "OPT / STEM OPT students, H-4 spouses, asylum seekers",
+    href: "/dashboard/tools/forms/i-765",
     uscisUrl: "https://www.uscis.gov/i-765",
-    status: "coming-soon",
+    status: "available",
   },
   {
     number: "I-485",
