@@ -181,6 +181,29 @@ create table if not exists public.notifications (
 -- Allowed MIME types: image/jpeg, image/png, image/webp, application/pdf
 -- Max file size: 10 MB
 
+-- ─── Community ───────────────────────────────────────────────────────────────
+-- Run these in Supabase SQL Editor:
+-- create table if not exists public.community_posts (
+--   id uuid primary key default uuid_generate_v4(),
+--   clerk_id text not null,
+--   user_name text not null default 'Anonymous',
+--   title text not null,
+--   body text not null,
+--   category text not null default 'General',
+--   upvotes integer not null default 0,
+--   reply_count integer not null default 0,
+--   created_at timestamptz default now()
+-- );
+-- create index if not exists idx_community_posts_category on public.community_posts(category);
+-- create index if not exists idx_community_posts_created  on public.community_posts(created_at desc);
+-- create index if not exists idx_community_posts_upvotes  on public.community_posts(upvotes desc);
+--
+-- Upvote helper function:
+-- create or replace function increment_upvotes(post_id uuid)
+-- returns void language sql as $$
+--   update public.community_posts set upvotes = upvotes + 1 where id = post_id;
+-- $$;
+
 -- ─── Indexes ─────────────────────────────────────────────────────────────────
 
 create index if not exists idx_profiles_clerk_id        on public.profiles(clerk_id);
