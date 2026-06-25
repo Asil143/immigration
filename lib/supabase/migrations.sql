@@ -17,7 +17,8 @@ alter table public.profiles add column if not exists mailing_state   text;
 alter table public.profiles add column if not exists mailing_zip     text;
 alter table public.profiles add column if not exists phone           text;
 alter table public.profiles add column if not exists a_number        text;
-alter table public.profiles add column if not exists i20_start_date  date;
+alter table public.profiles add column if not exists i20_start_date       date;
+alter table public.profiles add column if not exists notification_prefs  jsonb;
 
 -- ─── 2. Form submissions (I-864 and future forms) ────────────────────────────
 create table if not exists public.form_submissions (
@@ -58,7 +59,8 @@ create index if not exists idx_community_posts_created   on public.community_pos
 create index if not exists idx_community_posts_upvotes   on public.community_posts(upvotes desc);
 create index if not exists idx_community_posts_user      on public.community_posts(user_id);
 
--- Upvote helper (increments atomically)
+-- Upvote helper (drop old version first to allow parameter rename)
+drop function if exists increment_upvotes(uuid);
 create or replace function increment_upvotes(post_id uuid)
 returns void language sql as $$
   update public.community_posts set upvotes = upvotes + 1 where id = post_id;

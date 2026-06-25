@@ -1,12 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { Separator } from "@/components/ui/separator";
-import { Bell, Mail, MessageSquare, Smartphone, Check, AlertCircle } from "lucide-react";
+import { Loader2, Mail, MessageSquare, Smartphone, Check, AlertCircle } from "lucide-react";
 
 type Channel = "email" | "sms" | "push";
 type ReminderSetting = { id: string; title: string; description: string; days: number[]; channels: Channel[]; enabled: boolean };
@@ -23,7 +21,17 @@ const DEFAULT_REMINDERS: ReminderSetting[] = [
 
 export default function RemindersPage() {
   const [reminders, setReminders] = useState(DEFAULT_REMINDERS);
+  const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+
+  useEffect(() => {
+    fetch("/api/reminders")
+      .then((r) => r.json())
+      .then(({ prefs }) => {
+        if (prefs && Array.isArray(prefs)) setReminders(prefs);
+      })
+      .catch(() => {});
+  }, []);
 
   function toggle(id: string) {
     setReminders(prev => prev.map(r => r.id === id ? { ...r, enabled: !r.enabled } : r));
@@ -39,9 +47,19 @@ export default function RemindersPage() {
     }));
   }
 
-  function save() {
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2000);
+  async function save() {
+    setSaving(true);
+    try {
+      await fetch("/api/reminders", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ prefs: reminders }),
+      });
+      setSaved(true);
+      setTimeout(() => setSaved(false), 2500);
+    } finally {
+      setSaving(false);
+    }
   }
 
   const channelIcon: Record<Channel, React.ElementType> = { email: Mail, sms: MessageSquare, push: Smartphone };
@@ -54,8 +72,8 @@ export default function RemindersPage() {
           <h1 className="text-2xl font-bold">Reminders & Notifications</h1>
           <p className="mt-1 text-muted-foreground">Configure how and when VisaPilot alerts you</p>
         </div>
-        <Button onClick={save} className="gap-2">
-          {saved ? <><Check className="h-4 w-4" /> Saved!</> : "Save Preferences"}
+        <Button onClick={save} disabled={saving} className="gap-2">
+          {saving ? <><Loader2 className="h-4 w-4 animate-spin" /> Saving…</> : saved ? <><Check className="h-4 w-4" /> Saved!</> : "Save Preferences"}
         </Button>
       </div>
 
