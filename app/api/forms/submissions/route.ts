@@ -1,6 +1,7 @@
 import { auth, currentUser } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/server";
+import { sendAdminFormAlert, sendUserFormConfirmation } from "@/lib/resend/client";
 
 // POST /api/forms/submissions — save a completed form
 export async function POST(req: NextRequest) {
@@ -35,6 +36,24 @@ export async function POST(req: NextRequest) {
     .single();
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+
+  const userName = `${user?.firstName ?? ""} ${user?.lastName ?? ""}`.trim() || "A user";
+  const userEmail = user?.emailAddresses[0]?.emailAddress ?? "";
+
+  // Fire both emails in parallel, don't block the response
+  Promise.all([
+    sendAdminFormAlert({
+      userName,
+      userEmail,
+      formType: form_type,
+      fields: fields as Record<string, string>,
+      submissionId: data.id,
+    }),
+    userEmail
+      ? sendUserFormConfirmation({ to: userEmail, name: user?.firstName ?? "there", formType: form_type })
+      : Promise.resolve(),
+  ]).catch(console.error);
+
   return NextResponse.json(data);
 }
 
