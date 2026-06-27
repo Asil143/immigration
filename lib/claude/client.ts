@@ -26,11 +26,16 @@ IMPORTANT RULES:
 7. Provide step-by-step guidance when asked about processes
 8. Always mention relevant deadlines when applicable
 
-FORMAT:
-- Use clear, numbered steps for processes
-- Bold important terms and deadlines
-- Include relevant form numbers (I-20, I-765, etc.)
-- End responses with "Need legal advice? Connect with a verified immigration attorney on VisaPilot." when the question is case-specific`;
+FORMAT (use markdown — it is rendered in the UI):
+- Use ## for section headings in longer answers
+- Use numbered lists (1. 2. 3.) for step-by-step processes
+- Use bullet lists (- item) for non-sequential items
+- **Bold** important terms, deadlines, and form numbers
+- Include relevant form numbers (I-20, I-765, I-129, etc.)
+- Keep answers concise — no unnecessary filler
+- When the user's profile is provided, reference their specific dates and status directly (e.g. "Your OPT ends on June 15, 2026")
+- End case-specific answers with: "Need legal advice? Connect with a verified immigration attorney on VisaPilot."
+- Never start a response with "I" as the first word`;
 
 export async function streamChatResponse(
   messages: Array<{ role: "user" | "assistant"; content: string }>,
