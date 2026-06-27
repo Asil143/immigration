@@ -6,15 +6,15 @@ import { SignInButton, SignUpButton, UserButton, useUser } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils/cn";
-import { Bot, Menu, X, ChevronDown, CheckSquare, GitCompare, Clock, Bot as BotIcon, AlertTriangle } from "lucide-react";
+import { Bot, Menu, X, ChevronDown, CheckSquare, Clock, Bot as BotIcon, BarChart3, Calculator } from "lucide-react";
 import { useState } from "react";
 
 const toolsLinks = [
-  { href: "/dashboard/tools/checklists", label: "Visa Checklists", icon: CheckSquare, desc: "Step-by-step checklists for every visa" },
-  { href: "/visa-comparison", label: "Visa Comparison", icon: GitCompare, desc: "Compare F-1, H-1B, green card & more" }, // marketing version — stays in (marketing) layout
-  { href: "/dashboard/tools/opt-tracker", label: "OPT Day Counter", icon: Clock, desc: "Track your 90-day unemployment limit" },
-  { href: "/ai-assistant", label: "AI Assistant", icon: BotIcon, desc: "Ask immigration questions 24/7" },
-  { href: "/rfe-assistant", label: "RFE Assistant", icon: AlertTriangle, desc: "Analyze & respond to USCIS RFEs" },
+  { href: "/dashboard/tools/checklists",   label: "Visa Checklists", icon: CheckSquare, desc: "Step-by-step checklists for every visa" },
+  { href: "/dashboard/tools/opt-tracker",  label: "OPT Day Counter", icon: Clock,       desc: "Track your 90-day unemployment limit"  },
+  { href: "/dashboard/tools/visa-bulletin",label: "Visa Bulletin",   icon: BarChart3,   desc: "Priority date tracker & wait estimator"},
+  { href: "/dashboard/tools/fee-calculator",label: "Fee Calculator", icon: Calculator,  desc: "Calculate USCIS filing fees"            },
+  { href: "/ai-assistant",                  label: "AI Assistant",   icon: BotIcon,     desc: "Ask immigration questions 24/7"         },
 ];
 
 const navLinks = [

@@ -1,49 +1,39 @@
 import Link from "next/link";
 import { Bot } from "lucide-react";
 
-const visaGuides = [
-  { href: "/guides/f1-visa", label: "F-1 Student Visa" },
-  { href: "/guides/opt-stem-opt", label: "OPT & STEM OPT" },
-  { href: "/guides/h1b-visa", label: "H-1B Work Visa" },
-  { href: "/guides/green-card", label: "Green Card" },
-  { href: "/guides/j1-visa", label: "J-1 Exchange Visa" },
-  { href: "/guides/travel-advisory", label: "Travel Advisory" },
+const guides = [
+  { href: "/guides/f1-visa",         label: "F-1 Student Visa"    },
+  { href: "/guides/opt-stem-opt",    label: "OPT & STEM OPT"      },
+  { href: "/guides/h1b-visa",        label: "H-1B Work Visa"       },
+  { href: "/guides/green-card",      label: "Green Card"           },
+  { href: "/guides/j1-visa",         label: "J-1 Exchange Visa"    },
+  { href: "/guides/travel-advisory", label: "Travel Advisory"      },
 ];
 
 const tools = [
-  { href: "/dashboard/tools/checklists", label: "Visa Checklists" },
-  { href: "/visa-comparison", label: "Visa Comparison" },
-  { href: "/ai-assistant", label: "AI Assistant" },
-  { href: "/dashboard/tools/opt-tracker", label: "OPT Day Counter" },
-  { href: "/rfe-assistant", label: "RFE Assistant" },
-  { href: "/lawyers", label: "Find a Lawyer" },
-];
-
-const resources = [
-  { href: "/visa-bulletin", label: "Visa Bulletin" },
-  { href: "/glossary", label: "Glossary" },
-  { href: "/employer-lookup", label: "Employer Lookup" },
-  { href: "/dashboard/tools/processing-times", label: "Processing Times" },
-  { href: "/dashboard/tools/fee-calculator", label: "Fee Calculator" },
-  { href: "/events", label: "Events" },
-  { href: "/community", label: "Community" },
-  { href: "/pricing", label: "Pricing" },
+  { href: "/dashboard/tools/checklists",    label: "Visa Checklists"  },
+  { href: "/dashboard/tools/opt-tracker",   label: "OPT Day Counter"  },
+  { href: "/dashboard/tools/visa-bulletin", label: "Visa Bulletin"    },
+  { href: "/dashboard/tools/fee-calculator",label: "Fee Calculator"   },
+  { href: "/ai-assistant",                  label: "AI Assistant"     },
+  { href: "/employer-lookup",               label: "Employer Lookup"  },
 ];
 
 const company = [
-  { href: "/about", label: "About" },
-  { href: "/faq", label: "FAQ" },
-  { href: "/contact", label: "Contact" },
-  { href: "/blog", label: "Blog" },
-  { href: "/success-stories", label: "Success Stories" },
-  { href: "/lawyer-portal", label: "Attorney Portal" },
+  { href: "/pricing",         label: "Pricing"          },
+  { href: "/lawyers",         label: "Find a Lawyer"    },
+  { href: "/blog",            label: "Blog"             },
+  { href: "/community",       label: "Community"        },
+  { href: "/about",           label: "About"            },
+  { href: "/contact",         label: "Contact"          },
+  { href: "/faq",             label: "FAQ"              },
 ];
 
 export function Footer() {
   return (
     <footer className="border-t bg-slate-900 text-slate-300">
       <div className="container mx-auto px-4 py-14">
-        <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-5">
+        <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-4">
 
           {/* Brand */}
           <div className="space-y-4 lg:col-span-1">
@@ -67,7 +57,7 @@ export function Footer() {
           <div className="space-y-4">
             <h3 className="font-semibold text-sm text-white">Visa Guides</h3>
             <ul className="space-y-2.5">
-              {visaGuides.map((link) => (
+              {guides.map((link) => (
                 <li key={link.href}>
                   <Link href={link.href} className="text-sm text-slate-400 hover:text-white transition-colors">
                     {link.label}
@@ -79,23 +69,9 @@ export function Footer() {
 
           {/* Tools */}
           <div className="space-y-4">
-            <h3 className="font-semibold text-sm text-white">Tools</h3>
+            <h3 className="font-semibold text-sm text-white">Free Tools</h3>
             <ul className="space-y-2.5">
               {tools.map((link) => (
-                <li key={link.href}>
-                  <Link href={link.href} className="text-sm text-slate-400 hover:text-white transition-colors">
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Resources */}
-          <div className="space-y-4">
-            <h3 className="font-semibold text-sm text-white">Resources</h3>
-            <ul className="space-y-2.5">
-              {resources.map((link) => (
                 <li key={link.href}>
                   <Link href={link.href} className="text-sm text-slate-400 hover:text-white transition-colors">
                     {link.label}
@@ -128,7 +104,7 @@ export function Footer() {
           </p>
           <div className="flex items-center gap-4">
             <Link href="/privacy" className="text-xs text-slate-500 hover:text-slate-300 transition-colors">Privacy Policy</Link>
-            <Link href="/terms" className="text-xs text-slate-500 hover:text-slate-300 transition-colors">Terms of Service</Link>
+            <Link href="/terms"   className="text-xs text-slate-500 hover:text-slate-300 transition-colors">Terms of Service</Link>
           </div>
         </div>
       </div>
