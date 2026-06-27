@@ -22,7 +22,7 @@ export async function POST(req: NextRequest) {
   let extractedValue = answer.trim();
   try {
     const result = await anthropic.messages.create({
-      model: "claude-haiku-4-5-20251001",
+      model: "claude-haiku-4-5",
       max_tokens: 150,
       system: `Extract and normalize an immigration form field value from a conversational answer.
 Return ONLY valid JSON: {"value": "<normalized value>"}

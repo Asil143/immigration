@@ -180,6 +180,32 @@ export default function LawyersMarketplacePage() {
   const [location, setLocation] = useState("All Locations");
   const [selected, setSelected] = useState<typeof attorneys[0] | null>(null);
   const [bookedId, setBookedId] = useState<string | null>(null);
+  const [bookingName, setBookingName] = useState("");
+  const [bookingEmail, setBookingEmail] = useState("");
+  const [bookingMsg, setBookingMsg] = useState("");
+  const [bookingLoading, setBookingLoading] = useState(false);
+  const [bookingDone, setBookingDone] = useState(false);
+
+  async function submitInquiry(attorney: typeof attorneys[0], service?: string) {
+    if (!bookingName.trim() || !bookingEmail.trim()) return;
+    setBookingLoading(true);
+    try {
+      await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: bookingName,
+          email: bookingEmail,
+          subject: `Attorney Consult Request — ${attorney.name} (${attorney.firm})`,
+          message: `User is requesting a consultation with ${attorney.name} at ${attorney.firm}.\n\nService: ${service ?? "Free 15-min Consult"}\nLocation: ${attorney.location}\n\nUser message: ${bookingMsg || "(none)"}`,
+        }),
+      });
+      setBookedId(attorney.id);
+      setBookingDone(true);
+    } finally {
+      setBookingLoading(false);
+    }
+  }
 
   const filtered = useMemo(() => {
     return attorneys.filter(a => {
@@ -331,11 +357,11 @@ export default function LawyersMarketplacePage() {
                       View Profile & Book
                     </button>
                     <button
-                      onClick={() => setBookedId(attorney.id)}
+                      onClick={() => { setSelected(attorney); setBookingDone(false); setBookingName(""); setBookingEmail(""); setBookingMsg(""); }}
                       className="py-2 rounded-xl text-sm font-semibold border"
                       style={{ borderColor: "#e2e8f0", color: "#475569" }}
                     >
-                      {bookedId === attorney.id ? "✓ Consult Booked!" : "Book Free Consult"}
+                      {bookedId === attorney.id ? "✓ Request Sent!" : "Book Free Consult"}
                     </button>
                   </div>
                 </div>
@@ -410,7 +436,7 @@ export default function LawyersMarketplacePage() {
                         <button
                           className="text-xs font-semibold mt-0.5"
                           style={{ color: selected.color }}
-                          onClick={() => { setBookedId(svc.name); setSelected(null); }}
+                          onClick={() => { setBookingDone(false); setBookingName(""); setBookingEmail(""); setBookingMsg(svc.name); }}
                         >
                           Book →
                         </button>
@@ -431,13 +457,45 @@ export default function LawyersMarketplacePage() {
                 </div>
               </div>
 
-              <button
-                className="w-full py-3 rounded-xl text-sm font-bold text-white"
-                style={{ backgroundColor: selected.color }}
-                onClick={() => { setBookedId(selected.id); setSelected(null); }}
-              >
-                Book Free 15-Min Consult
-              </button>
+              {bookingDone ? (
+                <div className="rounded-xl p-4 bg-green-50 border border-green-200 text-center text-sm text-green-800">
+                  <p className="font-bold">✓ Inquiry sent!</p>
+                  <p className="text-xs mt-1">We&apos;ll connect you with {selected.name} within 24 hours.</p>
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  <p className="text-xs font-semibold text-slate-500 mb-1">Request a Free 15-Min Consult</p>
+                  <input
+                    type="text"
+                    value={bookingName}
+                    onChange={e => setBookingName(e.target.value)}
+                    placeholder="Your name"
+                    className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm outline-none focus:border-blue-400 focus:bg-white"
+                  />
+                  <input
+                    type="email"
+                    value={bookingEmail}
+                    onChange={e => setBookingEmail(e.target.value)}
+                    placeholder="Your email"
+                    className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm outline-none focus:border-blue-400 focus:bg-white"
+                  />
+                  <textarea
+                    value={bookingMsg}
+                    onChange={e => setBookingMsg(e.target.value)}
+                    placeholder="Briefly describe your situation (optional)"
+                    rows={2}
+                    className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm outline-none focus:border-blue-400 focus:bg-white resize-none"
+                  />
+                  <button
+                    className="w-full py-3 rounded-xl text-sm font-bold text-white disabled:opacity-50"
+                    style={{ backgroundColor: selected.color }}
+                    disabled={bookingLoading || !bookingName.trim() || !bookingEmail.trim()}
+                    onClick={() => submitInquiry(selected)}
+                  >
+                    {bookingLoading ? "Sending…" : "Send Inquiry →"}
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </div>

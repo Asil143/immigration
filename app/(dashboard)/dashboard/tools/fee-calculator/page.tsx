@@ -57,7 +57,8 @@ const visaPaths: VisaPath[] = [
       { name: "ACWIA Training Fee (≤25 employees)", code: "ACWIA-S", baseFee: 750, required: false, notes: "For employers with ≤25 full-time employees" },
       { name: "ACWIA Training Fee (>25 employees)", code: "ACWIA-L", baseFee: 1500, required: false, notes: "For employers with >25 full-time employees" },
       { name: "Fraud Prevention & Detection Fee", code: "FPDF", baseFee: 500, required: true },
-      { name: "Asylum Program Fee", code: "APF", baseFee: 600, required: false, notes: "Waived for non-profits & universities" },
+      { name: "Asylum Program Fee (≤25 employees)", code: "APF-S", baseFee: 300, required: false, notes: "Reduced rate for employers with ≤25 FTE. Waived for non-profits." },
+      { name: "Asylum Program Fee (>25 employees)", code: "APF-L", baseFee: 600, required: false, notes: "Standard rate. Waived for non-profits & universities." },
       { name: "Premium Processing (optional)", code: "I-907", baseFee: 2805, premiumFee: 2805, required: false, notes: "15 business day guarantee" },
     ],
   },
@@ -69,7 +70,8 @@ const visaPaths: VisaPath[] = [
     badgeColor: "bg-teal-100 text-teal-800",
     fees: [
       { name: "Form I-129 (Petition)", code: "I-129", baseFee: 730, required: true },
-      { name: "ACWIA Training Fee (>25 employees)", code: "ACWIA-L", baseFee: 1500, required: false, notes: "Based on new employer size" },
+      { name: "ACWIA Training Fee (≤25 employees)", code: "ACWIA-S", baseFee: 750, required: false, notes: "For employers with ≤25 full-time employees" },
+      { name: "ACWIA Training Fee (>25 employees)", code: "ACWIA-L", baseFee: 1500, required: false, notes: "For employers with >25 full-time employees" },
       { name: "Fraud Prevention & Detection Fee", code: "FPDF", baseFee: 500, required: true },
       { name: "Premium Processing (optional)", code: "I-907", baseFee: 2805, required: false },
     ],
@@ -133,22 +135,32 @@ export default function FeeCalculatorPage() {
 
   const path = visaPaths.find((p) => p.id === selectedPath)!;
 
+  const isH1bPath = selectedPath === "h1b" || selectedPath === "h1b-transfer";
+
   const getActiveFees = () => {
     return path.fees.filter((fee) => {
-      if (fee.code === "ACWIA-S" && (largeEmployer || selectedPath !== "h1b")) return false;
-      if (fee.code === "ACWIA-L" && (!largeEmployer && selectedPath === "h1b")) return false;
+      if (fee.code === "ACWIA-S" && (largeEmployer || !isH1bPath)) return false;
+      if (fee.code === "ACWIA-L" && (!largeEmployer || !isH1bPath)) return false;
+      if (fee.code === "APF-S" && (largeEmployer || !includeAsylum)) return false;
+      if (fee.code === "APF-L" && (!largeEmployer || !includeAsylum)) return false;
+      if ((fee.code === "APF" || fee.code === "APF-S" || fee.code === "APF-L") && !includeAsylum) return false;
       if ((fee.code === "I-907" || fee.premiumFee) && !includePremium) return false;
-      if (fee.code === "APF" && !includeAsylum) return false;
-      return fee.required || (fee.code === "I-907" && includePremium) || (fee.code === "APF" && includeAsylum);
+      return fee.required
+        || (fee.code === "ACWIA-S" && !largeEmployer && isH1bPath)
+        || (fee.code === "ACWIA-L" && largeEmployer && isH1bPath)
+        || (fee.code === "APF-S" && !largeEmployer && includeAsylum)
+        || (fee.code === "APF-L" && largeEmployer && includeAsylum)
+        || (fee.code === "APF" && includeAsylum)
+        || (fee.code === "I-907" && includePremium);
     });
   };
 
   const activeFees = getActiveFees();
   const total = activeFees.reduce((sum, f) => sum + f.baseFee, 0);
 
-  const hasEmployerOptions = selectedPath === "h1b" || selectedPath === "h1b-transfer";
+  const hasEmployerOptions = isH1bPath;
   const hasPremiumOption = path.fees.some((f) => f.code === "I-907");
-  const hasAsylumOption = path.fees.some((f) => f.code === "APF");
+  const hasAsylumOption = path.fees.some((f) => f.code === "APF" || f.code === "APF-S" || f.code === "APF-L");
 
   return (
     <div className="p-8 max-w-4xl mx-auto">

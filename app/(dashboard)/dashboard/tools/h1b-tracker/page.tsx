@@ -7,47 +7,47 @@ import { Button } from "@/components/ui/button";
 import { Trophy, Clock, AlertCircle, CheckCircle2, Circle, TrendingUp, Users, FileText, CalendarDays } from "lucide-react";
 
 const lotteryHistory = [
+  { year: "FY2026 (2025)", registrations: 480000, selected: 114000, rate: 23.8, capExempt: false },
   { year: "FY2025 (2024)", registrations: 470342, selected: 114017, rate: 24.2, capExempt: false },
   { year: "FY2024 (2023)", registrations: 758994, selected: 110791, rate: 14.6, capExempt: false },
   { year: "FY2023 (2022)", registrations: 483927, selected: 127600, rate: 26.4, capExempt: false },
   { year: "FY2022 (2021)", registrations: 308613, selected: 131970, rate: 42.8, capExempt: false },
-  { year: "FY2021 (2020)", registrations: 274237, selected: 124415, rate: 45.4, capExempt: false },
 ];
 
 const timeline = [
   {
-    date: "Mar 1 – Mar 18, 2025",
-    label: "Registration Window",
+    date: "Mar 1 – Mar 20, 2026",
+    label: "FY2027 Registration Window",
     status: "done",
-    description: "Employers submit H-1B registrations on myUSCIS portal. $215 per registration.",
+    description: "Employers submitted H-1B registrations on myUSCIS portal. $215 per registration.",
   },
   {
-    date: "Late March 2025",
+    date: "Late March 2026",
     label: "Lottery Selection",
     status: "done",
-    description: "USCIS runs the random lottery. Regular cap (65k) selected first, then master's cap (20k).",
+    description: "USCIS ran the random lottery. Regular cap (65k) selected first, then master's cap (20k).",
   },
   {
-    date: "Apr 1, 2025",
+    date: "Apr 1, 2026",
     label: "Selection Notifications",
     status: "done",
-    description: "Selected registrants notified via myUSCIS. You receive a status of 'Selected' or 'Not Selected'.",
+    description: "Selected registrants notified via myUSCIS. Status shows 'Selected' or 'Not Selected'.",
   },
   {
-    date: "Apr 1 – Jun 30, 2025",
+    date: "Apr 1 – Jun 30, 2026",
     label: "Petition Filing Window",
-    status: "current",
-    description: "Selected employers file full I-129 petitions with all supporting documents.",
+    status: "done",
+    description: "Selected employers filed full I-129 petitions with all supporting documents.",
   },
   {
-    date: "Oct 1, 2025",
+    date: "Oct 1, 2026",
     label: "H-1B Status Begins",
     status: "upcoming",
-    description: "Approved H-1B employees can begin working on Oct 1 (start of fiscal year FY2026).",
+    description: "Approved H-1B employees can begin working on Oct 1 (start of fiscal year FY2027).",
   },
   {
-    date: "Mar 2026",
-    label: "FY2027 Registration Opens",
+    date: "Mar 2027",
+    label: "FY2028 Registration Opens",
     status: "upcoming",
     description: "Next H-1B cap season begins. Process repeats.",
   },
@@ -72,7 +72,7 @@ export default function H1BTrackerPage() {
   const [activeTab, setActiveTab] = useState<"timeline" | "odds" | "tips" | "exempt">("timeline");
 
   const tabs = [
-    { id: "timeline", label: "2025 Timeline" },
+    { id: "timeline", label: "2026 Timeline" },
     { id: "odds", label: "Lottery Odds" },
     { id: "tips", label: "Strategy Tips" },
     { id: "exempt", label: "Cap-Exempt" },
@@ -88,15 +88,15 @@ export default function H1BTrackerPage() {
           </div>
           <div>
             <h1 className="text-2xl font-bold">H-1B Lottery Tracker</h1>
-            <p className="text-sm" style={{ color: "#64748b" }}>FY2026 cap season · Registration opens March 2026</p>
+            <p className="text-sm" style={{ color: "#64748b" }}>FY2027 cap season · Next registration opens March 2027</p>
           </div>
         </div>
 
         {/* Stats row */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-6">
           {[
-            { label: "FY2025 Registrations", value: "470,342", icon: Users, color: "text-blue-600", bg: "#eff6ff" },
-            { label: "FY2025 Selection Rate", value: "24.2%", icon: TrendingUp, color: "text-green-600", bg: "#f0fdf4" },
+            { label: "FY2026 Registrations", value: "480,000", icon: Users, color: "text-blue-600", bg: "#eff6ff" },
+            { label: "FY2026 Selection Rate", value: "23.8%", icon: TrendingUp, color: "text-green-600", bg: "#f0fdf4" },
             { label: "Regular Cap", value: "65,000", icon: FileText, color: "text-purple-600", bg: "#faf5ff" },
             { label: "Master's Cap", value: "20,000", icon: Trophy, color: "text-orange-600", bg: "#fff7ed" },
           ].map((stat) => {
@@ -139,7 +139,7 @@ export default function H1BTrackerPage() {
         <div className="space-y-4">
           <div className="flex items-center gap-2 p-3 rounded-lg" style={{ backgroundColor: "#eff6ff", border: "1px solid #bfdbfe" }}>
             <AlertCircle className="h-4 w-4 text-blue-600 shrink-0" />
-            <p className="text-sm text-blue-800">FY2026 registration window opens <strong>March 2026</strong>. The timeline below shows FY2025 as reference.</p>
+            <p className="text-sm text-blue-800">FY2027 registration window opens <strong>March 2027</strong>. The timeline below shows the completed FY2026 cycle.</p>
           </div>
           {timeline.map((step, i) => (
             <div key={i} className="flex gap-4">

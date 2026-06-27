@@ -26,6 +26,7 @@ export default function SettingsPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [currentPlanKey, setCurrentPlanKey] = useState<string>("free");
 
   const [profile, setProfile] = useState({
     nationality: "",
@@ -45,6 +46,7 @@ export default function SettingsPage() {
             schoolOrEmployer: data.employer ?? "",
             phone: data.phone ?? "",
           });
+          setCurrentPlanKey(data.subscription_plan ?? "free");
         }
       })
       .finally(() => setLoading(false));
@@ -67,7 +69,7 @@ export default function SettingsPage() {
     setTimeout(() => setSaved(false), 2000);
   }
 
-  const currentPlan = "free";
+  const currentPlan = (currentPlanKey in PLANS ? currentPlanKey : "free") as keyof typeof PLANS;
   const planDetails = PLANS[currentPlan];
 
   return (
@@ -240,7 +242,7 @@ export default function SettingsPage() {
                   <p className="font-medium text-sm">Password</p>
                   <p className="text-xs text-muted-foreground">Managed via Clerk authentication</p>
                 </div>
-                <Button variant="outline" size="sm">Change Password</Button>
+                <Button variant="outline" size="sm" onClick={() => user?.openModal?.() ?? window.open("https://accounts.clerk.dev/user", "_blank")}>Change Password</Button>
               </div>
               <Separator />
               <div className="flex items-center justify-between py-2">
@@ -248,7 +250,7 @@ export default function SettingsPage() {
                   <p className="font-medium text-sm">Two-Factor Authentication</p>
                   <p className="text-xs text-muted-foreground">Add an extra layer of security</p>
                 </div>
-                <Button variant="outline" size="sm">Enable 2FA</Button>
+                <Button variant="outline" size="sm" onClick={() => window.open("https://accounts.clerk.dev/user/security", "_blank")}>Enable 2FA</Button>
               </div>
               <Separator />
               <div className="flex items-center justify-between py-2">
@@ -271,7 +273,7 @@ export default function SettingsPage() {
               <p className="text-sm text-muted-foreground mb-4">
                 Deleting your account is irreversible. All your cases, documents, and chat history will be permanently deleted.
               </p>
-              <Button variant="destructive" size="sm">Delete Account</Button>
+              <Button variant="destructive" size="sm" onClick={() => { if (confirm("Are you sure? This permanently deletes your account and all data. This cannot be undone.")) window.open("mailto:kamepalliasil143@gmail.com?subject=Account%20Deletion%20Request", "_blank"); }}>Delete Account</Button>
             </CardContent>
           </Card>
         </TabsContent>

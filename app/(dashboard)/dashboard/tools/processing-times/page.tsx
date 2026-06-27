@@ -14,7 +14,7 @@ interface ProcessingRow {
   serviceCenter: string;
   min: number;
   max: number;
-  unit: "months" | "weeks";
+  unit: "months" | "weeks" | "business days";
   trend: "up" | "down" | "stable";
   category: string;
 }
@@ -39,8 +39,8 @@ const DATA: ProcessingRow[] = [
   // Naturalization
   { form: "N-400", title: "Application for Naturalization", serviceCenter: "Field Office", min: 12, max: 18, unit: "months", trend: "stable", category: "Citizenship" },
   // Premium
-  { form: "I-129 PP", title: "H-1B Premium Processing", serviceCenter: "Any SC", min: 15, max: 15, unit: "weeks", trend: "stable", category: "Premium" },
-  { form: "I-140 PP", title: "EB Petition Premium Processing", serviceCenter: "Any SC", min: 15, max: 15, unit: "weeks", trend: "stable", category: "Premium" },
+  { form: "I-129 PP", title: "H-1B Premium Processing", serviceCenter: "Any SC", min: 15, max: 15, unit: "business days", trend: "stable", category: "Premium" },
+  { form: "I-140 PP", title: "EB Petition Premium Processing", serviceCenter: "Any SC", min: 15, max: 15, unit: "business days", trend: "stable", category: "Premium" },
 ];
 
 const CATEGORIES = ["All", "Employment", "Family", "Student", "Travel", "Citizenship", "Premium"];
@@ -52,7 +52,7 @@ function TrendIcon({ trend }: { trend: ProcessingRow["trend"] }) {
 }
 
 function timeBadgeColor(min: number, unit: ProcessingRow["unit"]): string {
-  const months = unit === "weeks" ? min / 4 : min;
+  const months = unit === "weeks" ? min / 4 : unit === "business days" ? min / 20 : min;
   if (months <= 3) return "bg-green-100 text-green-700";
   if (months <= 9) return "bg-yellow-100 text-yellow-700";
   return "bg-red-100 text-red-700";

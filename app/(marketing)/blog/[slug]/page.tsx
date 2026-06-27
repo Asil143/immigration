@@ -26,24 +26,24 @@ Lottery participants were notified through their myUSCIS accounts beginning May 
 
 **What Happens Next**
 
-Selected registrants must file a complete H-1B cap-subject petition between June 1 and June 30, 2026. Petitions must be filed at the service center designated during the registration process (California SC or Vermont SC).
+Selected registrants must file a complete H-1B cap-subject petition between April 1 and June 30, 2026. Petitions must be filed at the service center designated during the registration process (California SC or Vermont SC).
 
 Required documents include:
 - Form I-129 with H classification supplement
 - Labor Condition Application (LCA) certified by the Department of Labor
 - Evidence of specialty occupation and beneficiary's qualifying degree
 - Employer support letter
-- Filing fees (currently $730 + ACWIA fee if applicable)
+- Filing fees (I-129 base fee $730 + ACWIA fee + Fraud Prevention fee $500)
 
 **Premium Processing**
 
-Premium processing (Form I-907, $2,805 fee) guarantees a 15 business-day response. USCIS has confirmed premium processing will be available for FY2026 H-1B petitions beginning June 1.
+Premium processing (Form I-907, $2,805 fee) guarantees a 15 business-day response. USCIS has confirmed premium processing is available for FY2026 H-1B petitions.
 
 **For Those Not Selected**
 
 Registrations not selected remain in a "reserve" pool. USCIS may conduct additional selections from this pool if the agency determines it needs more petitions to meet the cap. Historically, reserve selections have occurred between August and October.
 
-Employers who did not get selected should also consider alternatives such as:
+Employers who did not get selected should consider alternatives such as:
 - H-1B1 (for Chilean and Singaporean nationals)
 - TN visa (for Canadian and Mexican nationals)
 - O-1A visa (for individuals with extraordinary ability)
@@ -74,21 +74,172 @@ USCIS publishes processing times at uscis.gov/tools/processing-times. Applicants
 
 If your application has been pending longer than the published processing time, you may submit an e-request (case inquiry) through the USCIS website. USCIS will typically respond within 30 days. If no response, applicants may contact the USCIS Contact Center at 1-800-375-5283.`,
   },
+  "eb2-india-priority-date-movement": {
+    title: "EB-2 India Priority Dates Advance 8 Months in June 2026 Visa Bulletin",
+    category: "Green Card",
+    badge: "Visa Bulletin",
+    date: "May 15, 2026",
+    readTime: "4 min read",
+    author: "VisaPilot Editorial",
+    relatedSlugs: ["naturalization-record-numbers-2026", "h1b-2026-lottery-results"],
+    body: `The June 2026 Visa Bulletin shows one of the largest single-month advances for EB-2 India in recent years, moving the Final Action Date forward by approximately 8 months to January 1, 2014.
+
+**What This Means**
+
+Applicants born in India with an EB-2 priority date on or before January 1, 2014 may now be able to file Form I-485 (Adjustment of Status) or proceed with consular processing, depending on their situation.
+
+The Dates for Filing chart, which USCIS has confirmed will be used for I-485 purposes this month, shows an even more favorable cutoff of June 1, 2015 for EB-2 India.
+
+**Why Dates Moved**
+
+State Department attributed the forward movement to lower-than-expected demand in the EB-2 India category during the first half of FY2026, combined with visa numbers freed up from other employment-based categories. Demand tends to fluctuate month to month, so applicants should not assume this rate of movement will continue.
+
+**EB-3 India Update**
+
+EB-3 India advanced more modestly, moving approximately 2 months to November 1, 2012. EB-3 India often lags EB-2 India due to higher overall petition volume.
+
+**What Applicants Should Do**
+
+If your priority date is now current:
+- Contact your employer's immigration attorney immediately
+- Gather supporting documents (birth certificate, passport, medical exam results)
+- Prepare Form I-485, I-131 (Advance Parole), and I-765 (EAD) concurrently
+- Budget for filing fees: I-485 ($1,440) + biometrics ($85)
+
+**Retrogression Risk**
+
+Priority dates can and do retrogress. If you become eligible to file, do so promptly rather than waiting. Once an I-485 is filed, you generally maintain your place in line even if dates retrogress.`,
+  },
+  "stem-opt-extension-new-rules": {
+    title: "STEM OPT 2025: What Changed and How to Avoid Common Denials",
+    category: "OPT / STEM OPT",
+    badge: "Guide",
+    date: "May 10, 2026",
+    readTime: "5 min read",
+    author: "VisaPilot Editorial",
+    relatedSlugs: ["uscis-processing-times-may-2026", "rfe-rates-specialty-occupation-2026"],
+    body: `The STEM OPT extension allows F-1 students who graduated with a STEM degree to extend their post-completion OPT by 24 months, for a total of 36 months of work authorization. This guide covers the current requirements and the most common reasons for denial.
+
+**Core Eligibility Requirements**
+
+To qualify for STEM OPT extension, you must:
+- Have completed a bachelor's, master's, or doctoral degree in a DHS-designated STEM field
+- Be currently in a valid OPT period (cannot apply after OPT expires)
+- Have a job offer from an employer that is enrolled in E-Verify
+- Have your employer sign a Training Plan (Form I-983)
+- File Form I-765 with your DSO-endorsed I-20 showing the STEM extension
+
+**The 60-Day Filing Window**
+
+You must file your STEM OPT application within 60 days of your DSO issuing your new I-20 with the STEM extension recommendation. Because USCIS processing takes 2–3 months, your DSO should issue the I-20 at least 90 days before your OPT expires to give you enough time.
+
+If USCIS doesn't process your application before your OPT EAD expires, your employment authorization is automatically extended by 180 days (cap-gap rule for STEM OPT).
+
+**Top Reasons for Denial**
+
+- **Employer not E-Verify enrolled**: USCIS verifies this. If your employer deactivated or never joined E-Verify, your application will be denied.
+- **Training Plan (I-983) incomplete**: Every section must be filled out, including the specific learning objectives and how the employer will evaluate progress.
+- **STEM degree not on DHS list**: Verify your CIP code at the DHS STEM Designated Degree Program List before filing.
+- **Filed too late**: USCIS requires the I-765 to be filed while your current OPT is still valid. Filing even one day after expiration is grounds for denial.
+- **Mismatch between I-20 and employment**: The employer on your I-983 and your actual employer must match.
+
+**Reporting Requirements**
+
+STEM OPT students must complete validation reports every 6 months, and Form I-983 evaluations at 12 and 24 months. Missing these reports can jeopardize future immigration applications. VisaPilot's dashboard tracks all STEM OPT reporting deadlines automatically.`,
+  },
+  "rfe-rates-specialty-occupation-2026": {
+    title: "H-1B RFE Rates Hit 30% in 2026 — What USCIS Is Targeting",
+    category: "H-1B",
+    badge: "Analysis",
+    date: "April 28, 2026",
+    readTime: "4 min read",
+    author: "VisaPilot Editorial",
+    relatedSlugs: ["h1b-2026-lottery-results", "stem-opt-extension-new-rules"],
+    body: `Request for Evidence (RFE) rates for H-1B petitions have climbed to approximately 30% in early FY2026, according to USCIS data obtained through FOIA requests. The vast majority target the "specialty occupation" standard.
+
+**What Is a Specialty Occupation RFE?**
+
+USCIS issues specialty occupation RFEs when the agency is not satisfied that the proffered position normally requires — at minimum — a bachelor's degree in a specific specialty. Under 8 CFR 214.2(h)(4), the petitioner must establish this requirement by showing:
+
+- A baccalaureate or higher degree in the specific specialty is the normal minimum entry requirement for the position, OR
+- The degree requirement is common to the industry in parallel positions among similar organizations, OR
+- The employer normally requires a degree or its equivalent for the position, OR
+- The duties are so specialized and complex that the knowledge required to perform them is usually associated with attainment of a baccalaureate degree
+
+**Fields with Highest RFE Rates**
+
+Based on reported data:
+- Software Quality Assurance / Testing: ~42% RFE rate
+- Business Analyst / IT Project Manager: ~38%
+- Marketing / Market Research Analyst: ~35%
+- Management Consultant: ~32%
+- Software Engineer / Developer: ~18%
+
+**How to Respond**
+
+An effective specialty occupation RFE response should include:
+- Detailed breakdown of actual day-to-day duties with percentage of time estimates
+- Industry wage surveys (OES, OFLC) showing degree requirements for similar roles
+- Expert opinion letters from industry professionals
+- Company organizational charts showing degree requirements for comparable positions
+- Evidence that the beneficiary's degree directly relates to the job duties
+
+If you received an RFE, the VisaPilot RFE Assistant can help you build a response framework quickly. You should also consult an immigration attorney for RFEs on complex cases.`,
+  },
+  "naturalization-record-numbers-2026": {
+    title: "Naturalization Applications Hit Record High in FY2025",
+    category: "Citizenship",
+    badge: "Data",
+    date: "April 18, 2026",
+    readTime: "3 min read",
+    author: "VisaPilot Editorial",
+    relatedSlugs: ["eb2-india-priority-date-movement", "h1b-2026-lottery-results"],
+    body: `USCIS processed a record 1.05 million naturalization applications in fiscal year 2025, the highest number in the agency's history. Approximately 878,000 individuals were naturalized as U.S. citizens during the same period.
+
+**Who Applied**
+
+The top countries of origin for naturalization applicants in FY2025 were:
+- Mexico: ~152,000
+- India: ~74,000
+- Philippines: ~55,000
+- Cuba: ~47,000
+- Dominican Republic: ~38,000
+- China: ~36,000
+- Vietnam: ~30,000
+
+India's position reflects the large population of long-term employment-based green card holders now reaching the 5-year LPR milestone required for naturalization.
+
+**Processing Times**
+
+USCIS has reduced N-400 processing times to a national average of 8–14 months following additional staffing and process improvements. Some field offices, particularly in smaller cities, are processing in as few as 5–6 months.
+
+**Eligibility Reminder**
+
+To apply for naturalization, you must generally:
+- Have been a lawful permanent resident (LPR) for at least 5 years (3 years if married to a U.S. citizen)
+- Have been physically present in the U.S. for at least half of the required period
+- Have maintained continuous residence (no single trips abroad longer than 6 months)
+- Be a person of good moral character
+- Pass the English language test and civics test
+
+The N-400 filing fee is $760 (plus $85 biometrics for applicants aged 14–78). USCIS offers fee waivers for qualifying low-income applicants.`,
+  },
 };
 
 const FALLBACK = {
   title: "Article Not Found",
   category: "News",
   badge: "Info",
-  date: "May 2026",
+  date: "2026",
   readTime: "1 min read",
   author: "VisaPilot Editorial",
   relatedSlugs: [],
   body: "This article could not be found. Please browse our blog for the latest immigration news.",
 };
 
-export default function BlogPostPage({ params }: { params: { slug: string } }) {
-  const article = ARTICLES[params.slug] ?? FALLBACK;
+export default async function BlogPostPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const article = ARTICLES[slug] ?? FALLBACK;
 
   return (
     <div className="min-h-screen bg-background">
