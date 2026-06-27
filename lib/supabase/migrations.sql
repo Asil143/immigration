@@ -79,3 +79,34 @@ create or replace function increment_upvotes(post_id uuid)
 returns void language sql as $$
   update public.community_posts set upvotes = upvotes + 1 where id = post_id;
 $$;
+
+-- ─── 4. Payment submissions (manual Cash App / Venmo / Zelle etc.) ────────────
+create table if not exists public.payment_submissions (
+  id             uuid primary key default uuid_generate_v4(),
+  clerk_id       text references public.profiles(clerk_id) on delete set null,
+  email          text not null,
+  plan_id        text not null,
+  plan_name      text not null,
+  amount         numeric(8,2) not null,
+  tx_note        text,
+  screenshot_url text,
+  status         text not null default 'pending' check (status in ('pending','activated','rejected')),
+  activated_at   timestamptz,
+  created_at     timestamptz default now()
+);
+create index if not exists idx_payment_submissions_status  on public.payment_submissions(status);
+create index if not exists idx_payment_submissions_clerk   on public.payment_submissions(clerk_id);
+create index if not exists idx_payment_submissions_created on public.payment_submissions(created_at desc);
+
+-- ─── 5. User plans (activated plans after payment verification) ───────────────
+create table if not exists public.user_plans (
+  id         uuid primary key default uuid_generate_v4(),
+  clerk_id   text references public.profiles(clerk_id) on delete cascade,
+  email      text not null,
+  plan_id    text not null,
+  plan_name  text not null,
+  expires_at timestamptz,
+  created_at timestamptz default now()
+);
+create index if not exists idx_user_plans_clerk on public.user_plans(clerk_id);
+create index if not exists idx_user_plans_email on public.user_plans(email);
