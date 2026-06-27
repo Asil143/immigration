@@ -145,8 +145,8 @@ export default function DashboardPage() {
       fetch("/api/cases").then(r => r.ok ? r.json() : []),
     ]).then(([profileData, casesData]) => {
       if (profileData && !profileData.error) {
-        // Redirect new users to onboarding if they haven't completed it
-        if (!profileData.onboarding_complete) {
+        // Redirect new users to onboarding only when explicitly false (column must exist)
+        if (profileData.onboarding_complete === false) {
           router.push("/onboarding");
           return;
         }

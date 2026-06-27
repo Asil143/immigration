@@ -31,6 +31,9 @@ export async function GET(req: NextRequest) {
   }
 
   try {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 10000);
+
     const res = await fetch(USCIS_URL, {
       method: "POST",
       headers: {
@@ -43,8 +46,8 @@ export async function GET(req: NextRequest) {
         appReceiptNum: receipt,
         caseStatusSearchBtn: "CHECK STATUS",
       }).toString(),
-      signal: AbortSignal.timeout(10000),
-    });
+      signal: controller.signal,
+    }).finally(() => clearTimeout(timer));
 
     if (!res.ok) throw new Error(`USCIS returned ${res.status}`);
     const html = await res.text();
