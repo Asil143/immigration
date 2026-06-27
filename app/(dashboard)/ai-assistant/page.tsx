@@ -167,8 +167,8 @@ export default function AIAssistantPage() {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  const suggestedQuestions =
-    (visaType && QUESTIONS_BY_VISA[visaType]) ?? QUESTIONS_BY_VISA.default;
+  const suggestedQuestions: string[] =
+    (visaType ? QUESTIONS_BY_VISA[visaType] : undefined) ?? QUESTIONS_BY_VISA.default;
 
   // Auto-save conversation after each AI response
   const saveConversation = useCallback(async (msgs: ChatMessage[], convId: string | null, firstUserMsg?: string) => {
