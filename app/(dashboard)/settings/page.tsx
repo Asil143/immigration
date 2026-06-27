@@ -181,7 +181,12 @@ export default function SettingsPage() {
                   </p>
                 </div>
                 {currentPlan === "free" && (
-                  <Button size="sm"><Crown className="mr-2 h-4 w-4" /> Upgrade to Pro</Button>
+                  <Button size="sm" onClick={async () => {
+                    const res = await fetch("/api/payments/checkout", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ planId: "pro", billing: "monthly" }) });
+                    const { url, error } = await res.json();
+                    if (url) window.location.href = url;
+                    else alert(error ?? "Could not start checkout. Please try again.");
+                  }}><Crown className="mr-2 h-4 w-4" /> Upgrade to Pro</Button>
                 )}
               </div>
 
@@ -206,7 +211,13 @@ export default function SettingsPage() {
                         ))}
                       </ul>
                       {!isActive && (
-                        <Button variant="outline" size="sm" className="w-full mt-3">
+                        <Button variant="outline" size="sm" className="w-full mt-3" onClick={async () => {
+                          if (planKey === "free") return; // downgrade via portal
+                          const res = await fetch("/api/payments/checkout", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ planId: planKey, billing: "monthly" }) });
+                          const { url, error } = await res.json();
+                          if (url) window.location.href = url;
+                          else alert(error ?? "Could not start checkout. Please try again.");
+                        }}>
                           {(planKey as string) === "free" ? "Downgrade" : "Upgrade"}
                         </Button>
                       )}
@@ -224,8 +235,24 @@ export default function SettingsPage() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-muted-foreground">No active subscription. Upgrade to manage billing.</p>
-              <Button variant="outline" size="sm" className="mt-3" disabled>Manage Billing</Button>
+              <p className="text-sm text-muted-foreground">
+                {currentPlan === "free" ? "No active subscription. Upgrade to unlock all features." : `You are on the ${PLANS[currentPlan].name} plan.`}
+              </p>
+              {currentPlan !== "free" ? (
+                <Button variant="outline" size="sm" className="mt-3" onClick={async () => {
+                  const res = await fetch("/api/payments/portal", { method: "POST" });
+                  const { url, error } = await res.json();
+                  if (url) window.location.href = url;
+                  else alert(error ?? "Could not open billing portal.");
+                }}>Manage Billing</Button>
+              ) : (
+                <Button size="sm" className="mt-3" onClick={async () => {
+                  const res = await fetch("/api/payments/checkout", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ planId: "pro", billing: "monthly" }) });
+                  const { url, error } = await res.json();
+                  if (url) window.location.href = url;
+                  else alert(error ?? "Could not start checkout.");
+                }}><Crown className="mr-2 h-4 w-4" /> Upgrade to Pro</Button>
+              )}
             </CardContent>
           </Card>
         </TabsContent>
