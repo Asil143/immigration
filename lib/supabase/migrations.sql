@@ -21,7 +21,6 @@ alter table public.profiles add column if not exists i20_start_date          dat
 alter table public.profiles add column if not exists notification_prefs     jsonb;
 alter table public.profiles add column if not exists onboarding_complete    boolean not null default false;
 alter table public.profiles add column if not exists subscription_plan      text not null default 'free';
-alter table public.profiles add column if not exists stripe_customer_id     text;
 
 -- ─── Chat conversations ───────────────────────────────────────────────────────
 create table if not exists public.chat_conversations (

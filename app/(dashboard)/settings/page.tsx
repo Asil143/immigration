@@ -13,6 +13,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Check, Crown, Shield, User, CreditCard, Trash2, Loader2 } from "lucide-react";
 import { PLANS } from "@/lib/stripe/client";
+import { PaymentModal, type PlanInfo } from "@/components/payments/PaymentModal";
 
 const COUNTRIES = ["India", "China", "Mexico", "Brazil", "Philippines", "Nigeria", "South Korea", "Pakistan", "Other"];
 const VISA_TYPES = [
@@ -28,6 +29,7 @@ export default function SettingsPage() {
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [currentPlanKey, setCurrentPlanKey] = useState<string>("free");
+  const [upgradeModal, setUpgradeModal] = useState<PlanInfo | null>(null);
 
   const [profile, setProfile] = useState({
     nationality: "",
@@ -73,8 +75,11 @@ export default function SettingsPage() {
   const currentPlan = (currentPlanKey in PLANS ? currentPlanKey : "free") as keyof typeof PLANS;
   const planDetails = PLANS[currentPlan];
 
+  const userEmail = user?.emailAddresses?.[0]?.emailAddress ?? "";
+
   return (
     <div className="p-8 max-w-3xl">
+      {upgradeModal && <PaymentModal plan={upgradeModal} onClose={() => setUpgradeModal(null)} userEmail={userEmail} />}
       <div className="mb-8">
         <h1 className="text-2xl font-bold">Settings</h1>
         <p className="mt-1 text-muted-foreground">Manage your account and preferences</p>
@@ -181,12 +186,9 @@ export default function SettingsPage() {
                   </p>
                 </div>
                 {currentPlan === "free" && (
-                  <Button size="sm" onClick={async () => {
-                    const res = await fetch("/api/payments/checkout", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ planId: "pro", billing: "monthly" }) });
-                    const { url, error } = await res.json();
-                    if (url) window.location.href = url;
-                    else alert(error ?? "Could not start checkout. Please try again.");
-                  }}><Crown className="mr-2 h-4 w-4" /> Upgrade to Pro</Button>
+                  <Button size="sm" onClick={() => setUpgradeModal({ id: "all-access", name: "All-Access Plan", price: 99, period: "/ year" })}>
+                    <Crown className="mr-2 h-4 w-4" /> Upgrade
+                  </Button>
                 )}
               </div>
 
@@ -210,15 +212,10 @@ export default function SettingsPage() {
                           </li>
                         ))}
                       </ul>
-                      {!isActive && (
-                        <Button variant="outline" size="sm" className="w-full mt-3" onClick={async () => {
-                          if (planKey === "free") return; // downgrade via portal
-                          const res = await fetch("/api/payments/checkout", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ planId: planKey, billing: "monthly" }) });
-                          const { url, error } = await res.json();
-                          if (url) window.location.href = url;
-                          else alert(error ?? "Could not start checkout. Please try again.");
-                        }}>
-                          {(planKey as string) === "free" ? "Downgrade" : "Upgrade"}
+                      {!isActive && planKey !== "free" && (
+                        <Button variant="outline" size="sm" className="w-full mt-3"
+                          onClick={() => setUpgradeModal({ id: planKey, name: p.name, price: "monthlyPrice" in p ? p.monthlyPrice : 0, period: "/ mo" })}>
+                          Upgrade to {p.name}
                         </Button>
                       )}
                     </div>
@@ -236,22 +233,14 @@ export default function SettingsPage() {
             </CardHeader>
             <CardContent>
               <p className="text-sm text-muted-foreground">
-                {currentPlan === "free" ? "No active subscription. Upgrade to unlock all features." : `You are on the ${PLANS[currentPlan].name} plan.`}
+                {currentPlan === "free"
+                  ? "No active plan. Buy a pack or All-Access on the pricing page."
+                  : `You are on the ${PLANS[currentPlan].name} plan. To cancel or change, email kamepalliasil143@gmail.com.`}
               </p>
-              {currentPlan !== "free" ? (
-                <Button variant="outline" size="sm" className="mt-3" onClick={async () => {
-                  const res = await fetch("/api/payments/portal", { method: "POST" });
-                  const { url, error } = await res.json();
-                  if (url) window.location.href = url;
-                  else alert(error ?? "Could not open billing portal.");
-                }}>Manage Billing</Button>
-              ) : (
-                <Button size="sm" className="mt-3" onClick={async () => {
-                  const res = await fetch("/api/payments/checkout", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ planId: "pro", billing: "monthly" }) });
-                  const { url, error } = await res.json();
-                  if (url) window.location.href = url;
-                  else alert(error ?? "Could not start checkout.");
-                }}><Crown className="mr-2 h-4 w-4" /> Upgrade to Pro</Button>
+              {currentPlan === "free" && (
+                <Button size="sm" className="mt-3" onClick={() => setUpgradeModal({ id: "all-access", name: "All-Access Plan", price: 99, period: "/ year" })}>
+                  <Crown className="mr-2 h-4 w-4" /> Upgrade
+                </Button>
               )}
             </CardContent>
           </Card>
