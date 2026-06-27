@@ -71,21 +71,40 @@ export default function CaseStatusPage() {
   }, [isSignedIn]);
 
   async function checkStatus(receipt?: string) {
-    const num = (receipt ?? input).trim().toUpperCase().replace(/\s/g, "");
+    const num = (receipt ?? input).trim().toUpperCase().replace(/[^A-Z0-9]/g, "");
     if (!num) return;
     setInput(num);
     setLoading(true);
     setResult(null);
 
+    const fallback: LiveResult = {
+      receipt: num,
+      status: "Error",
+      description: "Could not reach USCIS. Try again or check egov.uscis.gov directly.",
+      valid: false,
+      checkedAt: new Date().toISOString(),
+    };
+
     try {
       const res = await fetch(`/api/cases/live-status?receipt=${encodeURIComponent(num)}`);
-      const data: LiveResult = await res.json();
+      let data: LiveResult;
+      try {
+        data = await res.json();
+        // Ensure all required fields are present
+        if (!data.receipt) data.receipt = num;
+        if (!data.checkedAt) data.checkedAt = new Date().toISOString();
+        if (!data.status) data.status = "Unknown";
+        if (data.description === undefined) data.description = "";
+        if (data.valid === undefined) data.valid = false;
+      } catch {
+        data = fallback;
+      }
       setResult(data);
       if (data.valid) {
         setHistory(prev => [data, ...prev.filter(h => h.receipt !== num)].slice(0, 10));
       }
     } catch {
-      setResult({ receipt: num, status: "Error", description: "Could not reach USCIS. Try again in a moment.", valid: false, checkedAt: new Date().toISOString() });
+      setResult(fallback);
     } finally {
       setLoading(false);
     }
