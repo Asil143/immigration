@@ -17,8 +17,22 @@ alter table public.profiles add column if not exists mailing_state   text;
 alter table public.profiles add column if not exists mailing_zip     text;
 alter table public.profiles add column if not exists phone           text;
 alter table public.profiles add column if not exists a_number        text;
-alter table public.profiles add column if not exists i20_start_date       date;
-alter table public.profiles add column if not exists notification_prefs  jsonb;
+alter table public.profiles add column if not exists i20_start_date          date;
+alter table public.profiles add column if not exists notification_prefs     jsonb;
+alter table public.profiles add column if not exists onboarding_complete    boolean not null default false;
+alter table public.profiles add column if not exists subscription_plan      text not null default 'free';
+
+-- ─── Chat conversations ───────────────────────────────────────────────────────
+create table if not exists public.chat_conversations (
+  id          uuid primary key default uuid_generate_v4(),
+  clerk_id    text not null references public.profiles(clerk_id) on delete cascade,
+  title       text not null default 'New conversation',
+  messages    jsonb not null default '[]',
+  created_at  timestamptz default now(),
+  updated_at  timestamptz default now()
+);
+create index if not exists idx_chat_conversations_clerk    on public.chat_conversations(clerk_id);
+create index if not exists idx_chat_conversations_updated  on public.chat_conversations(updated_at desc);
 
 -- ─── 2. Form submissions (I-864 and future forms) ────────────────────────────
 create table if not exists public.form_submissions (

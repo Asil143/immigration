@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -126,6 +127,7 @@ const DEMO_PROFILE: Record<string, string> = {
 
 export default function DashboardPage() {
   const { isSignedIn } = useUser();
+  const router = useRouter();
   const [profile, setProfile] = useState<Record<string, string> | null>(null);
   const [alerts, setAlerts] = useState<DeadlineAlert[]>([]);
   const [stemDeadlines, setStemDeadlines] = useState<StemDeadline[]>([]);
@@ -143,6 +145,11 @@ export default function DashboardPage() {
       fetch("/api/cases").then(r => r.ok ? r.json() : []),
     ]).then(([profileData, casesData]) => {
       if (profileData && !profileData.error) {
+        // Redirect new users to onboarding if they haven't completed it
+        if (!profileData.onboarding_complete) {
+          router.push("/onboarding");
+          return;
+        }
         const p: Record<string, string> = {
           visaType: profileData.visa_type ?? "",
           countryOfBirth: profileData.country_of_birth ?? "",
