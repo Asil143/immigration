@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useUser } from "@clerk/nextjs";
+import { useUser, useClerk } from "@clerk/nextjs";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -23,6 +23,7 @@ const VISA_TYPES = [
 
 export default function SettingsPage() {
   const { user } = useUser();
+  const { openUserProfile } = useClerk();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -242,7 +243,7 @@ export default function SettingsPage() {
                   <p className="font-medium text-sm">Password</p>
                   <p className="text-xs text-muted-foreground">Managed via Clerk authentication</p>
                 </div>
-                <Button variant="outline" size="sm" onClick={() => user?.openModal?.() ?? window.open("https://accounts.clerk.dev/user", "_blank")}>Change Password</Button>
+                <Button variant="outline" size="sm" onClick={() => openUserProfile()}>Change Password</Button>
               </div>
               <Separator />
               <div className="flex items-center justify-between py-2">
@@ -250,7 +251,7 @@ export default function SettingsPage() {
                   <p className="font-medium text-sm">Two-Factor Authentication</p>
                   <p className="text-xs text-muted-foreground">Add an extra layer of security</p>
                 </div>
-                <Button variant="outline" size="sm" onClick={() => window.open("https://accounts.clerk.dev/user/security", "_blank")}>Enable 2FA</Button>
+                <Button variant="outline" size="sm" onClick={() => openUserProfile()}>Enable 2FA</Button>
               </div>
               <Separator />
               <div className="flex items-center justify-between py-2">
