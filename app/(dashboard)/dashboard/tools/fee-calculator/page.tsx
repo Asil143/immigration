@@ -33,7 +33,7 @@ const visaPaths: VisaPath[] = [
     badge: "F-1 OPT",
     badgeColor: "bg-blue-100 text-blue-800",
     fees: [
-      { name: "Form I-765 (EAD Application)", code: "I-765", baseFee: 520, biometricFee: 0, required: true, notes: "No biometric fee for F-1 OPT as of Mar 2024" },
+      { name: "Form I-765 (EAD Application)", code: "I-765", baseFee: 470, biometricFee: 0, required: true, notes: "No biometric fee for F-1 OPT as of Mar 2024" },
     ],
   },
   {
@@ -43,7 +43,7 @@ const visaPaths: VisaPath[] = [
     badge: "STEM OPT",
     badgeColor: "bg-purple-100 text-purple-800",
     fees: [
-      { name: "Form I-765 (EAD Extension)", code: "I-765", baseFee: 520, required: true, notes: "Must file while initial OPT is valid" },
+      { name: "Form I-765 (EAD Extension)", code: "I-765", baseFee: 470, required: true, notes: "Must file while initial OPT is valid" },
     ],
   },
   {
@@ -119,7 +119,7 @@ const visaPaths: VisaPath[] = [
     badge: "EAD",
     badgeColor: "bg-orange-100 text-orange-800",
     fees: [
-      { name: "Form I-765 (EAD Renewal)", code: "I-765", baseFee: 520, required: true },
+      { name: "Form I-765 (EAD Renewal)", code: "I-765", baseFee: 470, required: true },
     ],
   },
 ];
