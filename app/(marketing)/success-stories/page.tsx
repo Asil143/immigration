@@ -1,183 +1,210 @@
-import { Star, Quote, ArrowRight } from "lucide-react";
-import Link from "next/link";
+"use client";
 
-const stories = [
-  {
-    name: "Priya Sharma",
-    country: "🇮🇳 India",
-    path: "F-1 → OPT → H-1B → Green Card",
-    company: "Software Engineer at Google",
-    duration: "7 years",
-    avatar: "PS",
-    color: "#eff6ff",
-    textColor: "#1d4ed8",
-    rating: 5,
-    quote: "VisaPilot's OPT tracker saved me when I almost hit the 90-day unemployment limit. The deadline alerts are a lifesaver for anyone navigating OPT.",
-    story: "I graduated from UT Austin with an MS in CS in 2018. OPT was my first step, then I won the H-1B lottery on my second try in 2020. My I-140 was approved in 2021, and I'm currently waiting on the priority date to become current. VisaPilot helped me understand exactly where I stand in the EB-2 backlog.",
-    tags: ["OPT", "H-1B Lottery", "EB-2"],
-  },
-  {
-    name: "Carlos Mendoza",
-    country: "🇲🇽 Mexico",
-    path: "TN Visa → EB-2 NIW",
-    company: "Civil Engineer at Bechtel",
-    duration: "4 years",
-    avatar: "CM",
-    color: "#f0fdf4",
-    textColor: "#15803d",
-    rating: 5,
-    quote: "I had no idea TN to EB-2 NIW was possible until I used VisaPilot's visa comparison tool. Now I have my green card.",
-    story: "As a Mexican engineer, TN was easy and fast. But I always wanted a more permanent path. VisaPilot's comparison tool showed me that EB-2 NIW could work for my infrastructure work. I self-petitioned in 2022 and got my green card in 2024. The AI assistant helped me draft my NIW cover letter.",
-    tags: ["TN Visa", "EB-2 NIW", "Green Card"],
-  },
-  {
-    name: "Wei Zhang",
-    country: "🇨🇳 China",
-    path: "F-1 → H-1B → EB-1A",
-    company: "Research Scientist at Pfizer",
-    duration: "9 years",
-    avatar: "WZ",
-    color: "#faf5ff",
-    textColor: "#6d28d9",
-    rating: 5,
-    quote: "China EB-2 backlog was 50+ years. VisaPilot showed me the EB-1A path — I got my green card in 18 months without a PERM.",
-    story: "I did my PhD at MIT and joined Pfizer on OPT, then H-1B. The EB-2 India/China backlog was devastating. VisaPilot's AI assistant suggested I explore EB-1A based on my publications and patents. With 12 peer-reviewed papers and a patent, I qualified. Approved in 2023.",
-    tags: ["PhD", "H-1B", "EB-1A", "No PERM"],
-  },
-  {
-    name: "Aisha Okonkwo",
-    country: "🇳🇬 Nigeria",
-    path: "F-1 → OPT → H-1B → Citizenship",
-    company: "Data Scientist at JPMorgan",
-    duration: "10 years",
-    avatar: "AO",
-    color: "#fff7ed",
-    textColor: "#c2410c",
-    rating: 5,
-    quote: "From student visa to US citizen in 10 years. VisaPilot kept me on track at every step with its timeline and deadline reminders.",
-    story: "I came to the US for my MBA at Wharton in 2013. OPT led to H-1B with JPMorgan in 2015. My employer sponsored my EB-2 green card — I received it in 2019. I became a citizen in 2024. The N-400 naturalization guide on VisaPilot was incredibly detailed and accurate.",
-    tags: ["MBA", "OPT", "H-1B", "EB-2", "Citizenship"],
-  },
-  {
-    name: "Rahul Patel",
-    country: "🇮🇳 India",
-    path: "H-1B Cap-Exempt → EB-1C",
-    company: "Associate Professor → Engineering Manager at Amazon",
-    duration: "6 years",
-    avatar: "RP",
-    color: "#ecfeff",
-    textColor: "#0891b2",
-    rating: 5,
-    quote: "I went cap-exempt route through university to avoid the lottery, then transferred to Amazon with L-1 and got EB-1C. VisaPilot explained the whole path clearly.",
-    story: "After my PhD, I joined a university as an assistant professor — cap-exempt H-1B, no lottery. Amazon recruited me in 2020. They transferred me on L-1A as a manager, which opened the EB-1C path. Green card in 2022 — bypassing the India EB-2 50-year backlog entirely.",
-    tags: ["Cap-Exempt", "L-1A", "EB-1C", "India Backlog"],
-  },
-  {
-    name: "Sofia Garcia",
-    country: "🇨🇴 Colombia",
-    path: "J-1 → Waiver → O-1A",
-    company: "Physician at Mayo Clinic",
-    duration: "5 years",
-    avatar: "SG",
-    color: "#fef2f2",
-    textColor: "#dc2626",
-    rating: 5,
-    quote: "J-1 two-year home residency requirement felt like the end of my US dream. VisaPilot's guide on Conrad 30 waivers changed everything.",
-    story: "I came on J-1 for my medical residency and got hit with the two-year home residency requirement. VisaPilot's J-1 guide explained the Conrad 30 waiver program in detail. Mayo Clinic in an underserved area sponsored my waiver. Got O-1A status in 2022, now applying for EB-1A green card.",
-    tags: ["J-1", "Conrad 30 Waiver", "O-1A"],
-  },
+import { useState } from "react";
+import Link from "next/link";
+import {
+  Star, ArrowRight, GraduationCap, Briefcase, Globe, TrendingUp,
+  CheckCircle2, AlertCircle, MessageSquare,
+} from "lucide-react";
+
+const PATHS = [
+  { icon: GraduationCap, color: "bg-blue-50 text-blue-700 border-blue-100",   label: "F-1 → OPT → H-1B",    desc: "The most common international student path to US employment authorization." },
+  { icon: TrendingUp,    color: "bg-purple-50 text-purple-700 border-purple-100", label: "H-1B → Green Card",  desc: "Employer-sponsored EB-2/EB-3, or self-petition via EB-1A or EB-2 NIW." },
+  { icon: Globe,         color: "bg-emerald-50 text-emerald-700 border-emerald-100", label: "OPT → STEM OPT", desc: "24-month extension for STEM degree holders with E-Verify employers." },
+  { icon: Briefcase,     color: "bg-amber-50 text-amber-700 border-amber-100",  label: "TN / L-1 → Green Card", desc: "Alternative paths for Canadian/Mexican nationals and intracompany transferees." },
 ];
 
 export default function SuccessStoriesPage() {
+  const [form, setForm] = useState({ name: "", email: "", path: "", story: "" });
+  const [loading, setLoading] = useState(false);
+  const [done, setDone] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!form.name || !form.email || !form.story) return;
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: form.name,
+          email: form.email,
+          subject: `Success story submission — ${form.path || "visa journey"}`,
+          message: `Path: ${form.path || "not specified"}\n\n${form.story}`,
+        }),
+      });
+      if (!res.ok) throw new Error();
+      setDone(true);
+    } catch {
+      setError("Something went wrong. Please email kamepalliasil143@gmail.com directly.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
   return (
-    <div style={{ backgroundColor: "#ffffff", minHeight: "100vh" }}>
+    <div className="bg-white min-h-screen">
 
       {/* Hero */}
-      <section className="py-16" style={{ background: "linear-gradient(135deg, #fef9c3 0%, #fff7ed 100%)" }}>
-        <div className="container mx-auto px-4 text-center">
-          <div className="inline-flex items-center gap-1 mb-4">
-            {[1,2,3,4,5].map((s) => <Star key={s} className="h-5 w-5 fill-yellow-400 text-yellow-400" />)}
+      <section className="py-20 border-b bg-gradient-to-b from-amber-50 to-white">
+        <div className="container mx-auto px-4 max-w-2xl text-center">
+          <div className="inline-flex items-center gap-1 mb-5">
+            {[1,2,3,4,5].map(s => <Star key={s} className="h-5 w-5 fill-amber-400 text-amber-400" />)}
           </div>
-          <h1 className="text-4xl font-bold mb-4">Success Stories</h1>
-          <p className="text-lg max-w-xl mx-auto" style={{ color: "#64748b" }}>
-            Real journeys from students and immigrants who navigated the US immigration system — and made it.
+          <h1 className="text-4xl font-bold text-slate-900 mb-4">
+            Immigration success stories
+          </h1>
+          <p className="text-lg text-slate-500 leading-7">
+            VisaPilot is early — we don't yet have a library of verified user stories to share.
+            If our tools helped you navigate your immigration journey, we'd love to feature you.
           </p>
-          <div className="flex justify-center gap-8 mt-8">
-            {[["50,000+", "Users helped"], ["4.9/5", "Average rating"], ["98%", "Would recommend"]].map(([val, label]) => (
-              <div key={label} className="text-center">
-                <p className="text-2xl font-bold" style={{ color: "#0f172a" }}>{val}</p>
-                <p className="text-sm" style={{ color: "#64748b" }}>{label}</p>
-              </div>
-            ))}
-          </div>
         </div>
       </section>
 
-      <div className="container mx-auto px-4 py-12 max-w-5xl">
-        <div className="space-y-8">
-          {stories.map((story, i) => (
-            <div key={i} className="rounded-2xl border overflow-hidden" style={{ borderColor: "#e2e8f0" }}>
-              <div className="p-6" style={{ backgroundColor: story.color }}>
-                <div className="flex items-start gap-4">
-                  <div className="h-14 w-14 rounded-2xl flex items-center justify-center font-bold text-lg shrink-0" style={{ backgroundColor: story.textColor, color: "#ffffff" }}>
-                    {story.avatar}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-start justify-between flex-wrap gap-2">
-                      <div>
-                        <p className="font-bold text-lg">{story.name}</p>
-                        <p className="text-sm" style={{ color: "#64748b" }}>{story.country} · {story.company}</p>
-                      </div>
-                      <div className="flex">
-                        {Array.from({ length: story.rating }).map((_, i) => (
-                          <Star key={i} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                        ))}
-                      </div>
-                    </div>
-                    <div className="flex flex-wrap gap-2 mt-2">
-                      <span className="text-xs font-medium px-2 py-1 rounded-full" style={{ backgroundColor: story.textColor + "20", color: story.textColor }}>
-                        {story.path}
-                      </span>
-                      <span className="text-xs px-2 py-1 rounded-full" style={{ backgroundColor: "#f1f5f9", color: "#64748b" }}>
-                        {story.duration} journey
-                      </span>
-                    </div>
-                  </div>
-                </div>
+      <div className="container mx-auto px-4 py-16 max-w-4xl space-y-16">
 
-                <div className="mt-4 flex items-start gap-2">
-                  <Quote className="h-5 w-5 shrink-0 mt-0.5" style={{ color: story.textColor }} />
-                  <p className="text-sm font-medium italic" style={{ color: "#0f172a" }}>{story.quote}</p>
+        {/* Common paths */}
+        <div>
+          <h2 className="text-2xl font-bold text-slate-900 text-center mb-2">Common paths we help with</h2>
+          <p className="text-sm text-center text-slate-500 mb-10">
+            These are the journeys VisaPilot is built to support — checklists, deadline tracking, AI guidance, and attorney connections.
+          </p>
+          <div className="grid sm:grid-cols-2 gap-4">
+            {PATHS.map(({ icon: Icon, color, label, desc }) => (
+              <div key={label} className={`flex items-start gap-4 p-5 rounded-2xl border ${color}`}>
+                <div className="h-10 w-10 rounded-xl bg-white flex items-center justify-center shrink-0 border">
+                  <Icon className="h-5 w-5" />
+                </div>
+                <div>
+                  <p className="font-semibold text-sm mb-1">{label}</p>
+                  <p className="text-xs opacity-80 leading-5">{desc}</p>
                 </div>
               </div>
-
-              <div className="p-6" style={{ backgroundColor: "#ffffff" }}>
-                <p className="text-sm leading-relaxed" style={{ color: "#475569" }}>{story.story}</p>
-                <div className="flex flex-wrap gap-1.5 mt-4">
-                  {story.tags.map((tag) => (
-                    <span key={tag} className="text-xs px-2 py-1 rounded-full font-medium" style={{ backgroundColor: "#f1f5f9", color: "#64748b" }}>{tag}</span>
-                  ))}
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* CTA */}
-        <div className="mt-12 text-center">
-          <h2 className="text-2xl font-bold mb-3">Start your own success story</h2>
-          <p className="mb-6" style={{ color: "#64748b" }}>Join 50,000+ immigrants who use VisaPilot to navigate their journey with confidence.</p>
-          <div className="flex justify-center gap-3 flex-wrap">
-            <Link href="/sign-up" className="inline-flex items-center gap-2 px-6 py-3 rounded-lg font-semibold text-sm text-white" style={{ backgroundColor: "#2563eb" }}>
-              Get Started Free <ArrowRight className="h-4 w-4" />
-            </Link>
-            <Link href="/ai-assistant" className="inline-flex items-center gap-2 px-6 py-3 rounded-lg font-semibold text-sm border" style={{ borderColor: "#e2e8f0", color: "#0f172a" }}>
-              Ask AI Assistant
+            ))}
+          </div>
+          <div className="text-center mt-8">
+            <Link href="/guides" className="inline-flex items-center gap-2 text-sm font-medium text-blue-600 hover:underline">
+              Browse all visa guides <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
         </div>
-      </div>
 
+        {/* Share your story */}
+        <div className="max-w-2xl mx-auto">
+          <div className="rounded-2xl border border-slate-200 overflow-hidden">
+            <div className="px-8 py-6 bg-slate-900">
+              <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                <MessageSquare className="h-5 w-5" />
+                Share your immigration story
+              </h2>
+              <p className="text-sm text-slate-400 mt-1">
+                Did VisaPilot help you navigate a tricky immigration situation? Tell us — we'll reach out to feature your story (with your permission).
+              </p>
+            </div>
+
+            <div className="p-8">
+              {done ? (
+                <div className="text-center py-8">
+                  <CheckCircle2 className="h-12 w-12 text-green-500 mx-auto mb-4" />
+                  <h3 className="text-lg font-bold text-slate-900 mb-2">Thank you!</h3>
+                  <p className="text-sm text-slate-500 leading-6">
+                    We'll review your submission and reach out to <strong>{form.email}</strong> if we'd like to feature your story.
+                    We'll never publish anything without your explicit permission.
+                  </p>
+                </div>
+              ) : (
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  <div className="grid sm:grid-cols-2 gap-4">
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-semibold text-slate-600">Your name *</label>
+                      <input
+                        required type="text" value={form.name}
+                        onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
+                        placeholder="First name or full name"
+                        className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-semibold text-slate-600">Email *</label>
+                      <input
+                        required type="email" value={form.email}
+                        onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
+                        placeholder="you@email.com"
+                        className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-semibold text-slate-600">Visa path (optional)</label>
+                    <input
+                      type="text" value={form.path}
+                      onChange={e => setForm(f => ({ ...f, path: e.target.value }))}
+                      placeholder="e.g. F-1 → OPT → H-1B → EB-2"
+                      className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-semibold text-slate-600">Your story *</label>
+                    <textarea
+                      required rows={5} value={form.story}
+                      onChange={e => setForm(f => ({ ...f, story: e.target.value }))}
+                      placeholder="Tell us how your immigration journey went and how VisaPilot helped. What did you find most useful? What was the hardest part?"
+                      className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+
+                  {error && (
+                    <div className="flex items-center gap-2 text-xs text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2.5">
+                      <AlertCircle className="h-4 w-4 shrink-0" />
+                      {error}
+                    </div>
+                  )}
+
+                  <button
+                    type="submit"
+                    disabled={loading || !form.name || !form.email || !form.story}
+                    className="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white font-bold text-sm transition-colors"
+                  >
+                    {loading ? "Submitting…" : "Submit my story"}
+                  </button>
+
+                  <p className="text-center text-xs text-slate-400">
+                    We'll never publish your story without explicit permission. We may edit for clarity or length and will share the final version with you first.
+                  </p>
+                </form>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* CTA */}
+        <div className="text-center border-t pt-12">
+          <h2 className="text-2xl font-bold text-slate-900 mb-3">Ready to start your journey?</h2>
+          <p className="text-slate-500 mb-6 text-sm">
+            Free checklists, deadline tracking, and AI-powered guidance — no credit card required.
+          </p>
+          <div className="flex justify-center gap-3 flex-wrap">
+            <Link
+              href="/sign-up"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-sm text-white bg-blue-600 hover:bg-blue-500 transition-colors"
+            >
+              Get started free <ArrowRight className="h-4 w-4" />
+            </Link>
+            <Link
+              href="/ai-assistant"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-sm border border-slate-200 text-slate-700 hover:bg-slate-50 transition-colors"
+            >
+              Ask the AI Assistant
+            </Link>
+          </div>
+        </div>
+
+      </div>
     </div>
   );
 }
