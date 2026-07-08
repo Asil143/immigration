@@ -1,7 +1,9 @@
-import Link from "next/link";
+"use client";
+
+import { useRouter } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { FileText, MessageSquareText, ExternalLink } from "lucide-react";
+import { FileText, MessageSquareText, ExternalLink, Download } from "lucide-react";
 
 interface FormCard {
   number: string;
@@ -106,7 +108,12 @@ const FORMS: FormCard[] = [
   },
 ];
 
+function blankPdfUrl(formNumber: string): string {
+  return `https://www.uscis.gov/sites/default/files/document/forms/${formNumber.toLowerCase()}.pdf`;
+}
+
 export default function FormsPage() {
+  const router = useRouter();
   const available = FORMS.filter(f => f.status === "available");
   const coming = FORMS.filter(f => f.status === "coming-soon");
 
@@ -138,25 +145,39 @@ export default function FormsPage() {
       <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-3">Available Now</h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 mb-10">
         {available.map(form => (
-          <Link key={form.number} href={form.href!}>
-            <Card className="h-full cursor-pointer hover:shadow-md hover:-translate-y-0.5 transition-all group border-blue-100">
-              <CardContent className="p-5">
-                <div className="flex items-start justify-between mb-3">
-                  <div className="flex items-center gap-2">
-                    <div className="rounded-lg bg-blue-600 text-white px-2 py-0.5 text-xs font-bold">{form.number}</div>
-                    <Badge className="bg-green-100 text-green-700 border-green-200 text-[10px]">Available</Badge>
-                  </div>
-                  <MessageSquareText className="h-4 w-4 text-blue-400 shrink-0" />
+          <Card
+            key={form.number}
+            onClick={() => router.push(form.href!)}
+            className="h-full cursor-pointer hover:shadow-md hover:-translate-y-0.5 transition-all group border-blue-100"
+          >
+            <CardContent className="p-5">
+              <div className="flex items-start justify-between mb-3">
+                <div className="flex items-center gap-2">
+                  <div className="rounded-lg bg-blue-600 text-white px-2 py-0.5 text-xs font-bold">{form.number}</div>
+                  <Badge className="bg-green-100 text-green-700 border-green-200 text-[10px]">Available</Badge>
                 </div>
-                <h3 className="font-bold text-sm mb-1 group-hover:text-blue-600 transition-colors">{form.title}</h3>
-                <p className="text-xs text-muted-foreground leading-relaxed mb-3">{form.description}</p>
-                <p className="text-[10px] text-slate-400 font-medium">Who files: {form.who}</p>
-                <div className="mt-3 text-xs font-semibold text-blue-600 opacity-0 group-hover:opacity-100 transition-opacity">
-                  Start guided interview →
+                <div className="flex items-center gap-2 shrink-0">
+                  <MessageSquareText className="h-4 w-4 text-blue-400" />
+                  <a
+                    href={blankPdfUrl(form.number)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={(e) => e.stopPropagation()}
+                    className="text-blue-400 hover:text-blue-600 transition-colors"
+                    title={`Download blank Form ${form.number} PDF`}
+                  >
+                    <Download className="h-4 w-4" />
+                  </a>
                 </div>
-              </CardContent>
-            </Card>
-          </Link>
+              </div>
+              <h3 className="font-bold text-sm mb-1 group-hover:text-blue-600 transition-colors">{form.title}</h3>
+              <p className="text-xs text-muted-foreground leading-relaxed mb-3">{form.description}</p>
+              <p className="text-[10px] text-slate-400 font-medium">Who files: {form.who}</p>
+              <div className="mt-3 text-xs font-semibold text-blue-600 opacity-0 group-hover:opacity-100 transition-opacity">
+                Start guided interview →
+              </div>
+            </CardContent>
+          </Card>
         ))}
       </div>
 
