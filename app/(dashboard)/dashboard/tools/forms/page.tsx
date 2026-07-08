@@ -37,16 +37,18 @@ const FORMS: FormCard[] = [
     title: "Application to Register Permanent Residence",
     description: "Adjust status to lawful permanent resident (green card) from inside the United States.",
     who: "Family-based, employment-based, asylum/refugee applicants",
+    href: "/dashboard/tools/forms/i-485",
     uscisUrl: "https://www.uscis.gov/i-485",
-    status: "coming-soon",
+    status: "available",
   },
   {
     number: "I-130",
     title: "Petition for Alien Relatives",
     description: "U.S. citizens and LPRs file this to establish a qualifying relationship with a foreign national family member.",
     who: "U.S. citizens and LPRs petitioning for family",
+    href: "/dashboard/tools/forms/i-130",
     uscisUrl: "https://www.uscis.gov/i-130",
-    status: "coming-soon",
+    status: "available",
   },
   {
     number: "I-131",
@@ -62,40 +64,45 @@ const FORMS: FormCard[] = [
     title: "Application to Extend/Change Nonimmigrant Status",
     description: "Extend your current visa status or change to a different nonimmigrant category without leaving the U.S.",
     who: "F-1, B-1/B-2, H-4, L-2, and other nonimmigrant visa holders",
+    href: "/dashboard/tools/forms/i-539",
     uscisUrl: "https://www.uscis.gov/i-539",
-    status: "coming-soon",
+    status: "available",
   },
   {
     number: "I-140",
     title: "Immigrant Petition for Alien Workers",
     description: "Employer files this to sponsor a foreign worker for a permanent employment-based green card (EB-1, EB-2, EB-3).",
     who: "Employers sponsoring foreign workers",
+    href: "/dashboard/tools/forms/i-140",
     uscisUrl: "https://www.uscis.gov/i-140",
-    status: "coming-soon",
+    status: "available",
   },
   {
     number: "I-90",
     title: "Application to Replace Permanent Resident Card",
     description: "Renew or replace a green card that is expired, lost, stolen, or incorrect.",
     who: "Current lawful permanent residents",
+    href: "/dashboard/tools/forms/i-90",
     uscisUrl: "https://www.uscis.gov/i-90",
-    status: "coming-soon",
+    status: "available",
   },
   {
     number: "N-400",
     title: "Application for Naturalization",
     description: "Apply to become a U.S. citizen. Requires 3–5 years as a permanent resident, English proficiency, and passing a civics test.",
     who: "LPRs eligible for U.S. citizenship",
+    href: "/dashboard/tools/forms/n-400",
     uscisUrl: "https://www.uscis.gov/n-400",
-    status: "coming-soon",
+    status: "available",
   },
   {
     number: "I-864A",
     title: "Contract Between Sponsor and Household Member",
     description: "Household members who are combining income with the primary sponsor on Form I-864 must complete this contract.",
     who: "Household members of the primary I-864 sponsor",
+    href: "/dashboard/tools/forms/i-864a",
     uscisUrl: "https://www.uscis.gov/i-864a",
-    status: "coming-soon",
+    status: "available",
   },
 ];
 
@@ -154,33 +161,37 @@ export default function FormsPage() {
       </div>
 
       {/* Coming soon */}
-      <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-3">Coming Soon</h2>
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
-        {coming.map(form => (
-          <Card key={form.number} className="h-full opacity-70">
-            <CardContent className="p-5">
-              <div className="flex items-start justify-between mb-3">
-                <div className="flex items-center gap-2">
-                  <div className="rounded-lg bg-slate-400 text-white px-2 py-0.5 text-xs font-bold">{form.number}</div>
-                  <Badge variant="secondary" className="text-[10px]">Coming Soon</Badge>
-                </div>
-                <a
-                  href={form.uscisUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-slate-400 hover:text-blue-500 transition-colors"
-                  title="View on USCIS.gov"
-                >
-                  <ExternalLink className="h-3.5 w-3.5" />
-                </a>
-              </div>
-              <h3 className="font-bold text-sm mb-1">{form.title}</h3>
-              <p className="text-xs text-muted-foreground leading-relaxed mb-3">{form.description}</p>
-              <p className="text-[10px] text-slate-400 font-medium">Who files: {form.who}</p>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+      {coming.length > 0 && (
+        <>
+          <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-3">Coming Soon</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+            {coming.map(form => (
+              <Card key={form.number} className="h-full opacity-70">
+                <CardContent className="p-5">
+                  <div className="flex items-start justify-between mb-3">
+                    <div className="flex items-center gap-2">
+                      <div className="rounded-lg bg-slate-400 text-white px-2 py-0.5 text-xs font-bold">{form.number}</div>
+                      <Badge variant="secondary" className="text-[10px]">Coming Soon</Badge>
+                    </div>
+                    <a
+                      href={form.uscisUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-slate-400 hover:text-blue-500 transition-colors"
+                      title="View on USCIS.gov"
+                    >
+                      <ExternalLink className="h-3.5 w-3.5" />
+                    </a>
+                  </div>
+                  <h3 className="font-bold text-sm mb-1">{form.title}</h3>
+                  <p className="text-xs text-muted-foreground leading-relaxed mb-3">{form.description}</p>
+                  <p className="text-[10px] text-slate-400 font-medium">Who files: {form.who}</p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </>
+      )}
     </div>
   );
 }

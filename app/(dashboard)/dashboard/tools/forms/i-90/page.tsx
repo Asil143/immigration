@@ -1,14 +1,14 @@
 "use client";
 
-import { Plane } from "lucide-react";
+import { CreditCard } from "lucide-react";
 import { FormWizard, type Fields } from "@/components/forms/form-wizard";
-import { I131_QUESTIONS, I131_PARTS } from "@/lib/forms/i131";
+import { I90_QUESTIONS, I90_PARTS } from "@/lib/forms/i90";
 
 function normalize(fieldId: string, raw: string): string {
   const v = raw.trim();
   if (!v || v.toLowerCase() === "n/a" || v.toLowerCase() === "none") return "N/A";
 
-  if (fieldId.includes("date") || fieldId === "departure_date" || fieldId === "return_date" || fieldId === "i485_filed_date") {
+  if (fieldId.includes("date")) {
     const d = new Date(v);
     if (!isNaN(d.getTime())) {
       const mm = String(d.getMonth() + 1).padStart(2, "0");
@@ -27,7 +27,7 @@ function normalize(fieldId: string, raw: string): string {
   }
   if (fieldId === "mailing_state") return v.toUpperCase().slice(0, 2);
   if (["family_name", "given_name", "middle_name", "country_of_birth", "country_of_citizenship",
-       "mailing_city", "countries_to_visit"].includes(fieldId)) {
+       "mailing_city", "other_names_used"].includes(fieldId)) {
     return v.replace(/\w\S*/g, (t) => t.charAt(0).toUpperCase() + t.slice(1).toLowerCase());
   }
   return v;
@@ -60,37 +60,36 @@ async function prefill(): Promise<Fields> {
   if (!p || p.error) return {};
 
   const f: Fields = {};
-  if (p.first_name)       f.given_name            = titleCase(String(p.first_name));
-  if (p.last_name)        f.family_name           = titleCase(String(p.last_name));
-  if (p.middle_name)      f.middle_name           = titleCase(String(p.middle_name));
-  if (p.date_of_birth)    f.date_of_birth         = isoToMDY(String(p.date_of_birth));
-  if (p.country_of_birth) f.country_of_birth      = titleCase(String(p.country_of_birth));
-  if (p.ssn)              f.ssn                   = fmtSSN(String(p.ssn));
-  if (p.a_number)         f.a_number              = String(p.a_number);
-  if (p.mailing_street)   f.mailing_street        = String(p.mailing_street);
-  if (p.mailing_city)     f.mailing_city          = titleCase(String(p.mailing_city));
-  if (p.mailing_state)    f.mailing_state         = String(p.mailing_state).toUpperCase();
-  if (p.mailing_zip)      f.mailing_zip           = String(p.mailing_zip);
-  if (p.phone)            f.daytime_phone         = fmtPhone(String(p.phone));
-  if (p.email)            f.email                 = String(p.email);
-  if (p.visa_type)        f.current_status        = String(p.visa_type);
+  if (p.first_name)       f.given_name       = titleCase(String(p.first_name));
+  if (p.last_name)        f.family_name      = titleCase(String(p.last_name));
+  if (p.middle_name)      f.middle_name      = titleCase(String(p.middle_name));
+  if (p.date_of_birth)    f.date_of_birth    = isoToMDY(String(p.date_of_birth));
+  if (p.country_of_birth) f.country_of_birth = titleCase(String(p.country_of_birth));
+  if (p.ssn)              f.ssn              = fmtSSN(String(p.ssn));
+  if (p.a_number)         f.a_number         = String(p.a_number);
+  if (p.mailing_street)   f.mailing_street   = String(p.mailing_street);
+  if (p.mailing_city)     f.mailing_city     = titleCase(String(p.mailing_city));
+  if (p.mailing_state)    f.mailing_state    = String(p.mailing_state).toUpperCase();
+  if (p.mailing_zip)      f.mailing_zip      = String(p.mailing_zip);
+  if (p.phone)            f.daytime_phone    = fmtPhone(String(p.phone));
+  if (p.email)            f.email            = String(p.email);
   return f;
 }
 
-export default function I131Page() {
+export default function I90Page() {
   return (
     <FormWizard
-      formNumber="I-131"
-      subtitle="Application for Travel Document"
-      formTypeForSubmission="I-131"
-      icon={Plane}
-      color="sky"
-      questions={I131_QUESTIONS}
-      parts={I131_PARTS}
-      description="For Advance Parole, Refugee Travel Documents, and Re-entry Permits. Answer questions in plain English — we'll prepare your official form."
-      subtext="Most commonly used by I-485 applicants who need to travel while their green card is pending."
+      formNumber="I-90"
+      subtitle="Application to Replace Permanent Resident Card"
+      formTypeForSubmission="I-90"
+      icon={CreditCard}
+      color="teal"
+      questions={I90_QUESTIONS}
+      parts={I90_PARTS}
+      description="For lawful permanent residents who need to renew an expiring green card or replace one that's lost, stolen, damaged, or incorrect. Answer questions in plain English — we'll prepare your official form."
+      subtext="Most green cards are valid for 10 years (2 years for conditional residents) — file for renewal as soon as it expires or is close to expiring."
       notices={[
-        { tone: "amber", text: <><strong>Important:</strong> Do NOT travel outside the U.S. while your I-485 is pending without an approved Advance Parole. Doing so may abandon your green card application.</> },
+        { tone: "amber", text: <>If your card was lost or stolen while you were outside the U.S., you may also need Form I-131A (Travel Document) to return home.</> },
       ]}
       normalize={normalize}
       prefill={prefill}
