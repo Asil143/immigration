@@ -4,7 +4,7 @@ function getResend() {
   return new Resend(process.env.RESEND_API_KEY!);
 }
 
-const FROM = process.env.RESEND_FROM_EMAIL ?? "noreply@visapilot.com";
+const FROM = process.env.RESEND_FROM_EMAIL ?? "noreply@statusclock.com";
 
 export async function sendDeadlineReminder(params: {
   to: string;
@@ -23,7 +23,7 @@ export async function sendDeadlineReminder(params: {
     html: `
       <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
         <div style="background: #2563eb; padding: 24px; border-radius: 8px 8px 0 0;">
-          <h1 style="color: white; margin: 0; font-size: 24px;">VisaPilot</h1>
+          <h1 style="color: white; margin: 0; font-size: 24px;">StatusClock</h1>
         </div>
         <div style="padding: 24px; background: #f8fafc; border-radius: 0 0 8px 8px;">
           <h2 style="color: #1e293b;">Hi ${params.name},</h2>
@@ -39,7 +39,7 @@ export async function sendDeadlineReminder(params: {
             View Your Timeline
           </a>
           <p style="color: #94a3b8; font-size: 12px; margin-top: 24px;">
-            VisaPilot provides general information, not legal advice. Consult a licensed immigration attorney for your specific situation.
+            StatusClock provides general information, not legal advice. Consult a licensed immigration attorney for your specific situation.
           </p>
         </div>
       </div>
@@ -72,7 +72,7 @@ export async function sendAdminFormAlert(params: {
     html: `
       <div style="font-family:sans-serif;max-width:680px;margin:0 auto;">
         <div style="background:#1e293b;padding:20px 24px;border-radius:8px 8px 0 0;display:flex;align-items:center;gap:12px;">
-          <span style="color:white;font-size:20px;font-weight:700;">VisaPilot Admin</span>
+          <span style="color:white;font-size:20px;font-weight:700;">StatusClock Admin</span>
           <span style="background:#3b82f6;color:white;font-size:11px;font-weight:600;padding:2px 8px;border-radius:9999px;">${params.formType}</span>
         </div>
         <div style="padding:24px;background:#f8fafc;border-left:1px solid #e2e8f0;border-right:1px solid #e2e8f0;">
@@ -105,11 +105,11 @@ export async function sendUserFormConfirmation(params: {
   return getResend().emails.send({
     from: FROM,
     to: params.to,
-    subject: `We received your ${params.formType} — VisaPilot`,
+    subject: `We received your ${params.formType} — StatusClock`,
     html: `
       <div style="font-family:sans-serif;max-width:600px;margin:0 auto;">
         <div style="background:#2563eb;padding:24px;border-radius:8px 8px 0 0;">
-          <h1 style="color:white;margin:0;font-size:22px;">VisaPilot</h1>
+          <h1 style="color:white;margin:0;font-size:22px;">StatusClock</h1>
         </div>
         <div style="padding:28px;background:#f8fafc;border-radius:0 0 8px 8px;">
           <h2 style="color:#1e293b;margin:0 0 8px;">Hi ${params.name},</h2>
@@ -144,15 +144,15 @@ export async function sendWelcomeEmail(params: {
   return getResend().emails.send({
     from: FROM,
     to: params.to,
-    subject: "Welcome to VisaPilot — your immigration co-pilot",
+    subject: "Welcome to StatusClock — never miss another immigration deadline",
     html: `
       <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
         <div style="background: #2563eb; padding: 24px; border-radius: 8px 8px 0 0;">
-          <h1 style="color: white; margin: 0;">Welcome to VisaPilot</h1>
+          <h1 style="color: white; margin: 0;">Welcome to StatusClock</h1>
         </div>
         <div style="padding: 24px;">
           <h2>Hi ${params.name},</h2>
-          <p>You're now set up on VisaPilot — your AI-powered immigration co-pilot.</p>
+          <p>You're now set up on StatusClock — your AI-powered immigration deadline tracker.</p>
           <p>Here's what you can do right now:</p>
           <ul>
             <li>Ask our AI assistant any immigration question</li>

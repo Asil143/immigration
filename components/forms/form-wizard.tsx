@@ -146,7 +146,7 @@ export function FormWizard({
       setCurrentQuestion(null);
       setMessages((prev) => [...prev, {
         role: "assistant",
-        content: `✅ All done! Form ${formNumber} is fully filled in.\n\nYour answers have been saved and sent to the VisaPilot team — we'll prepare your form and reach out shortly.`,
+        content: `✅ All done! Form ${formNumber} is fully filled in.\n\nYour answers have been saved and sent to the StatusClock team — we'll prepare your form and reach out shortly.`,
       }]);
       fetch("/api/forms/submissions", {
         method: "POST",

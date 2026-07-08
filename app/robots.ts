@@ -22,6 +22,6 @@ export default function robots(): MetadataRoute.Robots {
         ],
       },
     ],
-    sitemap: "https://visapilot.app/sitemap.xml",
+    sitemap: "https://statusclock.com/sitemap.xml",
   };
 }

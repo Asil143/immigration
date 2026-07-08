@@ -74,17 +74,17 @@ export async function PATCH(req: NextRequest) {
       await resend.emails.send({
         from: process.env.RESEND_FROM_EMAIL || "onboarding@resend.dev",
         to: sub.email,
-        subject: `✅ Your VisaPilot ${sub.plan_name} is now active!`,
+        subject: `✅ Your StatusClock ${sub.plan_name} is now active!`,
         text: [
           `Hi!`,
           ``,
-          `Your ${sub.plan_name} has been activated on VisaPilot.`,
+          `Your ${sub.plan_name} has been activated on StatusClock.`,
           ``,
           `You now have full access to all features included in your plan.`,
-          `Log in at https://visapilot-one.vercel.app/dashboard to get started.`,
+          `Log in at https://statusclock-one.vercel.app/dashboard to get started.`,
           ``,
           `Thank you for your purchase!`,
-          `— VisaPilot Team`,
+          `— StatusClock Team`,
         ].join("\n"),
       });
     } catch (e) {

@@ -159,7 +159,7 @@ export default function J1GuidePage() {
                 <p className="font-bold text-sm text-orange-800">Check Your Status</p>
               </div>
               <p className="text-xs text-orange-700 mb-3 leading-4">
-                Not sure if the two-year rule applies to you? Ask the VisaPilot AI — it can walk you through the checklist.
+                Not sure if the two-year rule applies to you? Ask the StatusClock AI — it can walk you through the checklist.
               </p>
               <Link href="/ai-assistant">
                 <Button size="sm" variant="outline" className="w-full border-orange-300 text-orange-700 hover:bg-orange-100">

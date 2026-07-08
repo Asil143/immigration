@@ -20,7 +20,7 @@ function useChecklistProgress(slug: string, totalItems: number) {
 
   useEffect(() => {
     try {
-      const saved = JSON.parse(localStorage.getItem(`visapilot_checklist_${slug}`) || "{}");
+      const saved = JSON.parse(localStorage.getItem(`statusclock_checklist_${slug}`) || "{}");
       const done = Object.values(saved).filter(Boolean).length;
       const next = totalItems > 0 ? Math.round((done / totalItems) * 100) : 0;
       Promise.resolve().then(() => setPct(next));

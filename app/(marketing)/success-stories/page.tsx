@@ -58,7 +58,7 @@ export default function SuccessStoriesPage() {
             Immigration success stories
           </h1>
           <p className="text-lg text-slate-500 leading-7">
-            VisaPilot is early — we don&apos;t yet have a library of verified user stories to share.
+            StatusClock is early — we don&apos;t yet have a library of verified user stories to share.
             If our tools helped you navigate your immigration journey, we&apos;d love to feature you.
           </p>
         </div>
@@ -70,7 +70,7 @@ export default function SuccessStoriesPage() {
         <div>
           <h2 className="text-2xl font-bold text-slate-900 text-center mb-2">Common paths we help with</h2>
           <p className="text-sm text-center text-slate-500 mb-10">
-            These are the journeys VisaPilot is built to support — checklists, deadline tracking, AI guidance, and attorney connections.
+            These are the journeys StatusClock is built to support — checklists, deadline tracking, AI guidance, and attorney connections.
           </p>
           <div className="grid sm:grid-cols-2 gap-4">
             {PATHS.map(({ icon: Icon, color, label, desc }) => (
@@ -101,7 +101,7 @@ export default function SuccessStoriesPage() {
                 Share your immigration story
               </h2>
               <p className="text-sm text-slate-400 mt-1">
-                Did VisaPilot help you navigate a tricky immigration situation? Tell us — we&apos;ll reach out to feature your story (with your permission).
+                Did StatusClock help you navigate a tricky immigration situation? Tell us — we&apos;ll reach out to feature your story (with your permission).
               </p>
             </div>
 
@@ -153,7 +153,7 @@ export default function SuccessStoriesPage() {
                     <textarea
                       required rows={5} value={form.story}
                       onChange={e => setForm(f => ({ ...f, story: e.target.value }))}
-                      placeholder="Tell us how your immigration journey went and how VisaPilot helped. What did you find most useful? What was the hardest part?"
+                      placeholder="Tell us how your immigration journey went and how StatusClock helped. What did you find most useful? What was the hardest part?"
                       className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                   </div>

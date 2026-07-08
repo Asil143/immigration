@@ -20,7 +20,7 @@ export default async function ChecklistPage({ params }: Props) {
     <div className="p-8">
       <ChecklistView
         checklist={checklist}
-        storageKey={`visapilot_checklist_${slug}`}
+        storageKey={`statusclock_checklist_${slug}`}
       />
     </div>
   );

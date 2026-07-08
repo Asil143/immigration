@@ -33,7 +33,7 @@ export function Sidebar() {
         <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-white">
           <Bot className="h-5 w-5" />
         </div>
-        <span className="font-bold text-xl text-primary">VisaPilot</span>
+        <span className="font-bold text-xl text-primary">StatusClock</span>
       </Link>
 
       {/* Main Nav */}

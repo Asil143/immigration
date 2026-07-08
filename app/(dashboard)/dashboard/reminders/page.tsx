@@ -70,7 +70,7 @@ export default function RemindersPage() {
       <div className="mb-8 flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">Reminders & Notifications</h1>
-          <p className="mt-1 text-muted-foreground">Configure how and when VisaPilot alerts you</p>
+          <p className="mt-1 text-muted-foreground">Configure how and when StatusClock alerts you</p>
         </div>
         <Button onClick={save} disabled={saving} className="gap-2">
           {saving ? <><Loader2 className="h-4 w-4 animate-spin" /> Saving…</> : saved ? <><Check className="h-4 w-4" /> Saved!</> : "Save Preferences"}

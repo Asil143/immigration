@@ -116,7 +116,7 @@ export default function PublicVisaBulletinPage() {
             <div className="text-sm text-green-800">
               <p className="font-semibold">Track your priority date</p>
               <p className="text-xs text-green-700 mt-1 leading-4">
-                Sign in to VisaPilot to check if your specific priority date is current, get monthly movement alerts, and see historical trends.
+                Sign in to StatusClock to check if your specific priority date is current, get monthly movement alerts, and see historical trends.
               </p>
               <Link href="/dashboard/tools/visa-bulletin" className="mt-2 inline-flex items-center gap-1 text-xs font-semibold text-green-700 hover:underline">
                 Open tracker <ArrowRight className="h-3 w-3" />
@@ -133,7 +133,7 @@ export default function PublicVisaBulletinPage() {
             </div>
             <div className="flex-1">
               <p className="font-bold">Questions about your green card timeline?</p>
-              <p className="text-sm text-muted-foreground mt-0.5">Ask the VisaPilot AI — it can estimate your wait time based on your priority date and current bulletin trends.</p>
+              <p className="text-sm text-muted-foreground mt-0.5">Ask the StatusClock AI — it can estimate your wait time based on your priority date and current bulletin trends.</p>
             </div>
             <Link href="/ai-assistant">
               <Button>

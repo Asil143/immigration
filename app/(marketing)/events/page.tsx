@@ -56,7 +56,7 @@ export default function EventsPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name: "Topic Suggestion",
-          email: "noreply@visapilot.app",
+          email: "noreply@statusclock.com",
           subject: "Webinar topic suggestion",
           message: topicDraft,
         }),

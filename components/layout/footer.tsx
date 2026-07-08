@@ -41,7 +41,7 @@ export function Footer() {
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-500 text-white">
                 <Bot className="h-5 w-5" />
               </div>
-              VisaPilot
+              StatusClock
             </Link>
             <p className="text-sm text-slate-400 leading-6 max-w-xs">
               Step-by-step checklists, AI guidance, and deadline tracking for
@@ -100,7 +100,7 @@ export function Footer() {
         {/* Bottom bar */}
         <div className="mt-12 border-t border-slate-800 pt-8 flex flex-col sm:flex-row items-center justify-between gap-3">
           <p className="text-xs text-slate-500">
-            © {new Date().getFullYear()} VisaPilot. All rights reserved.
+            © {new Date().getFullYear()} StatusClock. All rights reserved.
           </p>
           <div className="flex items-center gap-4">
             <Link href="/privacy" className="text-xs text-slate-500 hover:text-slate-300 transition-colors">Privacy Policy</Link>

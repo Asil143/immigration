@@ -112,7 +112,7 @@ export default function OnboardingPage() {
           <div className="h-10 w-10 rounded-xl flex items-center justify-center" style={{ backgroundColor: "#2563eb" }}>
             <Bot className="h-6 w-6 text-white" />
           </div>
-          <span className="text-xl font-bold">VisaPilot</span>
+          <span className="text-xl font-bold">StatusClock</span>
         </div>
 
         {/* Progress bar */}
@@ -235,7 +235,7 @@ export default function OnboardingPage() {
                       <AlertCircle className="h-4 w-4 text-orange-500 shrink-0 mt-0.5" />
                       <div>
                         <p className="text-sm font-semibold text-orange-900">India green card backlog</p>
-                        <p className="text-xs text-orange-700 mt-0.5">India EB-2 has a 50+ year backlog. VisaPilot will show you EB-1A and EB-1C paths that bypass the queue entirely.</p>
+                        <p className="text-xs text-orange-700 mt-0.5">India EB-2 has a 50+ year backlog. StatusClock will show you EB-1A and EB-1C paths that bypass the queue entirely.</p>
                       </div>
                     </div>
                   </div>

@@ -13,7 +13,7 @@ const ARTICLES = [
     excerpt: "USCIS announced the selection of 65,000 regular cap and 20,000 advanced-degree registrations for fiscal year 2026. Petitioners have until June 30 to file.",
     date: "May 27, 2026",
     readTime: "4 min read",
-    author: "VisaPilot Editorial",
+    author: "StatusClock Editorial",
     image: "h1b",
   },
   {
@@ -25,7 +25,7 @@ const ARTICLES = [
     excerpt: "USCIS has significantly reduced EAD processing times following a backlog-clearing initiative. OPT applicants filing at Potomac Service Center are now seeing approval in as little as 75 days.",
     date: "May 22, 2026",
     readTime: "3 min read",
-    author: "VisaPilot Editorial",
+    author: "StatusClock Editorial",
     image: "processing",
   },
   {
@@ -37,7 +37,7 @@ const ARTICLES = [
     excerpt: "The June 2026 Visa Bulletin shows continued movement for EB-2 India, now at April 1, 2012. Analysts project dates could reach mid-2013 by end of fiscal year if retrogression is avoided.",
     date: "May 15, 2026",
     readTime: "5 min read",
-    author: "VisaPilot Editorial",
+    author: "StatusClock Editorial",
     image: "bulletin",
   },
   {
@@ -49,7 +49,7 @@ const ARTICLES = [
     excerpt: "DHS released a proposed rulemaking that would expand the STEM OPT eligible field list and clarify training plan requirements under Form I-983. Public comment period open through July 15.",
     date: "May 10, 2026",
     readTime: "6 min read",
-    author: "VisaPilot Editorial",
+    author: "StatusClock Editorial",
     image: "opt",
   },
   {
@@ -61,7 +61,7 @@ const ARTICLES = [
     excerpt: "USCIS issued RFEs on 32% of H-1B petitions in Q1 2026, the highest rate since 2009. Specialty occupation and employer-employee relationship remain the top two issues across all service centers.",
     date: "May 5, 2026",
     readTime: "7 min read",
-    author: "VisaPilot Editorial",
+    author: "StatusClock Editorial",
     image: "rfe",
   },
   {
@@ -73,7 +73,7 @@ const ARTICLES = [
     excerpt: "USCIS reported processing a record 1.2 million naturalization applications in fiscal year 2025, aided by online filing expansion and increased N-400 officer capacity.",
     date: "Apr 28, 2026",
     readTime: "4 min read",
-    author: "VisaPilot Editorial",
+    author: "StatusClock Editorial",
     image: "citizenship",
   },
 ];

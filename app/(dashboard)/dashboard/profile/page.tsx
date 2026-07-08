@@ -742,7 +742,7 @@ export default function ProfilePage() {
             <div className="space-y-5">
               <div className="p-5 rounded-2xl border" style={{ borderColor: "#e2e8f0", backgroundColor: "#ffffff" }}>
                 <h3 className="font-semibold mb-1 text-sm" style={{ color: "#0f172a" }}>Pending USCIS Cases</h3>
-                <p className="text-xs mb-4" style={{ color: "#64748b" }}>Add your receipt numbers — VisaPilot will monitor status changes and alert you.</p>
+                <p className="text-xs mb-4" style={{ color: "#64748b" }}>Add your receipt numbers — StatusClock will monitor status changes and alert you.</p>
 
                 <div className="space-y-3 mb-5">
                   {cases.length === 0 && (

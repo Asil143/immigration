@@ -2,7 +2,7 @@ import { GitCompare } from "lucide-react";
 import { VisaComparisonTool } from "@/components/visa-comparison/visa-comparison-tool";
 
 export const metadata = {
-  title: "Visa Comparison | VisaPilot",
+  title: "Visa Comparison",
   description: "Compare F-1 OPT, H-1B, O-1A, L-1A, EB-2 NIW, and TN visas side by side.",
 };
 

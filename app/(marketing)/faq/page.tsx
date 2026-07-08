@@ -6,18 +6,18 @@ import { ChevronDown, Search, ArrowRight } from "lucide-react";
 
 const faqs = [
   {
-    category: "About VisaPilot",
+    category: "About StatusClock",
     items: [
       {
-        q: "What is VisaPilot?",
-        a: "VisaPilot is a free immigration information platform for international students and professionals in the U.S. We provide step-by-step checklists, an AI assistant, deadline tracking, and plain-language guides covering F-1, OPT, STEM OPT, H-1B, J-1, and Green Card pathways.",
+        q: "What is StatusClock?",
+        a: "StatusClock is a free immigration information platform for international students and professionals in the U.S. We provide step-by-step checklists, an AI assistant, deadline tracking, and plain-language guides covering F-1, OPT, STEM OPT, H-1B, J-1, and Green Card pathways.",
       },
       {
-        q: "Is VisaPilot a law firm or immigration attorney service?",
-        a: "No. VisaPilot is an information and tools platform — not a law firm. We do not provide legal advice, and using VisaPilot does not create an attorney-client relationship. For case-specific guidance, especially if you've received an RFE, NOID, or any government notice, always consult a licensed immigration attorney.",
+        q: "Is StatusClock a law firm or immigration attorney service?",
+        a: "No. StatusClock is an information and tools platform — not a law firm. We do not provide legal advice, and using StatusClock does not create an attorney-client relationship. For case-specific guidance, especially if you've received an RFE, NOID, or any government notice, always consult a licensed immigration attorney.",
       },
       {
-        q: "Is VisaPilot free to use?",
+        q: "Is StatusClock free to use?",
         a: "Yes — core tools including all visa checklists, the OPT day counter, and the timeline tracker are free with no sign-up required. The AI Assistant and some premium features require a free account. We offer paid plans for advanced features like document generation and priority support.",
       },
       {
@@ -72,7 +72,7 @@ const faqs = [
       },
       {
         q: "What is an RFE and what should I do if I receive one?",
-        a: "An RFE (Request for Evidence) is a notice from USCIS asking for more documentation to support your petition. You typically have 87 days to respond. An RFE is not a denial — respond thoroughly with your attorney's help. VisaPilot's RFE Assistant can help you understand common RFE types.",
+        a: "An RFE (Request for Evidence) is a notice from USCIS asking for more documentation to support your petition. You typically have 87 days to respond. An RFE is not a denial — respond thoroughly with your attorney's help. StatusClock's RFE Assistant can help you understand common RFE types.",
       },
     ],
   },
@@ -106,15 +106,15 @@ const faqs = [
       },
       {
         q: "Can I get a refund?",
-        a: "All purchases are final and non-refundable unless required by law. If you believe you were charged in error, contact us at support@visapilot.app within 14 days of the charge.",
+        a: "All purchases are final and non-refundable unless required by law. If you believe you were charged in error, contact us at support@statusclock.com within 14 days of the charge.",
       },
       {
         q: "Is my data secure?",
         a: "Yes. We use TLS encryption in transit and AES-256 encryption at rest. Authentication is handled by Clerk, a dedicated security-focused auth provider. We never store credit card details on our servers — payments go through Stripe. See our Privacy Policy for full details.",
       },
       {
-        q: "Can I use VisaPilot on mobile?",
-        a: "Yes — VisaPilot is fully responsive and works on mobile browsers. A dedicated mobile app is on our roadmap.",
+        q: "Can I use StatusClock on mobile?",
+        a: "Yes — StatusClock is fully responsive and works on mobile browsers. A dedicated mobile app is on our roadmap.",
       },
     ],
   },
@@ -164,7 +164,7 @@ export default function FAQPage() {
           <p className="text-sm font-medium text-blue-600 mb-2">Got questions?</p>
           <h1 className="text-4xl font-bold text-slate-900 mb-4">Frequently Asked Questions</h1>
           <p className="text-slate-500 mb-8">
-            Answers to the most common questions about U.S. immigration and VisaPilot.
+            Answers to the most common questions about U.S. immigration and StatusClock.
             {" "}<span className="text-slate-400">{total} questions across {faqs.length} categories.</span>
           </p>
           {/* Search */}

@@ -284,7 +284,7 @@ export default function GeneratePage() {
 
           <div className="rounded-lg border border-yellow-200 bg-yellow-50 p-4 text-sm text-yellow-800">
             <p className="font-semibold">Important Disclaimer</p>
-            <p className="mt-1 text-xs text-yellow-700">This is an AI-generated draft for reference only. Review all content carefully with a qualified immigration attorney before filing. VisaPilot is not a law firm and this is not legal advice.</p>
+            <p className="mt-1 text-xs text-yellow-700">This is an AI-generated draft for reference only. Review all content carefully with a qualified immigration attorney before filing. StatusClock is not a law firm and this is not legal advice.</p>
           </div>
 
           <div className="flex justify-between pt-4">

@@ -15,7 +15,7 @@ export async function POST(req: NextRequest) {
       from: process.env.RESEND_FROM_EMAIL || "onboarding@resend.dev",
       to: "kamepalliasil143@gmail.com",
       replyTo: email,
-      subject: subject ? `[VisaPilot] ${subject}` : "[VisaPilot] Contact Form Submission",
+      subject: subject ? `[StatusClock] ${subject}` : "[StatusClock] Contact Form Submission",
       text: `From: ${name} <${email}>\n\n${message}`,
       ...(attachment && {
         attachments: [{ filename: attachment.filename, content: attachment.content }],

@@ -2,8 +2,8 @@ import Link from "next/link";
 import { Bot, Target, Shield, Zap, Heart, ArrowRight, CheckCircle2 } from "lucide-react";
 
 export const metadata = {
-  title: "About | VisaPilot",
-  description: "VisaPilot helps international students and professionals navigate the U.S. immigration system with confidence.",
+  title: "About",
+  description: "StatusClock helps international students and professionals navigate the U.S. immigration system with confidence.",
 };
 
 const values = [
@@ -23,7 +23,7 @@ const values = [
     icon: Zap,
     title: "Speed when it matters",
     description:
-      "Missing an immigration deadline can have life-altering consequences. VisaPilot surfaces the right action at the right time so nothing slips through the cracks.",
+      "Missing an immigration deadline can have life-altering consequences. StatusClock surfaces the right action at the right time so nothing slips through the cracks.",
   },
   {
     icon: Heart,
@@ -44,12 +44,12 @@ const team = [
   {
     name: "Built by immigrants",
     description:
-      "VisaPilot was created by people who went through the F-1 → OPT → H-1B pipeline and wished there was a better resource. We know the stress firsthand.",
+      "StatusClock was created by people who went through the F-1 → OPT → H-1B pipeline and wished there was a better resource. We know the stress firsthand.",
   },
   {
     name: "Not a law firm",
     description:
-      "We're engineers and designers, not attorneys. We partner with licensed immigration lawyers to verify our content, but VisaPilot is an information tool — not legal counsel.",
+      "We're engineers and designers, not attorneys. We partner with licensed immigration lawyers to verify our content, but StatusClock is an information tool — not legal counsel.",
   },
   {
     name: "Independent & focused",
@@ -76,7 +76,7 @@ export default function AboutPage() {
             </span>
           </h1>
           <p className="text-xl text-slate-500 max-w-2xl mx-auto leading-8">
-            VisaPilot gives international students and professionals the checklists,
+            StatusClock gives international students and professionals the checklists,
             AI guidance, and deadline tracking they need to navigate the U.S. immigration
             system with confidence — for free.
           </p>
@@ -115,7 +115,7 @@ export default function AboutPage() {
               charge hundreds of dollars per hour. Reddit threads are full of conflicting advice.
             </p>
             <p className="text-slate-600 leading-7">
-              VisaPilot exists to fill that gap — with clear checklists, AI-assisted answers,
+              StatusClock exists to fill that gap — with clear checklists, AI-assisted answers,
               deadline tracking, and plain-language guides that actually make sense.
             </p>
           </div>
@@ -163,7 +163,7 @@ export default function AboutPage() {
       <div className="container mx-auto px-4 py-20 max-w-4xl">
         <div className="text-center mb-14">
           <p className="text-sm font-medium text-blue-600 mb-3">Who we are</p>
-          <h2 className="text-3xl font-bold text-slate-900 mb-4">The team behind VisaPilot</h2>
+          <h2 className="text-3xl font-bold text-slate-900 mb-4">The team behind StatusClock</h2>
           <p className="text-slate-500 max-w-xl mx-auto">
             A small team that went through the immigration process and decided to build the tool
             we wished existed.
@@ -210,7 +210,7 @@ export default function AboutPage() {
       {/* Legal disclaimer */}
       <div className="container mx-auto px-4 py-12 max-w-4xl">
         <div className="bg-amber-50 border border-amber-100 rounded-xl p-6 text-sm text-amber-800 leading-6">
-          <strong className="text-amber-900">Legal disclaimer:</strong> VisaPilot provides general
+          <strong className="text-amber-900">Legal disclaimer:</strong> StatusClock provides general
           immigration information for educational purposes only. We are not a law firm and nothing
           on this platform constitutes legal advice. Always consult a licensed immigration attorney
           for advice specific to your situation.

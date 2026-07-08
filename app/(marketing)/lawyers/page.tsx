@@ -103,7 +103,7 @@ export default function LawyersPage() {
             Connect with a licensed immigration attorney
           </h1>
           <p className="text-lg text-slate-500 max-w-xl mx-auto leading-7">
-            VisaPilot is not a law firm. When your situation needs real legal counsel,
+            StatusClock is not a law firm. When your situation needs real legal counsel,
             we connect you with vetted, licensed immigration attorneys — at transparent, fixed fees.
           </p>
         </div>
@@ -227,8 +227,8 @@ export default function LawyersPage() {
                   </button>
 
                   <p className="text-center text-xs text-slate-400">
-                    VisaPilot is not a law firm and does not provide legal advice.
-                    Attorneys listed are independent practitioners, not employees of VisaPilot.
+                    StatusClock is not a law firm and does not provide legal advice.
+                    Attorneys listed are independent practitioners, not employees of StatusClock.
                   </p>
                 </form>
               )}
@@ -261,7 +261,7 @@ export default function LawyersPage() {
           </div>
           <p className="text-xs text-slate-500 mt-5">
             For everything else — understanding checklists, tracking deadlines, filing fees —{" "}
-            <Link href="/dashboard" className="text-blue-600 hover:underline font-medium">VisaPilot&apos;s free tools</Link> are a good starting point.
+            <Link href="/dashboard" className="text-blue-600 hover:underline font-medium">StatusClock&apos;s free tools</Link> are a good starting point.
           </p>
         </div>
 

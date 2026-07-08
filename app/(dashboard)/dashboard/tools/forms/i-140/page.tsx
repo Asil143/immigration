@@ -71,7 +71,7 @@ function buildAddress(street?: unknown, city?: unknown, state?: unknown, zip?: u
   return parts.length ? parts.join(", ") : undefined;
 }
 
-// The worker applying through VisaPilot is almost always the beneficiary of an
+// The worker applying through StatusClock is almost always the beneficiary of an
 // I-140, not the petitioner — so profile/document data prefills beneficiary_*
 // fields only. Employer/petitioner fields are intentionally left blank since
 // they describe the sponsoring company, not the individual user's profile.

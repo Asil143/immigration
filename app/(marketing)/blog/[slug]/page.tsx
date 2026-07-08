@@ -14,7 +14,7 @@ const ARTICLES: Record<string, {
     badge: "Breaking",
     date: "May 27, 2026",
     readTime: "4 min read",
-    author: "VisaPilot Editorial",
+    author: "StatusClock Editorial",
     relatedSlugs: ["rfe-rates-specialty-occupation-2026", "uscis-processing-times-may-2026"],
     body: `USCIS has completed the H-1B random selection process for fiscal year 2026 (FY2026), selecting approximately 85,000 registrations to meet the statutory cap — 65,000 under the regular cap and 20,000 under the advanced degree exemption.
 
@@ -56,7 +56,7 @@ Employers who did not get selected should consider alternatives such as:
     badge: "Update",
     date: "May 22, 2026",
     readTime: "3 min read",
-    author: "VisaPilot Editorial",
+    author: "StatusClock Editorial",
     relatedSlugs: ["h1b-2026-lottery-results", "stem-opt-extension-new-rules"],
     body: `USCIS has updated its published processing times for May 2026, with the most significant change being a reduction in I-765 (Employment Authorization Document) processing times at the Potomac Service Center.
 
@@ -68,7 +68,7 @@ STEM OPT extensions (category (c)(3)(C)) are processing in 2–3 months, a notab
 
 **How to Check Your Processing Time**
 
-USCIS publishes processing times at uscis.gov/tools/processing-times. Applicants can check their specific form type, service center, and visa classification. The VisaPilot Processing Times tool also aggregates this data with trend indicators.
+USCIS publishes processing times at uscis.gov/tools/processing-times. Applicants can check their specific form type, service center, and visa classification. The StatusClock Processing Times tool also aggregates this data with trend indicators.
 
 **What to Do If You're Outside the Range**
 
@@ -80,7 +80,7 @@ If your application has been pending longer than the published processing time, 
     badge: "Visa Bulletin",
     date: "May 15, 2026",
     readTime: "4 min read",
-    author: "VisaPilot Editorial",
+    author: "StatusClock Editorial",
     relatedSlugs: ["naturalization-record-numbers-2026", "h1b-2026-lottery-results"],
     body: `The June 2026 Visa Bulletin shows one of the largest single-month advances for EB-2 India in recent years, moving the Final Action Date forward by approximately 8 months to January 1, 2014.
 
@@ -116,7 +116,7 @@ Priority dates can and do retrogress. If you become eligible to file, do so prom
     badge: "Guide",
     date: "May 10, 2026",
     readTime: "5 min read",
-    author: "VisaPilot Editorial",
+    author: "StatusClock Editorial",
     relatedSlugs: ["uscis-processing-times-may-2026", "rfe-rates-specialty-occupation-2026"],
     body: `The STEM OPT extension allows F-1 students who graduated with a STEM degree to extend their post-completion OPT by 24 months, for a total of 36 months of work authorization. This guide covers the current requirements and the most common reasons for denial.
 
@@ -145,7 +145,7 @@ If USCIS doesn't process your application before your OPT EAD expires, your empl
 
 **Reporting Requirements**
 
-STEM OPT students must complete validation reports every 6 months, and Form I-983 evaluations at 12 and 24 months. Missing these reports can jeopardize future immigration applications. VisaPilot's dashboard tracks all STEM OPT reporting deadlines automatically.`,
+STEM OPT students must complete validation reports every 6 months, and Form I-983 evaluations at 12 and 24 months. Missing these reports can jeopardize future immigration applications. StatusClock's dashboard tracks all STEM OPT reporting deadlines automatically.`,
   },
   "rfe-rates-specialty-occupation-2026": {
     title: "H-1B RFE Rates Hit 30% in 2026 — What USCIS Is Targeting",
@@ -153,7 +153,7 @@ STEM OPT students must complete validation reports every 6 months, and Form I-98
     badge: "Analysis",
     date: "April 28, 2026",
     readTime: "4 min read",
-    author: "VisaPilot Editorial",
+    author: "StatusClock Editorial",
     relatedSlugs: ["h1b-2026-lottery-results", "stem-opt-extension-new-rules"],
     body: `Request for Evidence (RFE) rates for H-1B petitions have climbed to approximately 30% in early FY2026, according to USCIS data obtained through FOIA requests. The vast majority target the "specialty occupation" standard.
 
@@ -184,7 +184,7 @@ An effective specialty occupation RFE response should include:
 - Company organizational charts showing degree requirements for comparable positions
 - Evidence that the beneficiary's degree directly relates to the job duties
 
-If you received an RFE, the VisaPilot RFE Assistant can help you build a response framework quickly. You should also consult an immigration attorney for RFEs on complex cases.`,
+If you received an RFE, the StatusClock RFE Assistant can help you build a response framework quickly. You should also consult an immigration attorney for RFEs on complex cases.`,
   },
   "naturalization-record-numbers-2026": {
     title: "Naturalization Applications Hit Record High in FY2025",
@@ -192,7 +192,7 @@ If you received an RFE, the VisaPilot RFE Assistant can help you build a respons
     badge: "Data",
     date: "April 18, 2026",
     readTime: "3 min read",
-    author: "VisaPilot Editorial",
+    author: "StatusClock Editorial",
     relatedSlugs: ["eb2-india-priority-date-movement", "h1b-2026-lottery-results"],
     body: `USCIS processed a record 1.05 million naturalization applications in fiscal year 2025, the highest number in the agency's history. Approximately 878,000 individuals were naturalized as U.S. citizens during the same period.
 
@@ -232,7 +232,7 @@ const FALLBACK = {
   badge: "Info",
   date: "2026",
   readTime: "1 min read",
-  author: "VisaPilot Editorial",
+  author: "StatusClock Editorial",
   relatedSlugs: [],
   body: "This article could not be found. Please browse our blog for the latest immigration news.",
 };
@@ -306,7 +306,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
             </div>
             <div className="flex-1">
               <p className="font-bold text-sm">Have questions about this update?</p>
-              <p className="text-xs text-muted-foreground mt-1 leading-4">Ask the VisaPilot AI Assistant — it&apos;s trained on USCIS policies, processing times, and immigration law.</p>
+              <p className="text-xs text-muted-foreground mt-1 leading-4">Ask the StatusClock AI Assistant — it&apos;s trained on USCIS policies, processing times, and immigration law.</p>
             </div>
             <Link href="/ai-assistant">
               <Button size="sm">Ask AI <ArrowRight className="ml-2 h-4 w-4" /></Button>

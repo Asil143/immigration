@@ -47,7 +47,7 @@ export default function LawyerPortalPage() {
         <Scale className="h-6 w-6 text-primary" />
         <div>
           <h1 className="text-2xl font-bold">Attorney Partner Portal</h1>
-          <p className="text-muted-foreground text-sm">Join the VisaPilot attorney network</p>
+          <p className="text-muted-foreground text-sm">Join the StatusClock attorney network</p>
         </div>
       </div>
 
@@ -56,7 +56,7 @@ export default function LawyerPortalPage() {
         <div>
           <p className="font-semibold text-amber-900 text-sm">Coming soon</p>
           <p className="text-xs text-amber-700 leading-5 mt-0.5">
-            The attorney portal is in development. We&apos;re building the infrastructure to connect licensed immigration attorneys with pre-screened clients through VisaPilot. Sign up below to be notified when it launches and to reserve early partner pricing.
+            The attorney portal is in development. We&apos;re building the infrastructure to connect licensed immigration attorneys with pre-screened clients through StatusClock. Sign up below to be notified when it launches and to reserve early partner pricing.
           </p>
         </div>
       </div>

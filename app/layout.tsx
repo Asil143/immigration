@@ -11,8 +11,8 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: {
-    default: "VisaPilot — Your Immigration Co-Pilot",
-    template: "%s | VisaPilot",
+    default: "StatusClock — Never Miss an Immigration Deadline",
+    template: "%s | StatusClock",
   },
   description:
     "AI-powered immigration guidance for international students and immigrants. Navigate F-1, OPT, H-1B, green card, and more with confidence.",
@@ -28,7 +28,7 @@ export const metadata: Metadata = {
     "immigration attorney",
   ],
   openGraph: {
-    title: "VisaPilot — Your Immigration Co-Pilot",
+    title: "StatusClock — Never Miss an Immigration Deadline",
     description: "AI-powered immigration guidance for international students",
     type: "website",
     locale: "en_US",

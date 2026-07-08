@@ -126,7 +126,7 @@ interface Conversation {
 const WELCOME: ChatMessage = {
   id: "welcome",
   role: "assistant",
-  content: "Hi! I'm your VisaPilot AI assistant — personalized to your visa status and key dates.\n\nI can help with F-1, OPT, STEM OPT, H-1B, green cards, and more.\n\n**Remember:** I provide general information, not legal advice. For your specific case, consult a licensed immigration attorney.\n\nWhat would you like to know?",
+  content: "Hi! I'm your StatusClock AI assistant — personalized to your visa status and key dates.\n\nI can help with F-1, OPT, STEM OPT, H-1B, green cards, and more.\n\n**Remember:** I provide general information, not legal advice. For your specific case, consult a licensed immigration attorney.\n\nWhat would you like to know?",
   created_at: new Date().toISOString(),
 };
 

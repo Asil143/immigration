@@ -66,7 +66,7 @@ export const greenCard: ChecklistDef = {
       items: [
         { id: "gw1", text: "Check DOS Visa Bulletin every month (published around the 10th of each month)", type: "action", link: { label: "Visa Bulletin", url: "https://travel.state.gov/content/travel/en/legal/visa-law0/visa-bulletin.html" } },
         { id: "gw2", text: "Track both 'Dates for Filing' and 'Final Action Dates' charts in the bulletin", type: "action" },
-        { id: "gw3", text: "Set up alert via VisaPilot reminders for monthly bulletin release", type: "action", link: { label: "Timeline page", url: "/dashboard/timeline" } },
+        { id: "gw3", text: "Set up alert via StatusClock reminders for monthly bulletin release", type: "action", link: { label: "Timeline page", url: "/dashboard/timeline" } },
         { id: "gw4", text: "During wait: keep H-1B status valid — file extensions as needed", type: "action" },
         { id: "gw5", text: "During wait: if changing employers after 180 days of pending I-485 (AC21 portability applies)", type: "action" },
         { id: "gw6", text: "Confirm with USCIS or attorney whether 'Dates for Filing' chart is accepting I-485 in your category", type: "action" },

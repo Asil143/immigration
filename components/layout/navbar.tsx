@@ -40,7 +40,7 @@ export function Navbar() {
           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-white">
             <Bot className="h-5 w-5" />
           </div>
-          VisaPilot
+          StatusClock
           <Badge variant="info" className="text-[10px] px-1.5 py-0">BETA</Badge>
         </Link>
 

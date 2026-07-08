@@ -1,8 +1,8 @@
 import Link from "next/link";
 
 export const metadata = {
-  title: "Privacy Policy | VisaPilot",
-  description: "How VisaPilot collects, uses, and protects your personal information.",
+  title: "Privacy Policy",
+  description: "How StatusClock collects, uses, and protects your personal information.",
 };
 
 const Section = ({ title, children }: { title: string; children: React.ReactNode }) => (
@@ -29,14 +29,14 @@ export default function PrivacyPage() {
 
         {/* Intro callout */}
         <div className="bg-blue-50 border border-blue-100 rounded-xl p-5 mb-12 text-sm text-blue-800 leading-6">
-          <strong>Summary:</strong> We collect only what&apos;s necessary to run VisaPilot. We never sell your data.
+          <strong>Summary:</strong> We collect only what&apos;s necessary to run StatusClock. We never sell your data.
           AI conversations are processed by Anthropic but not stored beyond your session.
           You can delete your account and data at any time.
         </div>
 
         <Section title="1. Who We Are">
           <p>
-            VisaPilot (&quot;we,&quot; &quot;our,&quot; or &quot;us&quot;) operates visapilot.app, an immigration information
+            StatusClock (&quot;we,&quot; &quot;our,&quot; or &quot;us&quot;) operates statusclock.com, an immigration information
             platform designed to help international students and professionals navigate the U.S.
             immigration system through checklists, AI-assisted guidance, and deadline tracking.
           </p>
@@ -47,7 +47,7 @@ export default function PrivacyPage() {
           </p>
           <p>
             If you have questions about this policy, contact us at{" "}
-            <a href="mailto:privacy@visapilot.app" className="text-blue-600 hover:underline">privacy@visapilot.app</a>.
+            <a href="mailto:privacy@statusclock.com" className="text-blue-600 hover:underline">privacy@statusclock.com</a>.
           </p>
         </Section>
 
@@ -115,7 +115,7 @@ export default function PrivacyPage() {
             <li>To generate AI responses to your immigration questions via the Claude API</li>
             <li>To process payments and send receipts and billing notifications</li>
             <li>To send transactional emails such as password resets and important account notices</li>
-            <li>To improve VisaPilot by analyzing aggregate, anonymized usage patterns</li>
+            <li>To improve StatusClock by analyzing aggregate, anonymized usage patterns</li>
             <li>To debug errors, investigate abuse, and maintain platform security</li>
             <li>To respond to your support inquiries and feedback</li>
             <li>To comply with legal obligations and enforce our Terms of Service</li>
@@ -144,16 +144,16 @@ export default function PrivacyPage() {
           <ul className="list-disc pl-5 space-y-2">
             <li>
               <strong className="text-slate-800">Service providers:</strong> We share data with vendors who help
-              operate VisaPilot (see Section 6). These vendors are contractually bound to use data only to
+              operate StatusClock (see Section 6). These vendors are contractually bound to use data only to
               provide services to us.
             </li>
             <li>
               <strong className="text-slate-800">Legal requirements:</strong> We may disclose data if required by
-              law, court order, or government request, or to protect the rights and safety of VisaPilot,
+              law, court order, or government request, or to protect the rights and safety of StatusClock,
               our users, or the public.
             </li>
             <li>
-              <strong className="text-slate-800">Business transfers:</strong> If VisaPilot is acquired or merges
+              <strong className="text-slate-800">Business transfers:</strong> If StatusClock is acquired or merges
               with another company, your data may be transferred as part of that transaction. We will notify
               you before your data is subject to a materially different privacy policy.
             </li>
@@ -244,7 +244,7 @@ export default function PrivacyPage() {
           </p>
           <p>
             To exercise any of these rights, email{" "}
-            <a href="mailto:privacy@visapilot.app" className="text-blue-600 hover:underline">privacy@visapilot.app</a>.
+            <a href="mailto:privacy@statusclock.com" className="text-blue-600 hover:underline">privacy@statusclock.com</a>.
             We will respond within 30 days. We may need to verify your identity before processing the request.
           </p>
         </Section>
@@ -263,7 +263,7 @@ export default function PrivacyPage() {
 
         <Section title="11. International Data Transfers">
           <p>
-            VisaPilot is operated from the United States. If you access the Service from outside the U.S.,
+            StatusClock is operated from the United States. If you access the Service from outside the U.S.,
             your data will be transferred to and processed in the U.S. For users in the EEA, UK, or
             Switzerland, such transfers are made under Standard Contractual Clauses or other appropriate
             safeguards.
@@ -272,7 +272,7 @@ export default function PrivacyPage() {
 
         <Section title="12. Children's Privacy">
           <p>
-            VisaPilot is intended for users 13 and older. We do not knowingly collect personal data from
+            StatusClock is intended for users 13 and older. We do not knowingly collect personal data from
             children under 13. If you believe a child under 13 has created an account, please contact us
             and we will delete the account and associated data promptly.
           </p>
@@ -282,7 +282,7 @@ export default function PrivacyPage() {
           <p>
             We may update this Privacy Policy periodically. When we do, we will update the &quot;Last updated&quot;
             date at the top. For material changes, we will notify you by email or by posting a prominent
-            notice on the site at least 14 days before changes take effect. Continued use of VisaPilot
+            notice on the site at least 14 days before changes take effect. Continued use of StatusClock
             after the effective date constitutes acceptance of the updated policy.
           </p>
         </Section>
@@ -290,9 +290,9 @@ export default function PrivacyPage() {
         <Section title="14. Contact Us">
           <p>For privacy-related questions, requests, or complaints:</p>
           <div className="bg-slate-50 rounded-lg p-5 text-sm space-y-1">
-            <p><strong className="text-slate-800">VisaPilot — Privacy Team</strong></p>
-            <p>Email: <a href="mailto:privacy@visapilot.app" className="text-blue-600 hover:underline">privacy@visapilot.app</a></p>
-            <p>General support: <a href="mailto:support@visapilot.app" className="text-blue-600 hover:underline">support@visapilot.app</a></p>
+            <p><strong className="text-slate-800">StatusClock — Privacy Team</strong></p>
+            <p>Email: <a href="mailto:privacy@statusclock.com" className="text-blue-600 hover:underline">privacy@statusclock.com</a></p>
+            <p>General support: <a href="mailto:support@statusclock.com" className="text-blue-600 hover:underline">support@statusclock.com</a></p>
           </div>
           <p className="text-sm text-slate-500">
             If you are in the EEA and are not satisfied with our response, you have the right to lodge

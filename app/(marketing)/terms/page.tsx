@@ -1,8 +1,8 @@
 import Link from "next/link";
 
 export const metadata = {
-  title: "Terms of Service | VisaPilot",
-  description: "Terms and conditions for using VisaPilot.",
+  title: "Terms of Service",
+  description: "Terms and conditions for using StatusClock.",
 };
 
 const Section = ({ title, children }: { title: string; children: React.ReactNode }) => (
@@ -29,16 +29,16 @@ export default function TermsPage() {
 
         {/* Intro callout */}
         <div className="bg-amber-50 border border-amber-100 rounded-xl p-5 mb-12 text-sm text-amber-800 leading-6">
-          <strong>Important:</strong> VisaPilot is an information platform, not a law firm. Nothing here
+          <strong>Important:</strong> StatusClock is an information platform, not a law firm. Nothing here
           is legal advice. Always consult a licensed immigration attorney for decisions specific to
           your case.
         </div>
 
         <Section title="1. Acceptance of Terms">
           <p>
-            These Terms of Service (&quot;Terms&quot;) govern your access to and use of VisaPilot, including
-            visapilot.app and any related mobile applications, APIs, or services (collectively, the &quot;Service&quot;),
-            operated by VisaPilot (&quot;we,&quot; &quot;us,&quot; or &quot;our&quot;).
+            These Terms of Service (&quot;Terms&quot;) govern your access to and use of StatusClock, including
+            statusclock.com and any related mobile applications, APIs, or services (collectively, the &quot;Service&quot;),
+            operated by StatusClock (&quot;we,&quot; &quot;us,&quot; or &quot;our&quot;).
           </p>
           <p>
             By creating an account, accessing, or using the Service, you confirm that you have read,
@@ -55,7 +55,7 @@ export default function TermsPage() {
 
         <Section title="2. Not Legal Advice — Important Disclaimer">
           <div className="bg-red-50 border border-red-100 rounded-lg p-4">
-            <p className="font-semibold text-red-800 mb-2">VisaPilot does not provide legal advice.</p>
+            <p className="font-semibold text-red-800 mb-2">StatusClock does not provide legal advice.</p>
             <p className="text-red-700 text-sm leading-6">
               All content, checklists, AI responses, guides, timelines, and tools on this platform are
               provided for general informational and educational purposes only. They do not constitute
@@ -65,20 +65,20 @@ export default function TermsPage() {
           </div>
           <p>
             Immigration law is complex, highly fact-specific, and subject to frequent regulatory change.
-            Information on VisaPilot may be incomplete, outdated, or not applicable to your individual
+            Information on StatusClock may be incomplete, outdated, or not applicable to your individual
             circumstances. <strong className="text-slate-800">Always consult a licensed U.S. immigration
             attorney or accredited representative</strong> before making immigration decisions, filing
             applications, or responding to government requests.
           </p>
           <p>
-            VisaPilot is not responsible or liable for any immigration outcome, USCIS decision, denial,
+            StatusClock is not responsible or liable for any immigration outcome, USCIS decision, denial,
             deportation, or other legal consequence resulting from use of or reliance on the Service.
           </p>
         </Section>
 
         <Section title="3. Eligibility">
           <p>
-            You must be at least 13 years old to use VisaPilot. If you are between 13 and 18, you
+            You must be at least 13 years old to use StatusClock. If you are between 13 and 18, you
             represent that your parent or legal guardian has reviewed and agreed to these Terms on your behalf.
           </p>
           <p>
@@ -101,7 +101,7 @@ export default function TermsPage() {
           <p>
             You are responsible for maintaining the confidentiality of your login credentials. Do not
             share your password with others. Notify us immediately at{" "}
-            <a href="mailto:support@visapilot.app" className="text-blue-600 hover:underline">support@visapilot.app</a>{" "}
+            <a href="mailto:support@statusclock.com" className="text-blue-600 hover:underline">support@statusclock.com</a>{" "}
             if you suspect unauthorized access to your account.
           </p>
 
@@ -115,7 +115,7 @@ export default function TermsPage() {
         </Section>
 
         <Section title="5. Acceptable Use">
-          <p>You agree to use VisaPilot only for lawful purposes and in accordance with these Terms. You agree not to:</p>
+          <p>You agree to use StatusClock only for lawful purposes and in accordance with these Terms. You agree not to:</p>
           <ul className="list-disc pl-5 space-y-2">
             <li>Use the Service to create, submit, or file fraudulent immigration documents or misrepresent facts to USCIS, DOL, DOS, or any government agency</li>
             <li>Use the AI Assistant to generate or assist with fraudulent visa applications, fake employment verification letters, or any other deceptive government filings</li>
@@ -151,7 +151,7 @@ export default function TermsPage() {
         <Section title="7. Subscriptions and Payments">
           <h3 className="font-semibold text-slate-800">7.1 Free and Paid Features</h3>
           <p>
-            Some features of VisaPilot are free to use without an account (e.g., checklists, basic guides).
+            Some features of StatusClock are free to use without an account (e.g., checklists, basic guides).
             Certain premium features require a paid subscription or one-time purchase.
           </p>
 
@@ -167,7 +167,7 @@ export default function TermsPage() {
             All purchases are final and non-refundable unless required by applicable law or unless
             we determine at our sole discretion that a refund is warranted. If you believe you were
             charged in error, contact us within 14 days at{" "}
-            <a href="mailto:support@visapilot.app" className="text-blue-600 hover:underline">support@visapilot.app</a>.
+            <a href="mailto:support@statusclock.com" className="text-blue-600 hover:underline">support@statusclock.com</a>.
           </p>
 
           <h3 className="font-semibold text-slate-800 mt-4">7.4 Price Changes</h3>
@@ -186,7 +186,7 @@ export default function TermsPage() {
         <Section title="8. Intellectual Property">
           <h3 className="font-semibold text-slate-800">8.1 Our Content</h3>
           <p>
-            All content, branding, code, designs, checklists, guides, and other materials on VisaPilot
+            All content, branding, code, designs, checklists, guides, and other materials on StatusClock
             are owned by or licensed to us and are protected by copyright, trademark, and other laws.
             You may not copy, reproduce, modify, distribute, or create derivative works without our
             prior written consent.
@@ -212,7 +212,7 @@ export default function TermsPage() {
 
         <Section title="9. Third-Party Links and Services">
           <p>
-            VisaPilot may link to third-party websites, government portals (e.g., uscis.gov, dol.gov),
+            StatusClock may link to third-party websites, government portals (e.g., uscis.gov, dol.gov),
             or resources. These links are provided for convenience only. We do not endorse, control,
             or take responsibility for the content or practices of any third-party site. Accessing
             third-party sites is at your own risk.
@@ -236,7 +236,7 @@ export default function TermsPage() {
 
         <Section title="11. Limitation of Liability">
           <p>
-            TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, VISAPILOT AND ITS OFFICERS, DIRECTORS,
+            TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, STATUSCLOCK AND ITS OFFICERS, DIRECTORS,
             EMPLOYEES, AND AGENTS SHALL NOT BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL,
             CONSEQUENTIAL, OR PUNITIVE DAMAGES ARISING FROM:
           </p>
@@ -258,7 +258,7 @@ export default function TermsPage() {
 
         <Section title="12. Indemnification">
           <p>
-            You agree to defend, indemnify, and hold harmless VisaPilot and its officers, directors,
+            You agree to defend, indemnify, and hold harmless StatusClock and its officers, directors,
             employees, contractors, and agents from and against any claims, damages, losses, liabilities,
             costs, and expenses (including reasonable legal fees) arising from:
           </p>
@@ -274,7 +274,7 @@ export default function TermsPage() {
           <h3 className="font-semibold text-slate-800">13.1 Informal Resolution</h3>
           <p>
             Before initiating any formal dispute, you agree to first contact us at{" "}
-            <a href="mailto:support@visapilot.app" className="text-blue-600 hover:underline">support@visapilot.app</a>{" "}
+            <a href="mailto:support@statusclock.com" className="text-blue-600 hover:underline">support@statusclock.com</a>{" "}
             and give us 30 days to attempt to resolve the issue informally.
           </p>
 
@@ -294,7 +294,7 @@ export default function TermsPage() {
 
         <Section title="14. General Provisions">
           <ul className="list-disc pl-5 space-y-2">
-            <li><strong className="text-slate-800">Entire Agreement:</strong> These Terms and the Privacy Policy constitute the entire agreement between you and VisaPilot regarding the Service.</li>
+            <li><strong className="text-slate-800">Entire Agreement:</strong> These Terms and the Privacy Policy constitute the entire agreement between you and StatusClock regarding the Service.</li>
             <li><strong className="text-slate-800">Severability:</strong> If any provision is found unenforceable, the remaining provisions remain in full effect.</li>
             <li><strong className="text-slate-800">Waiver:</strong> Our failure to enforce any provision is not a waiver of our right to enforce it in the future.</li>
             <li><strong className="text-slate-800">Assignment:</strong> You may not assign your rights under these Terms. We may assign our rights to a successor or acquirer.</li>
@@ -305,9 +305,9 @@ export default function TermsPage() {
         <Section title="15. Contact Us">
           <p>For questions about these Terms:</p>
           <div className="bg-slate-50 rounded-lg p-5 text-sm space-y-1">
-            <p><strong className="text-slate-800">VisaPilot — Legal Team</strong></p>
-            <p>Email: <a href="mailto:support@visapilot.app" className="text-blue-600 hover:underline">support@visapilot.app</a></p>
-            <p>Privacy inquiries: <a href="mailto:privacy@visapilot.app" className="text-blue-600 hover:underline">privacy@visapilot.app</a></p>
+            <p><strong className="text-slate-800">StatusClock — Legal Team</strong></p>
+            <p>Email: <a href="mailto:support@statusclock.com" className="text-blue-600 hover:underline">support@statusclock.com</a></p>
+            <p>Privacy inquiries: <a href="mailto:privacy@statusclock.com" className="text-blue-600 hover:underline">privacy@statusclock.com</a></p>
           </div>
         </Section>
 

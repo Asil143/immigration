@@ -144,7 +144,7 @@ const faqs = [
   },
   {
     q: "Do you take a cut from attorney fees?",
-    a: "Yes — if you hire through VisaPilot, we charge a 12% platform fee, which is already built into the prices attorneys list. No surprise costs to you.",
+    a: "Yes — if you hire through StatusClock, we charge a 12% platform fee, which is already built into the prices attorneys list. No surprise costs to you.",
   },
   {
     q: "Is my data private?",

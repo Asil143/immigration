@@ -57,22 +57,22 @@ export default function ContactPage() {
             <div>
               <h2 className="font-semibold text-slate-900 mb-5">Other ways to reach us</h2>
               <div className="space-y-4">
-                <a href="mailto:support@visapilot.app" className="flex items-start gap-3 group">
+                <a href="mailto:support@statusclock.com" className="flex items-start gap-3 group">
                   <div className="h-9 w-9 rounded-lg bg-blue-50 flex items-center justify-center flex-shrink-0 group-hover:bg-blue-100 transition-colors">
                     <Mail className="h-4 w-4 text-blue-600" />
                   </div>
                   <div>
                     <p className="text-sm font-medium text-slate-800">General support</p>
-                    <p className="text-sm text-blue-600 hover:underline">support@visapilot.app</p>
+                    <p className="text-sm text-blue-600 hover:underline">support@statusclock.com</p>
                   </div>
                 </a>
-                <a href="mailto:privacy@visapilot.app" className="flex items-start gap-3 group">
+                <a href="mailto:privacy@statusclock.com" className="flex items-start gap-3 group">
                   <div className="h-9 w-9 rounded-lg bg-blue-50 flex items-center justify-center flex-shrink-0 group-hover:bg-blue-100 transition-colors">
                     <Mail className="h-4 w-4 text-blue-600" />
                   </div>
                   <div>
                     <p className="text-sm font-medium text-slate-800">Privacy inquiries</p>
-                    <p className="text-sm text-blue-600 hover:underline">privacy@visapilot.app</p>
+                    <p className="text-sm text-blue-600 hover:underline">privacy@statusclock.com</p>
                   </div>
                 </a>
               </div>
@@ -194,7 +194,7 @@ export default function ContactPage() {
                 {status === "error" && (
                   <div className="flex items-center gap-2 text-sm text-red-600 bg-red-50 border border-red-100 rounded-lg px-4 py-3">
                     <AlertCircle className="h-4 w-4 flex-shrink-0" />
-                    Something went wrong. Please try emailing us directly at support@visapilot.app.
+                    Something went wrong. Please try emailing us directly at support@statusclock.com.
                   </div>
                 )}
 

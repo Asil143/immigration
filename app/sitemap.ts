@@ -1,6 +1,6 @@
 import { MetadataRoute } from "next";
 
-const BASE_URL = "https://visapilot.app";
+const BASE_URL = "https://statusclock.com";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();

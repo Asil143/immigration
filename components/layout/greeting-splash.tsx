@@ -11,7 +11,7 @@ const GREETINGS = [
   { text: "నమస్కారం", lang: "తెలుగు", from: "#047857", via: "#0ea5e9", to: "#4f46e5" },
 ];
 
-const STORAGE_KEY = "visapilot_greeted";
+const STORAGE_KEY = "statusclock_greeted";
 const STEP_MS = 850;
 
 export function GreetingSplash() {
@@ -143,7 +143,7 @@ export function GreetingSplash() {
           <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-white text-[#1d4ed8]">
             <Bot className="h-4 w-4" />
           </div>
-          <span className="text-sm font-bold tracking-wide text-white/90">VisaPilot</span>
+          <span className="text-sm font-bold tracking-wide text-white/90">StatusClock</span>
         </motion.div>
 
         {/* Progress indicator */}

@@ -40,7 +40,7 @@ export async function POST(req: NextRequest) {
     await resend.emails.send({
       from: process.env.RESEND_FROM_EMAIL || "onboarding@resend.dev",
       to: "kamepalliasil143@gmail.com",
-      subject: `[VisaPilot] New Payment — ${planName} ($${amount})`,
+      subject: `[StatusClock] New Payment — ${planName} ($${amount})`,
       text: [
         `New payment submission received!`,
         ``,
@@ -50,7 +50,7 @@ export async function POST(req: NextRequest) {
         `Note: ${txNote || "none"}`,
         `Screenshot: ${screenshotUrl ?? "(see attachment)"}`,
         ``,
-        `Activate at: https://visapilot-one.vercel.app/admin/payments`,
+        `Activate at: https://statusclock-one.vercel.app/admin/payments`,
       ].join("\n"),
       // Attach screenshot directly in case storage upload failed
       ...(screenshot?.content && !screenshotUrl && {
