@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { formatDateShort } from "@/lib/utils/date";
 import {
   User, Calendar, FileSearch, TrendingUp, Save, Plus, Trash2,
   CheckCircle2, AlertCircle, Clock, ShieldCheck, ChevronRight, Loader2,
@@ -992,7 +993,7 @@ export default function ProfilePage() {
                           {alert.days}d
                         </span>
                       </div>
-                      <p className="text-[10px] mt-0.5" style={{ color: style.text + "cc" }}>{style.label} — {new Date(alert.date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</p>
+                      <p className="text-[10px] mt-0.5" style={{ color: style.text + "cc" }}>{style.label} — {formatDateShort(alert.date)}</p>
                     </div>
                   );
                 })}

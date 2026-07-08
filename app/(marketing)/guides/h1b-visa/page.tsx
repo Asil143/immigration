@@ -3,50 +3,12 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { CheckCircle2, ArrowRight, Bot, AlertCircle, ExternalLink } from "lucide-react";
+import { H1B_STEPS as STEPS, H1B_FAQ as FAQ } from "@/config/guides";
 
 export const metadata = {
   title: "H-1B Visa Guide",
   description: "Complete H-1B specialty occupation visa guide — lottery, petition, extensions, and transfers.",
 };
-
-const STEPS = [
-  {
-    title: "Employer Files Labor Condition Application (LCA)",
-    description: "Your employer must file an LCA with the Department of Labor (DOL) before filing the H-1B petition.",
-    items: ["Employer posts LCA notice at worksite for 10 business days","DOL certifies LCA (usually 7 days)","LCA covers job title, wage, location, and period of employment","Wage must be prevailing wage or actual wage, whichever is higher"],
-    link: "https://flag.dol.gov/",
-  },
-  {
-    title: "H-1B Cap Registration (March each year)",
-    description: "For cap-subject H-1Bs, employers must register online before the full petition is filed. USCIS conducts a lottery if registrations exceed the cap.",
-    items: ["Registration window: typically March 1–18","Registration fee: $215 per beneficiary","Wait for lottery selection notice","Only selected registrants can file full petition"],
-    link: "https://www.uscis.gov/h1b",
-  },
-  {
-    title: "File Form I-129 (Petition for Nonimmigrant Worker)",
-    description: "If selected in the lottery, your employer files the full H-1B petition.",
-    items: ["File I-129 with all required evidence","Include specialty occupation evidence, degree evaluation if foreign","Pay filing fees ($730 base + ACWIA + fraud prevention fees)","Optional: Premium Processing ($2,805) for 15-business-day decision"],
-    link: "https://www.uscis.gov/i-129",
-  },
-  {
-    title: "H-1B Approval and Start Date",
-    description: "Cap-subject H-1B start date is October 1 of the fiscal year. Cap-exempt employers can start anytime.",
-    items: ["Receive I-797 Approval Notice","Start date: October 1 (cap-subject)","Initial period: 3 years (up to 6 years total)","Cap-gap protects F-1 OPT students during transition"],
-  },
-  {
-    title: "Extensions and Portability",
-    description: "H-1B can be extended beyond 6 years if a green card process is started.",
-    items: ["File I-129 extension 6 months before expiry","If I-140 approved for 365+ days: eligible for 3-year extensions","H-1B portability: can change employers if new employer files transfer petition","AC21 portability: port green card to same or similar job after 180+ days"],
-  },
-];
-
-const FAQ = [
-  { q: "What is the H-1B annual cap?", a: "65,000 visas per year, plus 20,000 additional for US master's degree holders. Some employers (universities, nonprofits, government research) are cap-exempt." },
-  { q: "Can I work for multiple H-1B employers?", a: "Yes — you can work for multiple H-1B employers concurrently. Each employer must file a separate H-1B petition. You cannot work for an employer who has not filed on your behalf." },
-  { q: "What is cap-gap?", a: "If you're on OPT and your H-1B is approved for October 1, cap-gap automatically extends your OPT and F-1 status from the OPT expiry date through September 30 (or until H-1B starts)." },
-  { q: "Can I travel while my H-1B extension is pending?", a: "You can travel if your current H-1B is still valid. If it expires while you're abroad, you need a valid H-1B visa stamp to re-enter. Consult an attorney before traveling with a pending extension." },
-  { q: "What happens if I'm laid off on H-1B?", a: "You have a grace period of 60 days (or until your H-1B end date, whichever is shorter) to find a new employer who will file an H-1B transfer, change to another status, or depart the US." },
-];
 
 export default function H1BGuidePage() {
   return (

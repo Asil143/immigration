@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Bot, Send, User, Loader2, Plus, Sparkles, MessageSquare, Trash2, ChevronLeft, ChevronRight } from "lucide-react";
 import type { ChatMessage } from "@/types";
+import { formatDateShortNoYear } from "@/lib/utils/date";
 
 // ── Visa-type-specific suggested questions ────────────────────────────────────
 const QUESTIONS_BY_VISA: Record<string, string[]> = {
@@ -320,7 +321,7 @@ export default function AIAssistantPage() {
     if (diffDays === 0) return "Today";
     if (diffDays === 1) return "Yesterday";
     if (diffDays < 7) return `${diffDays}d ago`;
-    return d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+    return formatDateShortNoYear(d);
   };
 
   return (

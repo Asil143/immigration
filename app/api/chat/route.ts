@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { SYSTEM_PROMPT } from "@/lib/claude/client";
 import { createAdminClient } from "@/lib/supabase/server";
+import { formatDateLong } from "@/lib/utils/date";
 
 async function buildUserContext(userId: string): Promise<string> {
   const supabase = createAdminClient();
@@ -22,7 +23,7 @@ async function buildUserContext(userId: string): Promise<string> {
   if (!profile) return "";
 
   const lines: string[] = ["=== USER PROFILE CONTEXT ==="];
-  const fmt = (d: string | null) => d ? new Date(d).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" }) : null;
+  const fmt = (d: string | null) => d ? formatDateLong(d) : null;
   const daysUntil = (d: string | null) => d ? Math.ceil((new Date(d).getTime() - Date.now()) / 86400000) : null;
   const daysLabel = (d: string | null) => {
     const n = daysUntil(d);

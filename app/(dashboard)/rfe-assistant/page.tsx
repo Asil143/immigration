@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
+import { formatDateLong } from "@/lib/utils/date";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import {
@@ -192,7 +193,7 @@ async function generatePDF(
 // ─── Cover letter builder ─────────────────────────────────────────────────────
 function buildCoverLetter(analysis: RFEAnalysis, receiptNumber: string, profile: Profile | null): string {
   const sc = getServiceCenter(receiptNumber);
-  const today = new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
+  const today = formatDateLong(new Date());
   const beneficiary = profile?.full_name || "[Beneficiary Name]";
   const employer = profile?.employer || "[Employer / Petitioner Name]";
 

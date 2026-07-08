@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { useUser } from "@clerk/nextjs";
 import { GuestPreviewBanner } from "@/components/ui/guest-preview-banner";
+import { formatDateLong, formatDateShort } from "@/lib/utils/date";
 
 function daysUntil(dateStr: string) {
   if (!dateStr) return null;
@@ -283,7 +284,7 @@ export default function DashboardPage() {
                         </Badge>
                       </div>
                       <p className="text-xs mt-0.5" style={{ color: "#64748b" }}>
-                        {new Date(alert.date).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}
+                        {formatDateLong(alert.date)}
                       </p>
                       <Link href={alert.actionHref} className="text-xs font-medium mt-1 inline-flex items-center gap-1" style={{ color: "#2563eb" }}>
                         {alert.action} <ArrowRight className="h-3 w-3" />
@@ -366,7 +367,7 @@ export default function DashboardPage() {
                           </div>
                           <p className="text-[11px] text-slate-500 mt-0.5">{dl.label}</p>
                           <p className="text-[10px] font-medium text-slate-400 mt-0.5">
-                            {new Date(dl.date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+                            {formatDateShort(dl.date)}
                           </p>
                         </div>
                       </div>

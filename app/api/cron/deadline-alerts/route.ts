@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/server";
 import { sendDeadlineReminder } from "@/lib/resend/client";
+import { formatDateLong } from "@/lib/utils/date";
 
 // Vercel Cron calls this with a CRON_SECRET header for security
 export async function GET(req: NextRequest) {
@@ -69,7 +70,7 @@ export async function GET(req: NextRequest) {
             to: profile.email,
             name: firstName,
             deadlineTitle: check.label,
-            dueDate: dueDate.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }),
+            dueDate: formatDateLong(dueDate),
             daysUntil,
           });
           sent++;
@@ -95,7 +96,7 @@ export async function GET(req: NextRequest) {
             to: profile.email,
             name: firstName,
             deadlineTitle: w.label,
-            dueDate: startDate.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }),
+            dueDate: formatDateLong(startDate),
             daysUntil: w.windowDays,
           });
           sent++;

@@ -5,6 +5,7 @@ import { useUser, SignInButton } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { GuestPreviewBanner } from "@/components/ui/guest-preview-banner";
+import { formatDateShort } from "@/lib/utils/date";
 import {
   Upload, FileText, Trash2, Eye, Loader2, CheckCircle2,
   ChevronDown, ChevronRight, Shield, X,
@@ -396,7 +397,7 @@ export default function DocumentsPage() {
                     <span className="text-xs text-slate-400">{formatSize(doc.file_size)}</span>
                   </div>
                   <p className="text-[10px] text-slate-400 mt-2">
-                    {new Date(doc.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+                    {formatDateShort(doc.created_at)}
                   </p>
 
                   {doc.signed_url && (

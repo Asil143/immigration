@@ -3,68 +3,12 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { CheckCircle2, ArrowRight, Bot, AlertCircle, ExternalLink } from "lucide-react";
+import { GREEN_CARD_EB_CATEGORIES as EB_CATEGORIES, GREEN_CARD_PROCESS_STEPS as PROCESS_STEPS } from "@/config/guides";
 
 export const metadata = {
   title: "Green Card Guide",
   description: "Employment-based green card guide — EB-1, EB-2, EB-3, and NIW pathways explained.",
 };
-
-const EB_CATEGORIES = [
-  {
-    category: "EB-1A",
-    title: "Extraordinary Ability",
-    description: "For individuals with extraordinary ability in sciences, arts, education, business, or athletics. No employer sponsor required.",
-    requirements: ["National or international awards/recognition","Published work with significant citations","Judging others' work in your field","High salary compared to peers","Memberships in prestigious associations"],
-    timeline: "12–24 months",
-    color: "bg-yellow-50 border-yellow-200 text-yellow-900",
-    badge: "bg-yellow-100 text-yellow-700",
-  },
-  {
-    category: "EB-1B",
-    title: "Outstanding Researchers & Professors",
-    description: "For researchers/professors with international recognition in a specific academic area. Requires employer sponsorship.",
-    requirements: ["At least 3 years research/teaching experience","Major prizes or awards","Membership in associations requiring outstanding achievement","Published material about your work","Participation as judge of others' work"],
-    timeline: "12–18 months",
-    color: "bg-blue-50 border-blue-200 text-blue-900",
-    badge: "bg-blue-100 text-blue-700",
-  },
-  {
-    category: "EB-2 NIW",
-    title: "National Interest Waiver",
-    description: "Waives the job offer and PERM requirements for individuals whose work is in the national interest of the US. Self-petition.",
-    requirements: ["Substantial merit and national importance of work","Well-positioned to advance the endeavor","Beneficial to waive job offer and PERM requirements","Strong evidence: papers, citations, media, letters of support"],
-    timeline: "12–30 months",
-    color: "bg-emerald-50 border-emerald-200 text-emerald-900",
-    badge: "bg-emerald-100 text-emerald-700",
-  },
-  {
-    category: "EB-2",
-    title: "Advanced Degree Professionals",
-    description: "For professionals with advanced degrees (master's+) or equivalent. Requires employer sponsorship and PERM labor certification.",
-    requirements: ["Advanced degree (master's or bachelor's + 5 years exp)","Employer files PERM labor certification","I-140 petition","Priority date must be current for your country"],
-    timeline: "3–10+ years (country dependent)",
-    color: "bg-indigo-50 border-indigo-200 text-indigo-900",
-    badge: "bg-indigo-100 text-indigo-700",
-  },
-  {
-    category: "EB-3",
-    title: "Skilled Workers",
-    description: "For skilled workers (2+ years training), professionals, and unskilled workers. Requires employer sponsorship and PERM.",
-    requirements: ["Skilled: 2+ years training/experience required","Professional: US bachelor's degree or equivalent","Permanent full-time job offer from US employer","PERM labor certification filed by employer"],
-    timeline: "3–10+ years (country dependent)",
-    color: "bg-orange-50 border-orange-200 text-orange-900",
-    badge: "bg-orange-100 text-orange-700",
-  },
-];
-
-const PROCESS_STEPS = [
-  { title: "PERM Labor Certification (EB-2/EB-3 only)", desc: "Employer proves no qualified US workers are available for the position. Takes 8–18 months." },
-  { title: "File I-140 (Immigrant Petition)", desc: "USCIS approves your immigrant classification. Establishes your Priority Date." },
-  { title: "Wait for Priority Date to Become Current", desc: "Check monthly Visa Bulletin. India and China have multi-year backlogs for EB-2/EB-3." },
-  { title: "Adjustment of Status (I-485) or Consular Processing", desc: "If in the US, file I-485. If abroad, go through National Visa Center and US Embassy." },
-  { title: "Biometrics, Medical Exam, and Interview", desc: "USCIS may require an interview. Medical exam from a USCIS civil surgeon required." },
-  { title: "Receive Green Card", desc: "Conditional (2-year) or permanent (10-year) green card issued. Renewable." },
-];
 
 export default function GreenCardGuidePage() {
   return (
