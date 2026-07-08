@@ -2,12 +2,13 @@ import Link from "next/link";
 import { Bot } from "lucide-react";
 
 const guides = [
-  { href: "/guides/f1-visa",         label: "F-1 Student Visa"    },
-  { href: "/guides/opt-stem-opt",    label: "OPT & STEM OPT"      },
-  { href: "/guides/h1b-visa",        label: "H-1B Work Visa"       },
-  { href: "/guides/green-card",      label: "Green Card"           },
-  { href: "/guides/j1-visa",         label: "J-1 Exchange Visa"    },
-  { href: "/guides/travel-advisory", label: "Travel Advisory"      },
+  { href: "/guides/f1-visa",           label: "F-1 Student Visa"     },
+  { href: "/guides/opt-stem-opt",      label: "OPT & STEM OPT"       },
+  { href: "/guides/h1b-visa",          label: "H-1B Work Visa"       },
+  { href: "/guides/green-card",        label: "Green Card — Employment" },
+  { href: "/guides/family-green-card", label: "Green Card — Family"  },
+  { href: "/guides/j1-visa",           label: "J-1 Exchange Visa"    },
+  { href: "/guides/travel-advisory",   label: "Travel Advisory"      },
 ];
 
 const tools = [

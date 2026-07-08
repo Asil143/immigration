@@ -50,10 +50,11 @@ export const settingsNav: NavItem[] = [
 ];
 
 export const visaGuides = [
-  { slug: "f1-visa",         title: "F-1 Student Visa",    subtitle: "Entry, maintenance, and status rules",      icon: "🎓", color: "bg-blue-50 text-blue-700"    },
-  { slug: "opt-stem-opt",    title: "OPT & STEM OPT",      subtitle: "Work authorization after graduation",       icon: "💼", color: "bg-purple-50 text-purple-700" },
-  { slug: "h1b-visa",        title: "H-1B Work Visa",       subtitle: "Specialty occupation visa guide",           icon: "🏢", color: "bg-green-50 text-green-700"   },
-  { slug: "green-card",      title: "Green Card",           subtitle: "Employment & family-based paths",           icon: "🌿", color: "bg-emerald-50 text-emerald-700"},
-  { slug: "j1-visa",         title: "J-1 Exchange Visitor", subtitle: "Exchange programs & two-year bar",         icon: "🌍", color: "bg-orange-50 text-orange-700" },
-  { slug: "travel-advisory", title: "Travel Advisory",      subtitle: "Safe travel on a visa & re-entry rules",   icon: "✈️", color: "bg-sky-50 text-sky-700"       },
+  { slug: "f1-visa",           title: "F-1 Student Visa",       subtitle: "Entry, maintenance, and status rules",      icon: "🎓", color: "bg-blue-50 text-blue-700"     },
+  { slug: "opt-stem-opt",      title: "OPT & STEM OPT",         subtitle: "Work authorization after graduation",       icon: "💼", color: "bg-purple-50 text-purple-700"  },
+  { slug: "h1b-visa",          title: "H-1B Work Visa",          subtitle: "Specialty occupation visa guide",           icon: "🏢", color: "bg-green-50 text-green-700"    },
+  { slug: "green-card",        title: "Green Card — Employment", subtitle: "EB-1, EB-2 NIW, EB-2, and EB-3 paths",      icon: "🌿", color: "bg-emerald-50 text-emerald-700" },
+  { slug: "family-green-card", title: "Green Card — Family",     subtitle: "Petitioning for a spouse, child, or relative", icon: "💗", color: "bg-rose-50 text-rose-700"   },
+  { slug: "j1-visa",           title: "J-1 Exchange Visitor",    subtitle: "Exchange programs & two-year bar",         icon: "🌍", color: "bg-orange-50 text-orange-700"  },
+  { slug: "travel-advisory",   title: "Travel Advisory",         subtitle: "Safe travel on a visa & re-entry rules",   icon: "✈️", color: "bg-sky-50 text-sky-700"        },
 ] as const;

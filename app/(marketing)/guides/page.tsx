@@ -44,6 +44,8 @@ export default function GuidesPage() {
                       ? "Exchange Visitor"
                       : guide.slug === "travel-advisory"
                       ? "Travel & Re-entry"
+                      : guide.slug === "family-green-card"
+                      ? "For Petitioners"
                       : "Permanent Residency"}
                   </Badge>
                   <h2 className="font-bold text-lg">{guide.title}</h2>
