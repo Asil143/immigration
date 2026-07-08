@@ -28,7 +28,18 @@ export async function GET() {
     .order("created_at", { ascending: false });
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
-  return NextResponse.json(data ?? []);
+
+  // screenshot_url stores a private-bucket storage path, not a public URL —
+  // sign a short-lived viewing link for each row on read.
+  const withSignedUrls = await Promise.all((data ?? []).map(async (sub) => {
+    if (!sub.screenshot_url) return sub;
+    const { data: urlData } = await supabase.storage
+      .from("payment-screenshots")
+      .createSignedUrl(sub.screenshot_url, 3600);
+    return { ...sub, screenshot_url: urlData?.signedUrl ?? null };
+  }));
+
+  return NextResponse.json(withSignedUrls);
 }
 
 export async function PATCH(req: NextRequest) {

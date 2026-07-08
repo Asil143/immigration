@@ -1,6 +1,7 @@
 import { auth } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
+import { getUserPlan } from "@/lib/supabase/subscription";
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! });
 
@@ -32,6 +33,14 @@ export async function POST(req: NextRequest) {
   const { userId } = await auth();
   if (!userId) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const plan = await getUserPlan(userId);
+  if (plan === "free") {
+    return NextResponse.json(
+      { error: "The RFE Analyzer requires an active plan. Upgrade at /pricing to unlock it." },
+      { status: 403 }
+    );
   }
 
   const { rfeText } = await req.json();

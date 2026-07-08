@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { SYSTEM_PROMPT } from "@/lib/claude/client";
 import { createAdminClient } from "@/lib/supabase/server";
+import { checkAndConsumeAIQuota } from "@/lib/supabase/subscription";
 import { formatDateLong } from "@/lib/utils/date";
 
 async function buildUserContext(userId: string): Promise<string> {
@@ -119,6 +120,11 @@ export async function POST(req: NextRequest) {
   const { userId } = await auth();
   if (!userId) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const quotaError = await checkAndConsumeAIQuota(userId);
+  if (quotaError) {
+    return NextResponse.json({ error: quotaError }, { status: 429 });
   }
 
   const { messages } = await req.json();

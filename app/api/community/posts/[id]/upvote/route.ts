@@ -9,6 +9,19 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
   const { id } = await params;
   const supabase = createAdminClient();
 
+  // Recording the vote first — the primary key (post_id, clerk_id) rejects
+  // a second vote from the same user with a unique-violation (23505).
+  const { error: voteError } = await supabase
+    .from("community_post_upvotes")
+    .insert({ post_id: id, clerk_id: userId });
+
+  if (voteError) {
+    if (voteError.code === "23505") {
+      return NextResponse.json({ error: "You already upvoted this post" }, { status: 409 });
+    }
+    return NextResponse.json({ error: voteError.message }, { status: 500 });
+  }
+
   const { data: post, error: fetchErr } = await supabase
     .from("community_posts")
     .select("upvotes")

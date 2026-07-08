@@ -15,9 +15,12 @@ export async function POST(req: NextRequest) {
   }
 
   const supabase = createAdminClient();
-  let screenshotUrl: string | null = null;
+  let screenshotPath: string | null = null;
+  let screenshotSignedUrl: string | null = null;
 
-  // Try to upload screenshot to Supabase Storage (best-effort)
+  // Try to upload screenshot to Supabase Storage (best-effort). The bucket
+  // is private, so we store the path and only ever hand out short-lived
+  // signed URLs rather than a permanent public link.
   if (screenshot?.content && screenshot?.filename) {
     try {
       const buffer = Buffer.from(screenshot.content, "base64");
@@ -27,8 +30,11 @@ export async function POST(req: NextRequest) {
         .from("payment-screenshots")
         .upload(path, buffer, { contentType: `image/${ext}`, upsert: false });
       if (!uploadError) {
-        const { data } = supabase.storage.from("payment-screenshots").getPublicUrl(path);
-        screenshotUrl = data.publicUrl;
+        screenshotPath = path;
+        const { data } = await supabase.storage
+          .from("payment-screenshots")
+          .createSignedUrl(path, 7 * 24 * 60 * 60); // 7 days — plenty of time to check email
+        screenshotSignedUrl = data?.signedUrl ?? null;
       }
     } catch (e) {
       console.error("[screenshot-upload]", e);
@@ -48,12 +54,12 @@ export async function POST(req: NextRequest) {
         `Amount: $${amount}`,
         `Customer: ${email}`,
         `Note: ${txNote || "none"}`,
-        `Screenshot: ${screenshotUrl ?? "(see attachment)"}`,
+        `Screenshot: ${screenshotSignedUrl ?? "(see attachment)"}`,
         ``,
-        `Activate at: https://statusclock-one.vercel.app/admin/payments`,
+        `Activate at: https://statusclock.com/admin/payments`,
       ].join("\n"),
       // Attach screenshot directly in case storage upload failed
-      ...(screenshot?.content && !screenshotUrl && {
+      ...(screenshot?.content && !screenshotSignedUrl && {
         attachments: [{ filename: screenshot.filename || "payment.png", content: screenshot.content }],
       }),
     });
@@ -72,7 +78,7 @@ export async function POST(req: NextRequest) {
         plan_name: planName,
         amount,
         tx_note: txNote || null,
-        screenshot_url: screenshotUrl,
+        screenshot_url: screenshotPath,
         status: "pending",
       });
   } catch (e) {

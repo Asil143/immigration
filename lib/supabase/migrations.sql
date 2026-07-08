@@ -110,3 +110,11 @@ create table if not exists public.user_plans (
 );
 create index if not exists idx_user_plans_clerk on public.user_plans(clerk_id);
 create index if not exists idx_user_plans_email on public.user_plans(email);
+
+-- ─── 6. Community post upvotes (one vote per user per post) ───────────────────
+create table if not exists public.community_post_upvotes (
+  post_id    uuid not null references public.community_posts(id) on delete cascade,
+  clerk_id   text not null references public.profiles(clerk_id) on delete cascade,
+  created_at timestamptz not null default now(),
+  primary key (post_id, clerk_id)
+);
