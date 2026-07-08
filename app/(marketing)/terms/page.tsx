@@ -36,9 +36,9 @@ export default function TermsPage() {
 
         <Section title="1. Acceptance of Terms">
           <p>
-            These Terms of Service ("Terms") govern your access to and use of VisaPilot, including
-            visapilot.app and any related mobile applications, APIs, or services (collectively, the "Service"),
-            operated by VisaPilot ("we," "us," or "our").
+            These Terms of Service (&quot;Terms&quot;) govern your access to and use of VisaPilot, including
+            visapilot.app and any related mobile applications, APIs, or services (collectively, the &quot;Service&quot;),
+            operated by VisaPilot (&quot;we,&quot; &quot;us,&quot; or &quot;our&quot;).
           </p>
           <p>
             By creating an account, accessing, or using the Service, you confirm that you have read,
@@ -47,7 +47,7 @@ export default function TermsPage() {
             If you do not agree, you must not use the Service.
           </p>
           <p>
-            We reserve the right to modify these Terms at any time. We will provide at least 14 days'
+            We reserve the right to modify these Terms at any time. We will provide at least 14 days&apos;
             notice of material changes. Continued use after the effective date of changes constitutes
             acceptance of the revised Terms.
           </p>
@@ -119,7 +119,7 @@ export default function TermsPage() {
           <ul className="list-disc pl-5 space-y-2">
             <li>Use the Service to create, submit, or file fraudulent immigration documents or misrepresent facts to USCIS, DOL, DOS, or any government agency</li>
             <li>Use the AI Assistant to generate or assist with fraudulent visa applications, fake employment verification letters, or any other deceptive government filings</li>
-            <li>Attempt to gain unauthorized access to any part of the Service, other users' accounts, or our infrastructure</li>
+            <li>Attempt to gain unauthorized access to any part of the Service, other users&apos; accounts, or our infrastructure</li>
             <li>Scrape, crawl, index, or extract data from the Service in bulk using automated tools without our prior written permission</li>
             <li>Reverse engineer, decompile, or attempt to extract the source code of any part of the Service</li>
             <li>Upload or transmit malware, viruses, or any malicious code</li>
@@ -136,15 +136,15 @@ export default function TermsPage() {
 
         <Section title="6. AI Assistant">
           <p>
-            The AI Assistant is powered by Anthropic's Claude API and designed to answer general
+            The AI Assistant is powered by Anthropic&apos;s Claude API and designed to answer general
             immigration questions. You acknowledge that:
           </p>
           <ul className="list-disc pl-5 space-y-2">
             <li>AI responses are generated automatically and may be incomplete, inaccurate, or outdated</li>
-            <li>The AI Assistant does not have access to your personal immigration file, USCIS case status, or your attorney's advice</li>
+            <li>The AI Assistant does not have access to your personal immigration file, USCIS case status, or your attorney&apos;s advice</li>
             <li>Responses should be independently verified before being relied upon for any immigration action</li>
             <li>You should <strong className="text-slate-800">never</strong> enter sensitive personal identifiers (passport numbers, Alien Registration Numbers, Social Security Numbers) into the AI chat</li>
-            <li>Conversations may be used by Anthropic to improve their models per Anthropic's Terms of Service, unless you have an enterprise arrangement</li>
+            <li>Conversations may be used by Anthropic to improve their models per Anthropic&apos;s Terms of Service, unless you have an enterprise arrangement</li>
           </ul>
         </Section>
 
@@ -172,7 +172,7 @@ export default function TermsPage() {
 
           <h3 className="font-semibold text-slate-800 mt-4">7.4 Price Changes</h3>
           <p>
-            We reserve the right to change pricing at any time with 30 days' notice. Your continued
+            We reserve the right to change pricing at any time with 30 days&apos; notice. Your continued
             use of paid features after a price change constitutes acceptance of the new pricing.
           </p>
 
@@ -221,7 +221,7 @@ export default function TermsPage() {
 
         <Section title="10. Disclaimer of Warranties">
           <p>
-            THE SERVICE IS PROVIDED "AS IS" AND "AS AVAILABLE" WITHOUT WARRANTIES OF ANY KIND,
+            THE SERVICE IS PROVIDED &quot;AS IS&quot; AND &quot;AS AVAILABLE&quot; WITHOUT WARRANTIES OF ANY KIND,
             EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO WARRANTIES OF MERCHANTABILITY, FITNESS
             FOR A PARTICULAR PURPOSE, ACCURACY, COMPLETENESS, NON-INFRINGEMENT, OR UNINTERRUPTED
             AVAILABILITY.

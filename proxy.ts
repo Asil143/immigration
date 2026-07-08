@@ -20,6 +20,8 @@ const isPublicRoute = createRouteMatcher([
   "/about(.*)",
   "/contact(.*)",
   "/faq(.*)",
+  "/jobs(.*)",
+  "/community(.*)",
   // Tools & dashboard accessible without login (preview mode)
   "/ai-assistant(.*)",
   "/rfe-assistant(.*)",

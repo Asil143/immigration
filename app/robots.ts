@@ -5,7 +5,14 @@ export default function robots(): MetadataRoute.Robots {
     rules: [
       {
         userAgent: "*",
-        allow: "/",
+        allow: [
+          "/",
+          // Public preview-mode tool pages living under /dashboard/ — kept out
+          // of the blanket disallow below so they stay indexable.
+          "/dashboard/tools/checklists",
+          "/dashboard/tools/opt-tracker",
+          "/dashboard/timeline",
+        ],
         disallow: [
           "/api/",
           "/dashboard/",

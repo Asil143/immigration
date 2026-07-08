@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -105,11 +105,13 @@ export default function CasesPage() {
   useEffect(() => {
     if (!isLoaded) return; // wait for Clerk to finish initializing
     if (!isSignedIn) {
-      setCases(DEMO_CASES);
-      setLoading(false);
+      Promise.resolve().then(() => {
+        setCases(DEMO_CASES);
+        setLoading(false);
+      });
       return;
     }
-    setFetchError(null);
+    Promise.resolve().then(() => setFetchError(null));
     Promise.all([
       fetch("/api/visa-cases").then(async r => {
         if (!r.ok) throw new Error(`visa-cases: ${r.status}`);

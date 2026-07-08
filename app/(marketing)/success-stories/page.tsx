@@ -58,8 +58,8 @@ export default function SuccessStoriesPage() {
             Immigration success stories
           </h1>
           <p className="text-lg text-slate-500 leading-7">
-            VisaPilot is early — we don't yet have a library of verified user stories to share.
-            If our tools helped you navigate your immigration journey, we'd love to feature you.
+            VisaPilot is early — we don&apos;t yet have a library of verified user stories to share.
+            If our tools helped you navigate your immigration journey, we&apos;d love to feature you.
           </p>
         </div>
       </section>
@@ -101,7 +101,7 @@ export default function SuccessStoriesPage() {
                 Share your immigration story
               </h2>
               <p className="text-sm text-slate-400 mt-1">
-                Did VisaPilot help you navigate a tricky immigration situation? Tell us — we'll reach out to feature your story (with your permission).
+                Did VisaPilot help you navigate a tricky immigration situation? Tell us — we&apos;ll reach out to feature your story (with your permission).
               </p>
             </div>
 
@@ -111,8 +111,8 @@ export default function SuccessStoriesPage() {
                   <CheckCircle2 className="h-12 w-12 text-green-500 mx-auto mb-4" />
                   <h3 className="text-lg font-bold text-slate-900 mb-2">Thank you!</h3>
                   <p className="text-sm text-slate-500 leading-6">
-                    We'll review your submission and reach out to <strong>{form.email}</strong> if we'd like to feature your story.
-                    We'll never publish anything without your explicit permission.
+                    We&apos;ll review your submission and reach out to <strong>{form.email}</strong> if we&apos;d like to feature your story.
+                    We&apos;ll never publish anything without your explicit permission.
                   </p>
                 </div>
               ) : (
@@ -174,7 +174,7 @@ export default function SuccessStoriesPage() {
                   </button>
 
                   <p className="text-center text-xs text-slate-400">
-                    We'll never publish your story without explicit permission. We may edit for clarity or length and will share the final version with you first.
+                    We&apos;ll never publish your story without explicit permission. We may edit for clarity or length and will share the final version with you first.
                   </p>
                 </form>
               )}

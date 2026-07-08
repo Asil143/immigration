@@ -7,7 +7,6 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Progress } from "@/components/ui/progress";
 import {
   Timer, AlertCircle, CheckCircle2, Info, Calendar, Loader2,
   Cloud, CloudOff,
@@ -36,6 +35,7 @@ export default function OPTTrackerPage() {
   const [loading, setLoading] = useState(true);
   const [syncStatus, setSyncStatus] = useState<SyncStatus>("idle");
   const saveTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
+  const nextPeriodId = useRef(0);
 
   // Load profile dates + saved tracker state
   useEffect(() => {
@@ -71,7 +71,6 @@ export default function OPTTrackerPage() {
       setLoading(false);
     }
     load();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isSignedIn]);
 
   function persistToServer(newOptType: "standard" | "stem", newPeriods: UnemployedPeriod[]) {
@@ -98,15 +97,16 @@ export default function OPTTrackerPage() {
     persistToServer(t, periods);
   }
 
-  function addPeriod() {
+  function handleAddPeriod() {
     if (!newStart) return;
-    const next = [...periods, { id: Date.now().toString(), start: newStart, end: newEnd || null }];
+    const id = `period-${nextPeriodId.current++}`;
+    const next = [...periods, { id, start: newStart, end: newEnd || null }];
     setPeriods(next);
     persistToServer(optType, next);
     setNewStart(""); setNewEnd("");
   }
 
-  function removePeriod(id: string) {
+  function handleRemovePeriod(id: string) {
     const next = periods.filter(x => x.id !== id);
     setPeriods(next);
     persistToServer(optType, next);
@@ -295,7 +295,7 @@ export default function OPTTrackerPage() {
                     <p className="font-bold text-primary">{days}</p>
                   </div>
                 </div>
-                <button onClick={() => removePeriod(p.id)} className="text-muted-foreground hover:text-destructive text-xs">✕</button>
+                <button onClick={() => handleRemovePeriod(p.id)} className="text-muted-foreground hover:text-destructive text-xs">✕</button>
               </div>
             );
           })}
@@ -309,7 +309,7 @@ export default function OPTTrackerPage() {
               <Label className="text-xs">End Date (leave blank if ongoing)</Label>
               <Input type="date" value={newEnd} onChange={e => setNewEnd(e.target.value)} className="h-8 text-sm" />
             </div>
-            <Button size="sm" onClick={addPeriod} disabled={!newStart} className="h-8">Add</Button>
+            <Button size="sm" onClick={handleAddPeriod} disabled={!newStart} className="h-8">Add</Button>
           </div>
         </CardContent>
       </Card>

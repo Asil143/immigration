@@ -135,9 +135,11 @@ export default function DashboardPage() {
 
   useEffect(() => {
     if (!isSignedIn) {
-      setProfile(DEMO_PROFILE);
-      setAlerts(computeAlerts(DEMO_PROFILE));
-      setCaseCount(2);
+      Promise.resolve().then(() => {
+        setProfile(DEMO_PROFILE);
+        setAlerts(computeAlerts(DEMO_PROFILE));
+        setCaseCount(2);
+      });
       return;
     }
     Promise.all([
@@ -170,7 +172,7 @@ export default function DashboardPage() {
       }
       if (Array.isArray(casesData)) setCaseCount(casesData.length);
     }).catch(() => setProfile({}));
-  }, [isSignedIn]);
+  }, [isSignedIn, router]);
 
   const profileSetUp = !!(profile?.visaType);
   const criticalCount = alerts.filter(a => a.priority === "critical").length;
@@ -213,7 +215,7 @@ export default function DashboardPage() {
             </div>
             <div>
               <p className="font-bold text-blue-900">Set up your immigration profile</p>
-              <p className="text-sm text-blue-700 mt-0.5">Tell us your visa type and key dates — we'll alert you before anything expires.</p>
+              <p className="text-sm text-blue-700 mt-0.5">Tell us your visa type and key dates — we&apos;ll alert you before anything expires.</p>
             </div>
           </div>
           <Link href="/dashboard/profile">

@@ -44,7 +44,7 @@ export default function AdminPaymentsPage() {
 
   useEffect(() => {
     if (!isLoaded) return;
-    if (!isAdmin) { setLoading(false); return; }
+    if (!isAdmin) { Promise.resolve().then(() => setLoading(false)); return; }
     fetch("/api/admin/payments")
       .then(r => r.json())
       .then(d => { setSubmissions(Array.isArray(d) ? d : []); setLoading(false); })
@@ -165,7 +165,7 @@ export default function AdminPaymentsPage() {
                       <span>{format(parseISO(sub.created_at), "MMM d, yyyy · h:mm a")}</span>
                     </div>
                     {sub.tx_note && (
-                      <p className="text-xs text-slate-500 mt-1 italic">"{sub.tx_note}"</p>
+                      <p className="text-xs text-slate-500 mt-1 italic">&quot;{sub.tx_note}&quot;</p>
                     )}
                   </div>
 

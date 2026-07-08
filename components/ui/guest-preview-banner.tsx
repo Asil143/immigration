@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { Lock, ArrowRight, Sparkles } from "lucide-react";
 import { SignInButton, SignUpButton } from "@clerk/nextjs";
 
@@ -40,7 +39,7 @@ export function GuestPreviewBanner({
   );
 }
 
-export function GuestPreviewOverlay({ href = "/sign-up" }: { href?: string }) {
+export function GuestPreviewOverlay() {
   return (
     <div className="relative">
       <div className="absolute inset-0 z-10 bg-white/70 backdrop-blur-[2px] rounded-xl flex flex-col items-center justify-center gap-4 p-6 text-center">

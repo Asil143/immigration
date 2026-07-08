@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { CheckCircle2, XCircle, AlertCircle, GitCompare } from "lucide-react";
+import { CheckCircle2, XCircle, AlertCircle } from "lucide-react";
 import Link from "next/link";
 
 interface VisaOption {

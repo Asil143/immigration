@@ -62,7 +62,7 @@ export default function CommunityPage() {
     }
   }, [activeCategory, sort]);
 
-  useEffect(() => { fetchPosts(); }, [fetchPosts]);
+  useEffect(() => { Promise.resolve().then(fetchPosts); }, [fetchPosts]);
 
   const filtered = posts.filter(
     (p) =>

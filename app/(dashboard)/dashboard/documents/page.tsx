@@ -123,7 +123,7 @@ export default function DocumentsPage() {
 
   useEffect(() => {
     if (!isSignedIn) return;
-    setLoadingDocs(true);
+    Promise.resolve().then(() => setLoadingDocs(true));
     fetch("/api/documents")
       .then(r => r.ok ? r.json() : [])
       .then(data => setDocs(Array.isArray(data) ? data : []))

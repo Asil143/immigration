@@ -146,7 +146,7 @@ export default function LawyersPage() {
           <div className="rounded-2xl border border-slate-200 overflow-hidden">
             <div className="px-8 py-6 bg-slate-900">
               <h2 className="text-xl font-bold text-white">Submit an attorney inquiry</h2>
-              <p className="text-sm text-slate-400 mt-1">We'll match you with the right attorney and have them reach out within 1–2 business days.</p>
+              <p className="text-sm text-slate-400 mt-1">We&apos;ll match you with the right attorney and have them reach out within 1–2 business days.</p>
             </div>
 
             <div className="p-8">
@@ -155,7 +155,7 @@ export default function LawyersPage() {
                   <CheckCircle2 className="h-12 w-12 text-green-500 mx-auto mb-4" />
                   <h3 className="text-lg font-bold text-slate-900 mb-2">Inquiry received!</h3>
                   <p className="text-sm text-slate-500 leading-6">
-                    We'll review your case and connect you with an immigration attorney within 1–2 business days.
+                    We&apos;ll review your case and connect you with an immigration attorney within 1–2 business days.
                     Check your inbox at <strong>{form.email}</strong>.
                   </p>
                   <Link href="/dashboard" className="mt-6 inline-flex items-center gap-2 text-sm font-medium text-blue-600 hover:underline">
@@ -261,7 +261,7 @@ export default function LawyersPage() {
           </div>
           <p className="text-xs text-slate-500 mt-5">
             For everything else — understanding checklists, tracking deadlines, filing fees —{" "}
-            <Link href="/dashboard" className="text-blue-600 hover:underline font-medium">VisaPilot's free tools</Link> are a good starting point.
+            <Link href="/dashboard" className="text-blue-600 hover:underline font-medium">VisaPilot&apos;s free tools</Link> are a good starting point.
           </p>
         </div>
 

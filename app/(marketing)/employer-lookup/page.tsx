@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { Search, Building2, TrendingUp, Users, MapPin, ExternalLink, Star } from "lucide-react";
+import { Search, Building2, MapPin } from "lucide-react";
 
 const employers = [
   { name: "Amazon", industry: "Technology", city: "Seattle, WA", h1bFiled: 12400, approvalRate: 97.2, avgSalary: 165000, capExempt: false, topRoles: ["SDE", "TPM", "Data Scientist"], tier: "platinum" },
@@ -110,7 +110,7 @@ export default function EmployerLookupPage() {
 
         {/* Results */}
         <div className="space-y-3">
-          {filtered.map((emp, i) => {
+          {filtered.map((emp) => {
             const tier = tierColors[emp.tier];
             return (
               <div key={emp.name} className="p-4 rounded-xl border flex flex-col sm:flex-row sm:items-center gap-4" style={{ borderColor: "#e2e8f0", backgroundColor: "#ffffff" }}>

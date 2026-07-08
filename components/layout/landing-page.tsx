@@ -26,7 +26,7 @@ function useTyping() {
     if (!del && text.length < word.length) t = setTimeout(() => setText(word.slice(0, text.length + 1)), 55);
     else if (!del && text.length === word.length) t = setTimeout(() => setDel(true), 1800);
     else if (del && text.length > 0) t = setTimeout(() => setText(text.slice(0, -1)), 30);
-    else { setDel(false); setIdx((i) => (i + 1) % WORDS.length); }
+    else t = setTimeout(() => { setDel(false); setIdx((i) => (i + 1) % WORDS.length); }, 0);
     return () => clearTimeout(t);
   }, [text, del, idx]);
   return text;
@@ -117,7 +117,11 @@ function TiltCard() {
   const [checked, setChecked] = useState<number[]>([]);
   const current = CHECKLISTS[listIdx];
 
-  useEffect(() => { setChecked([]); }, [listIdx]);
+  const [prevListIdx, setPrevListIdx] = useState(listIdx);
+  if (listIdx !== prevListIdx) {
+    setPrevListIdx(listIdx);
+    setChecked([]);
+  }
 
   useEffect(() => {
     if (checked.length >= current.items.length) {
@@ -612,7 +616,7 @@ export function LandingPage() {
             <div className="text-center mb-10">
               <Badge variant="secondary" className="mb-3 text-xs">Personalized</Badge>
               <h2 className="text-3xl font-bold text-slate-900 tracking-tight">Where are you right now?</h2>
-              <p className="mt-3 text-slate-500">Pick your current visa stage — we'll show you exactly what to do next.</p>
+              <p className="mt-3 text-slate-500">Pick your current visa stage — we&apos;ll show you exactly what to do next.</p>
             </div>
           </FadeUp>
 

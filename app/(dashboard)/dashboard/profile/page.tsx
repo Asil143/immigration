@@ -220,7 +220,6 @@ export default function ProfilePage() {
   const [copiedCase, setCopiedCase] = useState<string | null>(null);
 
   const load = useCallback(async () => {
-    setLoading(true);
     try {
       const [profileRes, casesRes] = await Promise.all([
         fetch("/api/profile"),

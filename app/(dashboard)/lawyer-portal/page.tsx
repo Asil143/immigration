@@ -56,7 +56,7 @@ export default function LawyerPortalPage() {
         <div>
           <p className="font-semibold text-amber-900 text-sm">Coming soon</p>
           <p className="text-xs text-amber-700 leading-5 mt-0.5">
-            The attorney portal is in development. We're building the infrastructure to connect licensed immigration attorneys with pre-screened clients through VisaPilot. Sign up below to be notified when it launches and to reserve early partner pricing.
+            The attorney portal is in development. We&apos;re building the infrastructure to connect licensed immigration attorneys with pre-screened clients through VisaPilot. Sign up below to be notified when it launches and to reserve early partner pricing.
           </p>
         </div>
       </div>
@@ -83,7 +83,7 @@ export default function LawyerPortalPage() {
       <div className="rounded-2xl border border-slate-200 overflow-hidden">
         <div className="px-8 py-5 bg-slate-900">
           <h2 className="text-lg font-bold text-white">Express interest in joining</h2>
-          <p className="text-xs text-slate-400 mt-1">We'll reach out before launch to discuss pricing and terms.</p>
+          <p className="text-xs text-slate-400 mt-1">We&apos;ll reach out before launch to discuss pricing and terms.</p>
         </div>
 
         <div className="p-8">
@@ -92,7 +92,7 @@ export default function LawyerPortalPage() {
               <CheckCircle2 className="h-10 w-10 text-green-500 mx-auto mb-3" />
               <h3 className="font-bold text-slate-900 mb-1">Got it — thanks!</h3>
               <p className="text-sm text-slate-500">
-                We'll email <strong>{form.email}</strong> before the portal launches.
+                We&apos;ll email <strong>{form.email}</strong> before the portal launches.
               </p>
             </div>
           ) : (

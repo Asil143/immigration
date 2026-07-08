@@ -173,7 +173,7 @@ export default function GlossaryPage() {
         {filtered.length === 0 && (
           <div className="text-center py-16" style={{ color: "#94a3b8" }}>
             <BookOpen className="h-12 w-12 mx-auto mb-3 opacity-40" />
-            <p className="font-medium">No terms found for "{search}"</p>
+            <p className="font-medium">No terms found for &quot;{search}&quot;</p>
             <p className="text-sm mt-1">Try a different search or browse all categories</p>
           </div>
         )}

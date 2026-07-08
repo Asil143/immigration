@@ -213,7 +213,7 @@ export default function I765Page() {
         </div>
         <h1 className="text-2xl font-bold mb-2">I-765 Application for Employment Authorization</h1>
         <p className="text-muted-foreground text-sm max-w-md mb-2">
-          For F-1 students applying for OPT or STEM OPT extension. Answer questions in plain English — we'll fill the official form and send it to you.
+          For F-1 students applying for OPT or STEM OPT extension. Answer questions in plain English — we&apos;ll fill the official form and send it to you.
         </p>
         <p className="text-xs text-slate-500 max-w-sm mb-6">
           Covers all sections of the official USCIS Form I-765 relevant to OPT and STEM OPT applicants.

@@ -45,7 +45,7 @@ export default function CaseStatusPage() {
   const [cases, setCases] = useState<VisaCase[]>([]);
 
   useEffect(() => {
-    if (!isSignedIn) { setCases(DEMO_CASES); return; }
+    if (!isSignedIn) { Promise.resolve().then(() => setCases(DEMO_CASES)); return; }
     fetch("/api/visa-cases")
       .then(r => r.ok ? r.json() : [])
       .then(data => { if (Array.isArray(data)) setCases(data); });

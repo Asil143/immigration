@@ -3,34 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { BarChart3, ArrowRight, Bell, TrendingUp, Info, Bot } from "lucide-react";
-
-const BULLETIN_MONTH = "June 2026";
-
-interface BulletinRow {
-  category: string;
-  chargeability: string;
-  china: string;
-  india: string;
-  mexico: string;
-  philippines: string;
-}
-
-const FINAL_ACTION: BulletinRow[] = [
-  { category: "EB-1", chargeability: "C", china: "C", india: "C", mexico: "C", philippines: "C" },
-  { category: "EB-2", chargeability: "C", china: "01JAN19", india: "01APR12", mexico: "C", philippines: "C" },
-  { category: "EB-3 Skilled/Prof", chargeability: "C", china: "01JUL19", india: "01JUN12", mexico: "22OCT22", philippines: "C" },
-  { category: "EB-3 Other", chargeability: "01JAN21", china: "01JAN21", india: "01JAN21", mexico: "01JAN21", philippines: "01JAN21" },
-  { category: "EB-4", chargeability: "C", china: "C", india: "C", mexico: "22MAY19", philippines: "22MAY19" },
-  { category: "EB-5 Set-aside", chargeability: "C", china: "C", india: "C", mexico: "C", philippines: "C" },
-];
-
-const COUNTRY_COLS: { key: keyof BulletinRow; label: string }[] = [
-  { key: "chargeability", label: "All Others" },
-  { key: "china", label: "China" },
-  { key: "india", label: "India" },
-  { key: "mexico", label: "Mexico" },
-  { key: "philippines", label: "Philippines" },
-];
+import { BULLETIN_MONTH, FINAL_ACTION, COUNTRY_COLS } from "@/lib/visa-bulletin";
 
 function CellBadge({ value }: { value: string }) {
   if (value === "C") return <Badge variant="success" className="text-xs font-mono">Current</Badge>;

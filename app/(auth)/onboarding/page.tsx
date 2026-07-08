@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
 import {
   CheckCircle2, ArrowRight, Bot, Shield, Calendar, Target,
-  ChevronLeft, Sparkles, Clock, AlertCircle, Star,
+  ChevronLeft, Sparkles, AlertCircle, Star,
 } from "lucide-react";
 
 const visaOptions = [
@@ -64,9 +64,10 @@ export default function OnboardingPage() {
     setSelectedGoals(g => g.includes(id) ? g.filter(x => x !== id) : [...g, id]);
   }
 
+  const [now] = useState(() => Date.now());
   function daysUntil(d: string) {
     if (!d) return null;
-    return Math.ceil((new Date(d).getTime() - Date.now()) / 86400000);
+    return Math.ceil((new Date(d).getTime() - now) / 86400000);
   }
 
   async function finish() {
@@ -152,7 +153,7 @@ export default function OnboardingPage() {
             <div className="p-8">
               <h1 className="text-2xl font-bold mb-1">What is your current visa status?</h1>
               <p className="text-sm mb-6" style={{ color: "#64748b" }}>
-                Hi{user?.firstName ? ` ${user.firstName}` : ""}! Select your current status and we'll personalize everything for you.
+                Hi{user?.firstName ? ` ${user.firstName}` : ""}! Select your current status and we&apos;ll personalize everything for you.
               </p>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                 {visaOptions.map(opt => (
@@ -247,7 +248,7 @@ export default function OnboardingPage() {
           {step === 3 && (
             <div className="p-8">
               <h1 className="text-2xl font-bold mb-1">Add your key dates</h1>
-              <p className="text-sm mb-6" style={{ color: "#64748b" }}>We'll alert you before anything expires. You can always add more later in your profile.</p>
+              <p className="text-sm mb-6" style={{ color: "#64748b" }}>We&apos;ll alert you before anything expires. You can always add more later in your profile.</p>
 
               <div className="space-y-4">
                 {(visaType === "OPT" || visaType === "STEM OPT") && (
@@ -296,7 +297,7 @@ export default function OnboardingPage() {
           {step === 4 && (
             <div className="p-8">
               <h1 className="text-2xl font-bold mb-1">What do you need help with?</h1>
-              <p className="text-sm mb-6" style={{ color: "#64748b" }}>Select all that apply. We'll prioritize these in your dashboard. (You can change this later)</p>
+              <p className="text-sm mb-6" style={{ color: "#64748b" }}>Select all that apply. We&apos;ll prioritize these in your dashboard. (You can change this later)</p>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {goals.map(goal => {
@@ -332,7 +333,7 @@ export default function OnboardingPage() {
               </div>
               <h1 className="text-2xl font-bold mb-2">You are all set!</h1>
               <p className="text-sm mb-8" style={{ color: "#64748b" }}>
-                Your personalized immigration dashboard is ready. Here's what's waiting for you:
+                Your personalized immigration dashboard is ready. Here&apos;s what&apos;s waiting for you:
               </p>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8 text-left">

@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Trophy, Clock, AlertCircle, CheckCircle2, Circle, TrendingUp, Users, FileText, CalendarDays } from "lucide-react";
+import { Trophy, Clock, AlertCircle, CheckCircle2, Circle, TrendingUp, Users, FileText } from "lucide-react";
 
 const lotteryHistory = [
   { year: "FY2026 (2025)", registrations: 480000, selected: 114000, rate: 23.8, capExempt: false },
@@ -212,7 +212,7 @@ export default function H1BTrackerPage() {
           </Card>
           <div className="p-4 rounded-xl" style={{ backgroundColor: "#fef9c3", border: "1px solid #fde047" }}>
             <p className="text-sm font-semibold text-yellow-800 mb-1">Key insight</p>
-            <p className="text-sm text-yellow-700">Holding a US master's degree effectively doubles your lottery entries. In FY2025, master's cap holders had a statistically higher chance of selection than regular cap applicants.</p>
+            <p className="text-sm text-yellow-700">Holding a US master&apos;s degree effectively doubles your lottery entries. In FY2025, master&apos;s cap holders had a statistically higher chance of selection than regular cap applicants.</p>
           </div>
         </div>
       )}

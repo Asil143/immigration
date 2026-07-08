@@ -171,7 +171,7 @@ export default function I131Page() {
         </div>
         <h1 className="text-2xl font-bold mb-2">I-131 Application for Travel Document</h1>
         <p className="text-muted-foreground text-sm max-w-md mb-2">
-          For Advance Parole, Refugee Travel Documents, and Re-entry Permits. Answer questions in plain English — we'll prepare your official form.
+          For Advance Parole, Refugee Travel Documents, and Re-entry Permits. Answer questions in plain English — we&apos;ll prepare your official form.
         </p>
         <p className="text-xs text-slate-500 max-w-sm mb-6">
           Most commonly used by I-485 applicants who need to travel while their green card is pending.
@@ -188,7 +188,7 @@ export default function I131Page() {
         {prefillCount > 0 && (
           <div className="flex items-center gap-2 bg-green-50 border border-green-200 rounded-xl px-4 py-3 mb-6 text-sm text-green-800 max-w-md">
             <CheckCircle2 className="h-4 w-4 text-green-600 shrink-0" />
-            <span><strong>{prefillCount} field{prefillCount > 1 ? "s" : ""}</strong> pre-filled from your profile — we'll skip to unanswered questions.</span>
+            <span><strong>{prefillCount} field{prefillCount > 1 ? "s" : ""}</strong> pre-filled from your profile — we&apos;ll skip to unanswered questions.</span>
           </div>
         )}
         <Button size="lg" onClick={startForm} className="px-8 bg-sky-600 hover:bg-sky-700">
@@ -236,7 +236,7 @@ export default function I131Page() {
             {isComplete && (
               <div className="flex justify-center pt-2">
                 <div className="flex items-center gap-2 bg-green-50 border border-green-200 rounded-full px-4 py-2 text-sm text-green-700 font-medium">
-                  <CheckCircle2 className="h-4 w-4" /> Form complete — we'll be in touch shortly
+                  <CheckCircle2 className="h-4 w-4" /> Form complete — we&apos;ll be in touch shortly
                 </div>
               </div>
             )}

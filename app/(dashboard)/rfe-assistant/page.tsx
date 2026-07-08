@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { useUser } from "@clerk/nextjs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -716,7 +716,7 @@ export default function RFEAssistantPage() {
                         </div>
                         <div className="flex gap-2">
                           <Button size="sm" className="flex-1" onClick={handleTicketSubmit} disabled={!ticketForm.email || !ticketForm.description}>
-                            <ArrowRight className="h-3.5 w-3.5 mr-1.5" /> Submit — We'll reach out within 24h
+                            <ArrowRight className="h-3.5 w-3.5 mr-1.5" /> Submit — We&apos;ll reach out within 24h
                           </Button>
                           <Button size="sm" variant="ghost" onClick={() => setTicketOpen(false)}>Cancel</Button>
                         </div>
@@ -729,7 +729,7 @@ export default function RFEAssistantPage() {
                   ) : (
                     <div className="flex items-center gap-2 text-sm text-green-700 bg-green-50 border border-green-200 rounded-lg px-4 py-3">
                       <CheckCircle2 className="h-4 w-4" />
-                      Request received! We'll email you within 24 hours with next steps and pricing.
+                      Request received! We&apos;ll email you within 24 hours with next steps and pricing.
                     </div>
                   )}
                 </div>

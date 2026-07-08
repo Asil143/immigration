@@ -84,7 +84,7 @@ export default function EventsPage() {
             Live immigration Q&amp;As with attorneys
           </h1>
           <p className="text-lg text-slate-500 leading-7">
-            We're planning free live webinars on H-1B, OPT, green card backlogs, and more —
+            We&apos;re planning free live webinars on H-1B, OPT, green card backlogs, and more —
             with licensed immigration attorneys. No events are scheduled yet.
             Join the waitlist to be the first to know.
           </p>
@@ -100,12 +100,12 @@ export default function EventsPage() {
             <h2 className="text-lg font-bold text-slate-900">Get notified when we go live</h2>
           </div>
           <p className="text-sm text-slate-600 mb-5">
-            We'll send one email when the first webinar is scheduled. No spam, unsubscribe any time.
+            We&apos;ll send one email when the first webinar is scheduled. No spam, unsubscribe any time.
           </p>
           {notifyDone ? (
             <div className="flex items-center gap-2 text-sm font-medium text-green-700">
               <CheckCircle2 className="h-5 w-5" />
-              You're on the list — we'll email you when the first event is announced.
+              You&apos;re on the list — we&apos;ll email you when the first event is announced.
             </div>
           ) : (
             <form onSubmit={submitNotify} className="flex gap-2">
@@ -130,7 +130,7 @@ export default function EventsPage() {
 
         {/* Planned topics */}
         <div>
-          <h2 className="text-xl font-bold text-slate-900 mb-2">Topics we're planning to cover</h2>
+          <h2 className="text-xl font-bold text-slate-900 mb-2">Topics we&apos;re planning to cover</h2>
           <p className="text-sm text-slate-500 mb-6">These are topics we intend to host — not confirmed dates or speakers.</p>
           <div className="space-y-3">
             {PLANNED_TOPICS.map(t => (
@@ -152,12 +152,12 @@ export default function EventsPage() {
             <h2 className="text-lg font-bold text-slate-900">Suggest a topic</h2>
           </div>
           <p className="text-sm text-slate-500 mb-5">
-            Have a specific immigration question that would be great for a live Q&A? Tell us — we'll prioritize topics with the most requests.
+            Have a specific immigration question that would be great for a live Q&A? Tell us — we&apos;ll prioritize topics with the most requests.
           </p>
           {topicDone ? (
             <div className="flex items-center gap-2 text-sm font-medium text-green-700">
               <CheckCircle2 className="h-5 w-5" />
-              Thanks! We'll factor this in when planning topics.
+              Thanks! We&apos;ll factor this in when planning topics.
             </div>
           ) : (
             <form onSubmit={submitTopic} className="space-y-3">

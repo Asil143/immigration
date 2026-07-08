@@ -146,6 +146,8 @@ export default function AIAssistantPage() {
 
   const bottomRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const nextMsgId = useRef(0);
+  const accumulatedRef = useRef("");
 
   // Load profile + conversation list on mount
   useEffect(() => {
@@ -245,7 +247,7 @@ export default function AIAssistantPage() {
     if (!text.trim() || loading) return;
 
     const userMsg: ChatMessage = {
-      id: Date.now().toString(),
+      id: `msg-${nextMsgId.current++}`,
       role: "user",
       content: text,
       created_at: new Date().toISOString(),
@@ -256,13 +258,13 @@ export default function AIAssistantPage() {
     setInput("");
     setLoading(true);
 
-    const assistantMsgId = (Date.now() + 1).toString();
+    const assistantMsgId = `msg-${nextMsgId.current++}`;
     setMessages(prev => [
       ...prev,
       { id: assistantMsgId, role: "assistant", content: "", created_at: new Date().toISOString() },
     ]);
 
-    let accumulated = "";
+    accumulatedRef.current = "";
 
     try {
       const response = await fetch("/api/chat", {
@@ -283,15 +285,15 @@ export default function AIAssistantPage() {
       while (true) {
         const { done, value } = await reader.read();
         if (done) break;
-        accumulated += decoder.decode(value, { stream: true });
+        accumulatedRef.current += decoder.decode(value, { stream: true });
         setMessages(prev =>
-          prev.map(m => m.id === assistantMsgId ? { ...m, content: accumulated } : m)
+          prev.map(m => m.id === assistantMsgId ? { ...m, content: accumulatedRef.current } : m)
         );
       }
     } catch {
-      accumulated = "I'm having trouble connecting right now. Please try again in a moment.";
+      accumulatedRef.current = "I'm having trouble connecting right now. Please try again in a moment.";
       setMessages(prev =>
-        prev.map(m => m.id === assistantMsgId ? { ...m, content: accumulated } : m)
+        prev.map(m => m.id === assistantMsgId ? { ...m, content: accumulatedRef.current } : m)
       );
     } finally {
       setLoading(false);
@@ -300,7 +302,7 @@ export default function AIAssistantPage() {
     // Save after AI response is complete
     const finalMsgs: ChatMessage[] = [
       ...updatedMsgs,
-      { id: assistantMsgId, role: "assistant", content: accumulated, created_at: new Date().toISOString() },
+      { id: assistantMsgId, role: "assistant", content: accumulatedRef.current, created_at: new Date().toISOString() },
     ];
     await saveConversation(finalMsgs, activeConvId, text);
   }

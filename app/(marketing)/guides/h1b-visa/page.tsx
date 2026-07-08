@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { CheckCircle2, ArrowRight, Bot, AlertCircle, Clock, ExternalLink, Calendar } from "lucide-react";
+import { CheckCircle2, ArrowRight, Bot, AlertCircle, ExternalLink } from "lucide-react";
 
 export const metadata = {
   title: "H-1B Visa Guide",

@@ -27,7 +27,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     // Tools (public)
     { url: `${BASE_URL}/dashboard/tools/checklists`, lastModified: now, changeFrequency: "monthly", priority: 0.9 },
     { url: `${BASE_URL}/dashboard/tools/opt-tracker`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
-    { url: `${BASE_URL}/dashboard/tools/timeline`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
+    { url: `${BASE_URL}/dashboard/timeline`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
     { url: `${BASE_URL}/ai-assistant`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
 
     // Resources

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Bot, Target, Shield, Users, Zap, Heart, ArrowRight, CheckCircle2 } from "lucide-react";
+import { Bot, Target, Shield, Zap, Heart, ArrowRight, CheckCircle2 } from "lucide-react";
 
 export const metadata = {
   title: "About | VisaPilot",

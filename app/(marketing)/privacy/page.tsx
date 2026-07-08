@@ -29,14 +29,14 @@ export default function PrivacyPage() {
 
         {/* Intro callout */}
         <div className="bg-blue-50 border border-blue-100 rounded-xl p-5 mb-12 text-sm text-blue-800 leading-6">
-          <strong>Summary:</strong> We collect only what's necessary to run VisaPilot. We never sell your data.
+          <strong>Summary:</strong> We collect only what&apos;s necessary to run VisaPilot. We never sell your data.
           AI conversations are processed by Anthropic but not stored beyond your session.
           You can delete your account and data at any time.
         </div>
 
         <Section title="1. Who We Are">
           <p>
-            VisaPilot ("we," "our," or "us") operates visapilot.app, an immigration information
+            VisaPilot (&quot;we,&quot; &quot;our,&quot; or &quot;us&quot;) operates visapilot.app, an immigration information
             platform designed to help international students and professionals navigate the U.S.
             immigration system through checklists, AI-assisted guidance, and deadline tracking.
           </p>
@@ -60,7 +60,7 @@ export default function PrivacyPage() {
             </li>
             <li>
               <strong className="text-slate-800">AI Assistant conversations:</strong> Messages you send to the AI
-              Assistant are transmitted to Anthropic's Claude API. We do not permanently store your conversation
+              Assistant are transmitted to Anthropic&apos;s Claude API. We do not permanently store your conversation
               history on our servers unless you use a Save feature. Anthropic may retain messages per their
               own privacy policy.
             </li>
@@ -103,7 +103,7 @@ export default function PrivacyPage() {
           <p>
             Payments are processed by Stripe, Inc. We never see or store your full credit card number, CVV,
             or billing address on our servers. Stripe provides us with a tokenized reference and basic
-            billing details (last 4 digits, card brand, expiration). Stripe's privacy policy governs
+            billing details (last 4 digits, card brand, expiration). Stripe&apos;s privacy policy governs
             how they handle payment data.
           </p>
         </Section>
@@ -280,7 +280,7 @@ export default function PrivacyPage() {
 
         <Section title="13. Changes to This Policy">
           <p>
-            We may update this Privacy Policy periodically. When we do, we will update the "Last updated"
+            We may update this Privacy Policy periodically. When we do, we will update the &quot;Last updated&quot;
             date at the top. For material changes, we will notify you by email or by posting a prominent
             notice on the site at least 14 days before changes take effect. Continued use of VisaPilot
             after the effective date constitutes acceptance of the updated policy.

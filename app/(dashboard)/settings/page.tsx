@@ -73,7 +73,6 @@ export default function SettingsPage() {
   }
 
   const currentPlan = (currentPlanKey in PLANS ? currentPlanKey : "free") as keyof typeof PLANS;
-  const planDetails = PLANS[currentPlan];
 
   const userEmail = user?.emailAddresses?.[0]?.emailAddress ?? "";
 

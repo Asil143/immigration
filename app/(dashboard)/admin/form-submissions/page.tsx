@@ -107,7 +107,7 @@ export default function AdminFormSubmissionsPage() {
     }
   }, []);
 
-  useEffect(() => { if (isAdmin) load(); }, [isAdmin, load]);
+  useEffect(() => { if (isAdmin) Promise.resolve().then(load); }, [isAdmin, load]);
 
   async function updateStatus(id: string, status: Status) {
     setSavingId(id);

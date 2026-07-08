@@ -107,7 +107,6 @@ export default function GeneratePage() {
   const [selectedDoc, setSelectedDoc] = useState<string | null>(null);
   const [fields, setFields] = useState<Record<string, string>>({});
   const [generating, setGenerating] = useState(false);
-  const [generated, setGenerated] = useState(false);
   const [copied, setCopied] = useState(false);
 
   const docType = DOC_TYPES.find(d => d.id === selectedDoc);
@@ -120,7 +119,6 @@ export default function GeneratePage() {
     setGenerating(true);
     setTimeout(() => {
       setGenerating(false);
-      setGenerated(true);
       setStep(3);
     }, 2000);
   }
@@ -290,7 +288,7 @@ export default function GeneratePage() {
           </div>
 
           <div className="flex justify-between pt-4">
-            <Button variant="outline" onClick={() => { setStep(1); setSelectedDoc(null); setFields({}); setGenerated(false); }}>
+            <Button variant="outline" onClick={() => { setStep(1); setSelectedDoc(null); setFields({}); }}>
               Generate Another
             </Button>
             <Button variant="outline" onClick={() => setStep(2)}>

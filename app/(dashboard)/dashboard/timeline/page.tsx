@@ -2,13 +2,13 @@
 
 import { useState, useEffect } from "react";
 import { useUser, SignUpButton } from "@clerk/nextjs";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
-  Plus, Calendar, AlertCircle, Clock, CheckCircle2, Trash2, Loader2,
+  Plus, Calendar, Clock, CheckCircle2, Trash2, Loader2,
   Sparkles, ArrowRight, ExternalLink, UserCircle, FileText,
 } from "lucide-react";
 import { differenceInDays, format, parseISO, isValid } from "date-fns";
@@ -336,8 +336,10 @@ export default function TimelinePage() {
   useEffect(() => {
     if (isSignedIn === undefined) return;
     if (!isSignedIn) {
-      setProfile(DEMO_PROFILE);
-      setLoading(false);
+      Promise.resolve().then(() => {
+        setProfile(DEMO_PROFILE);
+        setLoading(false);
+      });
       return;
     }
     Promise.all([
@@ -429,7 +431,7 @@ export default function TimelinePage() {
         <div className="mb-6 rounded-xl border border-dashed border-slate-200 p-8 text-center">
           <UserCircle className="h-10 w-10 mx-auto mb-3 text-slate-300" />
           <p className="font-semibold text-slate-700">No key dates found</p>
-          <p className="text-sm text-muted-foreground mt-1 mb-4">Fill in your visa dates in your profile and they'll auto-populate here.</p>
+          <p className="text-sm text-muted-foreground mt-1 mb-4">Fill in your visa dates in your profile and they&apos;ll auto-populate here.</p>
           <Button asChild variant="outline" size="sm">
             <Link href="/dashboard/profile">Go to Profile →</Link>
           </Button>
@@ -654,6 +656,7 @@ export default function TimelinePage() {
                       <div className="flex items-center justify-between flex-wrap gap-2">
                         <p className="font-medium text-sm">{d.title}</p>
                         <div className="flex items-center gap-2">
+                          <Badge variant={cfg.badgeVariant} className="text-[10px] capitalize">{d.priority}</Badge>
                           {daysLeftBadge(days)}
                           <button onClick={() => remove(d.id)} className="opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-destructive transition-all">
                             <Trash2 className="h-4 w-4" />

@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
-import { ArrowLeft, ThumbsUp, MessageCircle, Bookmark, Share2, Award, CheckCircle2, Flag } from "lucide-react";
+import { ArrowLeft, ThumbsUp, MessageCircle, Bookmark, Share2, Award, Flag } from "lucide-react";
 
 const POST = {
   id: "1",
