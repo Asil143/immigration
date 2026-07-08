@@ -8,7 +8,7 @@ const GREETINGS = [
   { text: "Hello", lang: "English", from: "#1d4ed8", via: "#2563eb", to: "#06b6d4" },
   { text: "Hola", lang: "Español", from: "#c026d3", via: "#e11d48", to: "#f97316" },
   { text: "नमस्ते", lang: "हिन्दी", from: "#b45309", via: "#dc2626", to: "#db2777" },
-  { text: "నమస్తే", lang: "తెలుగు", from: "#047857", via: "#0ea5e9", to: "#4f46e5" },
+  { text: "నమస్కారం", lang: "తెలుగు", from: "#047857", via: "#0ea5e9", to: "#4f46e5" },
 ];
 
 const STORAGE_KEY = "visapilot_greeted";
